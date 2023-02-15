@@ -223,7 +223,7 @@ local function get_formspec(tabview, name, tabdata)
 --		retval = retval .. ";0]"
 --	end
 
-	return retval, "size[15.5,7,false]real_coordinates[true]"
+	return retval
 end
 
 --------------------------------------------------------------------------------
