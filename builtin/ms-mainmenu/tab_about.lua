@@ -17,7 +17,10 @@
 
 --------------------------------------------------------------------------------
 
-local matematica_superpiatta = {"Questa è una versione modificata di minetest per un accesso","esclusivo e semplificato al server matematicasuperpiatta.it.";"Il codice è disponibile su https://github.com/leonardoguidoni/minetest", "Leonardo Guidoni <l.guidoni@gmail.com>"}
+local matematica_superpiatta = {
+	"Questa è una versione modificata di minetest per un accesso","esclusivo e semplificato al server matematicasuperpiatta.it.";
+	"Il codice è disponibile su https://github.com/leonardoguidoni/minetest",
+	"Leonardo Guidoni <l.guidoni@gmail.com>"}
 
 local core_developers = {
 	"Perttu Ahola (celeron55) <celeron55@gmail.com>",
@@ -108,14 +111,19 @@ return {
 	cbf_formspec = function(tabview, name, tabdata)
 		local logofile = defaulttexturedir .. "logo.png"
 		local version = core.get_version()
-		local fs = "image[0.75,0.5;2.2,2.2;" .. core.formspec_escape(logofile) .. "]" ..
+		local fs = "formspec_version[6]" ..
+		    "image[0.75,0.5;2.2,2.2;" .. core.formspec_escape(logofile) .. "]" ..
 			"style[label_button;border=false]" ..
 			"button[0.5,2;2.5,2;label_button;" .. version.project .. " " .. version.string .. "]" ..
-			"button[0.75,2.75;2,2;homepage;minetest.net]" ..
+			"button[0,4;3.5,1;homepage;minetest.net]" ..
+
+			"tooltip[ms_site;" .. fgettext("Visita il sito") .. "]" ..
+			"button[0,2.75;3.5,2;ms_site;" .. fgettext("matematicasuperpiatta.it") .. "]" ..
+
 			"tablecolumns[color;text]" ..
 			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
 			"table[3.5,-0.25;8.5,6.05;list_credits;" ..
-			"#FFFF00," .. fgettext("MINETEST - client dedicato al server Matematica Superpiatta") .. ",," ..
+			"#FFFF00," .. fgettext("Matematica Superpiatta - client MINETEST") .. ",," ..
 			buildCreditList(matematica_superpiatta) .. ",,," ..
 			"#FFFF00," .. fgettext("Core Developers") .. ",," ..
 			buildCreditList(core_developers) .. ",,," ..
@@ -132,13 +140,6 @@ return {
 			fgettext("Active renderer:") .. "\n" ..
 			core.formspec_escape(core.get_screen_info().render_info) .. "]"
 
-		if PLATFORM ~= "Android" then
-			fs = fs .. "tooltip[userdata;" ..
-					fgettext("Opens the directory that contains user-provided worlds, games, mods,\n" ..
-							"and texture packs in a file manager / explorer.") .. "]"
-			fs = fs .. "button[0,4;3.5,1;userdata;" .. fgettext("Open User Data Directory") .. "]"
-		end
-
 		return fs
 	end,
 	cbf_button_handler = function(this, fields, name, tabdata)
@@ -146,8 +147,8 @@ return {
 			core.open_url("https://www.minetest.net")
 		end
 
-		if fields.userdata then
-			core.open_dir(core.get_user_path())
+		if fields.ms_site then
+			core.open_url("https://www.matematicasuperpiatta.it")
 		end
 	end,
 }

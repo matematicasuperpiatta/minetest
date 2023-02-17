@@ -51,10 +51,8 @@ dofile(default_menupath .. DIR_DELIM .. "dlg_rename_modpack.lua")
 local tabs = {}
 
 tabs.settings = dofile(default_menupath .. DIR_DELIM .. "tab_settings.lua")
--- tabs.content  = dofile(menupath .. DIR_DELIM .. "tab_content.lua")
 tabs.about    = dofile(menupath .. DIR_DELIM .. "tab_about.lua")
--- tabs.local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua")
-tabs.play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
+tabs.ms = dofile(menupath .. DIR_DELIM .. "tab_ms.lua")
 
 --------------------------------------------------------------------------------
 local function main_event_handler(tabview, event)
@@ -96,10 +94,8 @@ local function init_globals()
 	local tv_main = tabview_create("maintab", {x = 12, y = 5.4}, {x = 0, y = 0})
 
 	tv_main:set_autosave_tab(true)
---	tv_main:add(tabs.local_game)
-	tv_main:add(tabs.play_online)
+	tv_main:add(tabs.ms)
 
---	tv_main:add(tabs.content)
 	tv_main:add(tabs.settings)
 	tv_main:add(tabs.about)
 
