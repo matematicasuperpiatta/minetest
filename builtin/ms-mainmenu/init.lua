@@ -48,6 +48,11 @@ dofile(default_menupath .. DIR_DELIM .. "dlg_delete_content.lua")
 dofile(default_menupath .. DIR_DELIM .. "dlg_delete_world.lua")
 dofile(default_menupath .. DIR_DELIM .. "dlg_rename_modpack.lua")
 
+dofile(menupath .. "oop" .. DIR_DELIM .. "oo_formspec.lua")
+
+dofile(menupath .. DIR_DELIM .. "dlg_whoareu.lua")
+-- dofile(menupath .. DIR_DELIM .. "dlg_passwd.lua")
+
 local tabs = {}
 
 tabs.settings = dofile(default_menupath .. DIR_DELIM .. "tab_settings.lua")

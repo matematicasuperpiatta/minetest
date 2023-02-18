@@ -209,7 +209,7 @@ Image = Tetragon:new{x = 0, y = 0, w = 0, h = 0, path = "", middle = false}
 
 function Image:render()
 	local buf = ""
-	if (middle) then
+	if (self.middle) then
 		buf = string.format("%s;%s;%s", self:_partial(), self.path, self.middle)
 	else
 		buf = string.format("%s;%s", self:_partial(), self.path)
@@ -224,7 +224,7 @@ AnimatedImage = Tetragon:new{x = 0, y = 0, w = 0, h = 0, name = "", path = "", f
 
 function AnimatedImage:render()
 	local buf = ""
-	if (middle) then
+	if (self.middle) then
 		buf = string.format("%s;%s;%s;%g,%g,%g;%s", self:_partial(), self.name, self.path, self.fr_count, self.fr_duration, self.fr_start, self.middle)
 	else
 		buf = string.format("%s;%s;%s;%g,%g,%g", self:_partial(), self.name, self.path, self.fr_count, self.fr_duration, self.fr_start)
