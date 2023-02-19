@@ -9,3 +9,4 @@ local.properties
 native/.*
 native/build
 native/deps
+local.properties

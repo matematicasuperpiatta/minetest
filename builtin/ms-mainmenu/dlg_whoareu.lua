@@ -115,35 +115,6 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 
 		gamedata.selected_world = 0
 
-		--[[
-		local idx = core.get_table_index("servers")
-		local server = idx and tabdata.lookup[idx]
-
-		set_selected_server(tabdata)
-
-		if server and server.address == gamedata.address and
-			server.port == gamedata.port then
-
-			serverlistmgr.add_favorite(server)
-
-			gamedata.servername        = server.name
-			gamedata.serverdescription = server.description
-
-			if not is_server_protocol_compat_or_error(
-				server.proto_min, server.proto_max) then
-				return true
-			end
-		else
-			gamedata.servername        = ""
-			gamedata.serverdescription = ""
-
-			serverlistmgr.add_favorite({
-				address = gamedata.address,
-				port = gamedata.port,
-			})
-		end
-		]]--
-
 		core.settings:set("address",     "")
 		core.settings:set("remote_port", "")
 
