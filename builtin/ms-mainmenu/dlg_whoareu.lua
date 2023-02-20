@@ -17,6 +17,8 @@
 
 local whoareu = ""
 
+local error_msg = ""
+
 --
 -- Utils
 --
@@ -42,17 +44,23 @@ end
 --
 
 local function get_whoareu_formspec(tabview, _, tabdata)
-	return FormspecVersion:new{version=6}:render() ..
+	local fs = FormspecVersion:new{version=6}:render() ..
 		Size:new{w = 5.5, h = 4.5, fix = true}:render() ..
-		Label:new{x = 0.5, y = 1, label = fgettext("Username:")}:render() ..
-		Field:new{x = 0.5, y = 1.25, w = 4.5, h = 0.7, name = "username", value = whoareu}:render() ..
+		Label:new{x = 0.5, y = 1.5, label = fgettext("Username:")}:render() ..
+		Field:new{x = 0.5, y = 1.75, w = 4.5, h = 0.7, name = "username", value = whoareu}:render() ..
 		-- Button:new{x=0.5, y=2.25, w=3.5, h=0.75, name = "btn_unsafe_next", label = fgettext("Someone look at me")}:render() ..
 		Button:new{x=0.5, y=3.25, w=2.2, h=0.75, name = "btn_back", label = fgettext("Back")}:render() ..
 		Button:new{x=2.8, y=3.25, w=2.2, h=0.75, name = "btn_next", label = fgettext("Next")}:render() ..
 
 		-- Styled stuff
 		StyleType:new{selectors = {"label"}, props = {"font=italic"}}:render() ..
-		Label:new{x = 0.5, y = 2.25, label = fgettext("You need a provided account")}:render()
+		Label:new{x = 0.5, y = 2.75, label = fgettext("You need a provided account")}:render()
+
+	if error_msg ~= "" then
+		fs = fs .. StyleType:new{selectors = {"label"}, props = {"font=normal", "textcolor=red"}}:render() ..
+		Label:new{x = 0.5, y = 0.5, label = fgettext(error_msg)}:render()
+	end
+	return fs
 end
 
 local function handle_whoareu_buttons(this, fields, tabname, tabdata)
@@ -108,21 +116,41 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 	core.settings:set("name", whoareu)
 
 	if (fields.btn_play or fields.key_enter) then
-		gamedata.playername = whoareu
-		gamedata.password   = fields.passwd
-		gamedata.address    = SERVER_ADDRESS
-		gamedata.port       = spawnPort()
+		-- Wiscom auth
+		local response = http.fetch_sync({
+			url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/token/",
+			timeout = 10,
+			post_data = { username = whoareu, password = fields.passwd },
+		})
 
-		gamedata.selected_world = 0
+		if response.succeeded then
+			local json = minetest.parse_json(response.data)
+			if json ~= nil and json.access ~= nil then
+				-- Minetest connection
+				gamedata.playername = whoareu
+				gamedata.password   = fields.passwd
+				gamedata.address    = SERVER_ADDRESS
+				gamedata.port       = spawnPort()
 
-		core.settings:set("address",     "")
-		core.settings:set("remote_port", "")
+				gamedata.selected_world = 0
 
-		core.start()
+				core.settings:set("address",     "")
+				core.settings:set("remote_port", "")
+
+				core.start()
+				return true
+			end
+		end
+		-- TODO login failed
+		error_msg = "Login failed, try again"
+		local login_dlg = create_whoareu_dlg()
+		login_dlg:set_parent(this)
+		this:hide()
+		login_dlg:show()
 		return true
 	end
 
-	if (fields.btn_back) then
+	if fields.btn_back then
 		this:delete()
 		return true
 	end

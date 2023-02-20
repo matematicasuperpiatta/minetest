@@ -18,16 +18,6 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
--- Matematica Superpiatta's environment
-
-SERVER_ADDRESS = "mt.matematicasuperpiatta.it"
-SERVER_PORT = 29999
-URL_GET = "http://"..SERVER_ADDRESS..":"..SERVER_PORT
-
-SERVICE_DISCOVERY = "swissknife.raspberryip.com"
-SERVICE_URL = "https://"..SERVICE_DISCOVERY.."/"
-
 local http = core.get_http_api()
 
 local function check_updates()

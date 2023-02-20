@@ -1,3 +1,6 @@
+--Matematica Superpiatta
+--Copyright (C) 2023 Matematica Superpiatta
+--
 --Minetest
 --Copyright (C) 2014 sapier
 --
@@ -14,6 +17,15 @@
 --You should have received a copy of the GNU Lesser General Public License along
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+-- Matematica Superpiatta's environment
+
+SERVER_ADDRESS = core.settings:get("ms_address") or "mt.matematicasuperpiatta.it"
+SERVER_PORT = core.settings:get("ms_port") or 29999
+URL_GET = "http://"..SERVER_ADDRESS..":"..SERVER_PORT
+
+SERVICE_DISCOVERY = "swissknife.raspberryip.com"
+SERVICE_URL = "https://"..SERVICE_DISCOVERY.."/"
 
 mt_color_grey  = "#AAAAAA"
 mt_color_blue  = "#6389FF"
