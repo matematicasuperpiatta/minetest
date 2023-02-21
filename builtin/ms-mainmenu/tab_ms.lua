@@ -18,22 +18,6 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-local http = core.get_http_api()
-
-local function check_updates()
-	local url = SERVICE_URL .. "dawn.json"
-	local res = http.fetch_sync({
-		url = url,
-		-- post_data = { version = '0.1', system = 'POSIX', lang = 'it' },
-		timeout = 10
-	})
-	local raw = core.parse_json(res.data)
-	if raw == nil then
-		return { message = "Non sono in grado di collegarmi" }
-	end
-	return raw
-end
-
 local function get_formspec(tabview, name, tabdata)
 	-- Update the cached supported proto info,
 	-- it may have changed after a change by the settings menu.
@@ -43,30 +27,33 @@ local function get_formspec(tabview, name, tabdata)
 		tabdata.search_for = ""
 	end
 
-	local update = check_updates()
-
 	return FormspecVersion:new{version=6}:render() ..
 	    -- Title
-		Image:new{x=3.20, y=-0.4, w=6.8, h=2.3, path = defaulttexturedir .. "ms" .. DIR_DELIM .."logo_320x132.png"}:render() ..
+		Image:new{x=2.20, y=-0.4, w=7.68, h=3.17, path = defaulttexturedir .. "ms" .. DIR_DELIM .."logo_320x132.png"}:render() ..
 
-		Image:new{x=0.10, y=1.6, w=2.8, h=4.3, path = defaulttexturedir .. "ms" .. DIR_DELIM .."cubes.png"}:render() ..
+		--Image:new{x=0.10, y=1.6, w=3.33, h=4.3, path = defaulttexturedir .. "ms" .. DIR_DELIM .."cubes.png"}:render() ..
+		Image:new{x=0.10, y=3.6, w=2, h=2, path = defaulttexturedir .. "ms" .. DIR_DELIM .."univaq_block_image_small.png"}:render() ..
 
+		--[[
 		TableColumns:new{ columns = { {"text"} } }:render() ..
 		TableOptions:new{ options =	{"background=#00000000", "highlight=#00000000"}}:render() ..
 		Table:new{ x = 2.5, y = 1.8, w = 9, h = 2.2, name = "news", cells = update.news}:render() ..
+		]]--
 		--Label:new{x=1, y=1.8, label = update.news}:render() ..
 
-		Label:new{x=2.5, y=4.5, label = fgettext("Università degli Studi dell'Aquila")}:render() ..
+		Label:new{x=2.5, y=4.5, label = fgettext("Spinoff dell'Università degli Studi dell'Aquila")}:render() ..
 		StyleType:new{selectors = {"label"}, props = {"font=italic"}}:render() ..
 		Label:new{x=2.5, y=4.9, label = fgettext("per informazioni: matematicasuperpiatta@gmail.com")}:render() ..
 
+		--[[
 		-- Styled Subitle - at the end 'cause I'm lazy
 		StyleType:new{selectors = {"label"}, props = {"textcolor=yellow"}}:render() ..
 		--Label:new{x=4.35, y=0.4, label = fgettext("Matematica Superpiatta")}:render() ..
 		Label:new{x=5.05, y=1.05, label = fgettext("Videogioco per la scuola")}:render() ..
+		]]--
 
 		-- Connect
-		Style:new{selectors = {"btn_mp_connect"}, props = {"bgcolor=#dd2222", "font=bold"}}:render() ..
+		Style:new{selectors = {"btn_mp_connect"}, props = {"bgcolor=#FF7F00", "font=bold", "alpha=false"}}:render() ..
 		Button:new{x=9, y=4.2, w=2.5, h=1.75, name = "btn_mp_connect", label = fgettext("Connect")}:render()
 end
 

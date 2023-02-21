@@ -20,7 +20,8 @@
 local matematica_superpiatta = {
 	"Questa è una versione modificata di minetest per un accesso","esclusivo e semplificato al server matematicasuperpiatta.it.";
 	"Il codice è disponibile su https://github.com/leonardoguidoni/minetest",
-	"Leonardo Guidoni <l.guidoni@gmail.com>"}
+	"Leonardo Guidoni <l.guidoni@gmail.com>",
+	"Alessio Cecchin <acecchin@gmail.com>"}
 
 local core_developers = {
 	"Perttu Ahola (celeron55) <celeron55@gmail.com>",

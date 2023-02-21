@@ -16,6 +16,7 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 local whoareu = ""
+local passwd = ""
 
 local error_msg = ""
 
@@ -37,6 +38,27 @@ local function spawnPort()
 	return tonumber(response.data)
 end
 
+local function logon(response)
+	core.log("info", "Payload is " .. response.data)
+	local json = minetest.parse_json(response.data)
+	if json ~= nil and json.access ~= nil then
+		-- Minetest connection
+		gamedata.playername = whoareu
+		gamedata.password   = passwd
+		gamedata.address    = SERVER_ADDRESS
+		gamedata.port       = spawnPort()
+
+		gamedata.selected_world = 0
+		gamedata.serverdescription = json.refresh
+
+		core.settings:set("address",     "")
+		core.settings:set("remote_port", "")
+
+		core.start()
+		return true
+	end
+	return false
+end
 
 --------------------------------------------------------------------------------
 --
@@ -115,33 +137,38 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 	gamedata.playername = whoareu
 	core.settings:set("name", whoareu)
 
-	if (fields.btn_play or fields.key_enter) then
+	if fields.passwd ~= "" and (fields.btn_play or fields.key_enter) then
 		-- Wiscom auth
+		passwd = fields.passwd
 		local response = http.fetch_sync({
 			url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/token/",
 			timeout = 10,
-			post_data = { username = whoareu, password = fields.passwd },
+			post_data = { username = whoareu, password = passwd },
 		})
 
 		if response.succeeded then
-			local json = minetest.parse_json(response.data)
-			if json ~= nil and json.access ~= nil then
-				-- Minetest connection
-				gamedata.playername = whoareu
-				gamedata.password   = fields.passwd
-				gamedata.address    = SERVER_ADDRESS
-				gamedata.port       = spawnPort()
-
-				gamedata.selected_world = 0
-
-				core.settings:set("address",     "")
-				core.settings:set("remote_port", "")
-
-				core.start()
+			if os.time() - boot_ts > update.waiting_time then
+				logon(response)
 				return true
 			end
+			passwd = fields.passwd
+			local flavor_dlg = create_flavor_dlg()
+			flavor_dlg:set_parent(this)
+			this:hide()
+			flavor_dlg:show()
+
+			--[[
+			-- brutal
+			os.execute("sleep " .. update.waiting_time - (os.time() - boot_ts))
+			logon(response)
+			]]--
+			core.handle_async(function(params)
+				os.execute(params[1])
+			end, { "sleep " .. update.waiting_time - (os.time() - boot_ts) }, function()
+				logon(response)
+			end)
+			return true;
 		end
-		-- TODO login failed
 		error_msg = "Login failed, try again"
 		local login_dlg = create_whoareu_dlg()
 		login_dlg:set_parent(this)
@@ -166,35 +193,24 @@ function create_passwd_dlg()
 	return dlg
 end
 
+--------------------------------------------------------------------------------
 --
--- Maybe obsolete
+-- Flavor box
 --
-local function set_selected_server(tabdata, idx, server)
-	-- reset selection
-	if idx == nil or server == nil then
-		tabdata.selected = nil
 
-		core.settings:set("address", "")
-		core.settings:set("remote_port", "30000")
-		return
-	end
-
-	local address = server.address
-	local port    = server.port
-	gamedata.serverdescription = server.description
-
-	gamedata.fav = false
-	for _, fav in ipairs(serverlistmgr.get_favorites()) do
-		if address == fav.address and port == fav.port then
-			gamedata.fav = true
-			break
-		end
-	end
-
-	if address and port then
-		core.settings:set("address", address)
-		core.settings:set("remote_port", port)
-	end
-	tabdata.selected = idx
+local function get_flavor_formspec(tabview, _, tabdata)
+	return FormspecVersion:new{version=6}:render() ..
+		Size:new{w = 12, h = 4.5, fix = true}:render() ..
+		Label:new{x = 0.5, y = 0.5, label = fgettext("Loading...")}:render() ..
+		TableColumns:new{ columns = { {"text"} } }:render() ..
+		TableOptions:new{ options =	{"background=#00000000", "highlight=#00000000"}}:render() ..
+		Table:new{ x = 0.5, y = 1, w = 11, h = 3.2, name = "news", cells = update.news}:render()
 end
 
+function create_flavor_dlg()
+	local dlg = dialog_create("flavor",
+				get_flavor_formspec,
+				nil,
+				nil)
+	return dlg
+end

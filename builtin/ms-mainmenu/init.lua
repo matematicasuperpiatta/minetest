@@ -33,43 +33,63 @@ mt_color_green = "#72FF63"
 mt_color_dark_green = "#25C191"
 mt_color_orange  = "#FF8800"
 
-local default_menupath = core.get_mainmenu_path()
-local basepath = core.get_builtin_path()
-local menupath = basepath .. "ms-mainmenu" .. DIR_DELIM
-defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
-					DIR_DELIM .. "pack" .. DIR_DELIM
-core.log("info", "core mainmenu dir is " .. core.get_mainmenu_path())
-core.log("info", "texturedir is " .. defaulttexturedir)
+--------------------------------------------------------------------------------
+local function check_updates()
+	local http = core.get_http_api()
+	local url = SERVICE_URL .. "dawn.json"
+	local res = http.fetch_sync({
+		url = url,
+		-- post_data = { version = '0.1', system = 'POSIX', lang = 'it' },
+		timeout = 10
+	})
+	local raw = core.parse_json(res.data)
+	if raw == nil then
+		return { message = "Non sono in grado di collegarmi" }
+	end
+	return raw
+end
 
-dofile(basepath .. "common" .. DIR_DELIM .. "filterlist.lua")
-dofile(basepath .. "fstk" .. DIR_DELIM .. "buttonbar.lua")
-dofile(basepath .. "fstk" .. DIR_DELIM .. "dialog.lua")
-dofile(basepath .. "fstk" .. DIR_DELIM .. "tabview.lua")
-dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
-dofile(default_menupath .. DIR_DELIM .. "async_event.lua")
-dofile(default_menupath .. DIR_DELIM .. "common.lua")
-dofile(default_menupath .. DIR_DELIM .. "pkgmgr.lua")
-dofile(default_menupath .. DIR_DELIM .. "serverlistmgr.lua")
-dofile(default_menupath .. DIR_DELIM .. "game_theme.lua")
+local function bootstrap()
+	-- ASAP!
+	update = check_updates()
+	boot_ts = os.time()
 
-dofile(default_menupath .. DIR_DELIM .. "dlg_config_world.lua")
-dofile(default_menupath .. DIR_DELIM .. "dlg_settings_advanced.lua")
-dofile(default_menupath .. DIR_DELIM .. "dlg_contentstore.lua")
-dofile(default_menupath .. DIR_DELIM .. "dlg_create_world.lua")
-dofile(default_menupath .. DIR_DELIM .. "dlg_delete_content.lua")
-dofile(default_menupath .. DIR_DELIM .. "dlg_delete_world.lua")
-dofile(default_menupath .. DIR_DELIM .. "dlg_rename_modpack.lua")
+	local default_menupath = core.get_mainmenu_path()
+	local basepath = core.get_builtin_path()
+	local menupath = basepath .. "ms-mainmenu" .. DIR_DELIM
+	defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
+						DIR_DELIM .. "pack" .. DIR_DELIM
 
-dofile(menupath .. "oop" .. DIR_DELIM .. "oo_formspec.lua")
+	dofile(basepath .. "common" .. DIR_DELIM .. "filterlist.lua")
+	dofile(basepath .. "fstk" .. DIR_DELIM .. "buttonbar.lua")
+	dofile(basepath .. "fstk" .. DIR_DELIM .. "dialog.lua")
+	dofile(basepath .. "fstk" .. DIR_DELIM .. "tabview.lua")
+	dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
+	dofile(default_menupath .. DIR_DELIM .. "async_event.lua")
+	dofile(default_menupath .. DIR_DELIM .. "common.lua")
+	dofile(default_menupath .. DIR_DELIM .. "pkgmgr.lua")
+	dofile(default_menupath .. DIR_DELIM .. "serverlistmgr.lua")
+	dofile(default_menupath .. DIR_DELIM .. "game_theme.lua")
 
-dofile(menupath .. DIR_DELIM .. "dlg_whoareu.lua")
--- dofile(menupath .. DIR_DELIM .. "dlg_passwd.lua")
+	dofile(default_menupath .. DIR_DELIM .. "dlg_config_world.lua")
+	dofile(default_menupath .. DIR_DELIM .. "dlg_settings_advanced.lua")
+	dofile(default_menupath .. DIR_DELIM .. "dlg_contentstore.lua")
+	dofile(default_menupath .. DIR_DELIM .. "dlg_create_world.lua")
+	dofile(default_menupath .. DIR_DELIM .. "dlg_delete_content.lua")
+	dofile(default_menupath .. DIR_DELIM .. "dlg_delete_world.lua")
+	dofile(default_menupath .. DIR_DELIM .. "dlg_rename_modpack.lua")
 
-local tabs = {}
+	dofile(menupath .. "oop" .. DIR_DELIM .. "oo_formspec.lua")
 
-tabs.settings = dofile(default_menupath .. DIR_DELIM .. "tab_settings.lua")
-tabs.about    = dofile(menupath .. DIR_DELIM .. "tab_about.lua")
-tabs.ms = dofile(menupath .. DIR_DELIM .. "tab_ms.lua")
+	dofile(menupath .. DIR_DELIM .. "dlg_whoareu.lua")
+	-- dofile(menupath .. DIR_DELIM .. "dlg_passwd.lua")
+
+	return {
+		ms       = dofile(menupath .. DIR_DELIM .. "tab_ms.lua"),
+		settings = dofile(default_menupath .. DIR_DELIM .. "tab_settings.lua"),
+		about    = dofile(menupath .. DIR_DELIM .. "tab_about.lua")
+	}
+end
 
 --------------------------------------------------------------------------------
 local function main_event_handler(tabview, event)
@@ -80,7 +100,7 @@ local function main_event_handler(tabview, event)
 end
 
 --------------------------------------------------------------------------------
-local function init_globals()
+local function init_globals(tabs)
 	-- Init gamedata
 	gamedata.worldindex = 0
 
@@ -139,6 +159,7 @@ local function init_globals()
 	ui.update()
 
 	mm_game_theme.reset()
+	mm_game_theme.update_game(pkgmgr.find_by_gameid(core.settings:get("menu_last_game")))
 end
 
-init_globals()
+init_globals( bootstrap() )
