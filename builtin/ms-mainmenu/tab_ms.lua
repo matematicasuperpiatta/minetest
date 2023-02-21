@@ -48,66 +48,10 @@ end
 
 --------------------------------------------------------------------------------
 
-
-local function search_server_list(input)
-	menudata.search_result = nil
-	if #serverlistmgr.servers < 2 then
-		return
-	end
-
-	-- setup the keyword list
-	local keywords = {}
-	for word in input:gmatch("%S+") do
-		word = word:gsub("(%W)", "%%%1")
-		table.insert(keywords, word)
-	end
-
-	if #keywords == 0 then
-		return
-	end
-
-	menudata.search_result = {}
-
-	-- Search the serverlist
-	local search_result = {}
-	for i = 1, #serverlistmgr.servers do
-		local server = serverlistmgr.servers[i]
-		local found = 0
-		for k = 1, #keywords do
-			local keyword = keywords[k]
-			if server.name then
-				local sername = server.name:lower()
-				local _, count = sername:gsub(keyword, keyword)
-				found = found + count * 4
-			end
-
-			if server.description then
-				local desc = server.description:lower()
-				local _, count = desc:gsub(keyword, keyword)
-				found = found + count * 2
-			end
-		end
-		if found > 0 then
-			local points = (#serverlistmgr.servers - i) / 5 + found
-			server.points = points
-			table.insert(search_result, server)
-		end
-	end
-
-	if #search_result == 0 then
-		return
-	end
-
-	table.sort(search_result, function(a, b)
-		return a.points > b.points
-	end)
-	menudata.search_result = search_result
-end
-
 local function main_button_handler(tabview, fields, name, tabdata)
 	if (fields.btn_mp_connect or fields.key_enter) then
 		local whoareu_dlg = create_whoareu_dlg()
-		whoareu_dlg:set_parent(this)
+		-- whoareu_dlg:set_parent(this)
 		tabview:hide()
 		whoareu_dlg:show()
 		return true

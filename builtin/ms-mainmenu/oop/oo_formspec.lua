@@ -126,10 +126,17 @@ end
 -- concrete ScrollContainer
 --
 
-ScrollContainer = Container:new{_name = "scroll_container", x = 0, y = 0, w = 0, h = 0, name = "", orientation = "vertical", factor = 0.1, elements = {}}
+ScrollContainer = Container:new{
+	_name = "scroll_container",
+	x = 0, y = 0, w = 0, h = 0, name = "", orientation = "vertical", factor = 0.1, elements = {}}
 
 function ScrollContainer:render()
-	return self:_render(self:_compose( "scroll_container", string.format("%g,%g;%g,%g;%s;%s;%g", self.x, self.y, self.w, self.h, self.name, self.orientation, self.factor)))
+	return self:_render(self:_compose(
+		"scroll_container",
+		string.format(
+			"%g,%g;%g,%g;%s;%s;%g",
+			self.x, self.y, self.w, self.h, self.name, self.orientation, self.factor)
+	))
 end
 
 --
@@ -166,9 +173,11 @@ end
 Listcolors = Component:new{bg_normal = "", bg_hover = "", border = false, bg_tooltip = false, fontcolor_tooltip = false}
 
 function Listcolors:render()
-	buf = ""
+	local buf
 	if (self.bg_tooltip) then
-		buf = string.format("%s;%s;%s;%s;%s", self.bg_normal, self.bg_hover, self.border, self.bg_tooltip, self.fontcolor_tooltip)
+		buf = string.format(
+			"%s;%s;%s;%s;%s",
+			self.bg_normal, self.bg_hover, self.border, self.bg_tooltip, self.fontcolor_tooltip)
 	elseif (self.border) then
 		buf = string.format("%s;%s;%s", self.bg_normal, self.bg_hover, self.border)
 	else
@@ -180,7 +189,9 @@ end
 --
 -- concrete Tooltip
 --
-Tooltip = Tetragon:new{x = false, y = false, w = false, h = false, name = false, text = "", bgcolor = false, fontcolor = false}
+Tooltip = Tetragon:new{
+	x = false, y = false, w = false, h = false,
+	name = false, text = "", bgcolor = false, fontcolor = false}
 
 function Tooltip:_common()
 	if (self.fontcolor) then
@@ -193,7 +204,7 @@ function Tooltip:_common()
 end
 
 function Tooltip:render()
-	buf = ""
+	local buf
 	if (self.name) then
 		buf = string.format("%s;%s", self.name, self:_common())
 	else
@@ -208,7 +219,7 @@ end
 Image = Tetragon:new{x = 0, y = 0, w = 0, h = 0, path = "", middle = false}
 
 function Image:render()
-	local buf = ""
+	local buf
 	if (self.middle) then
 		buf = string.format("%s;%s;%s", self:_partial(), self.path, self.middle)
 	else
@@ -220,14 +231,20 @@ end
 --
 -- concrete AnimatedImage
 --
-AnimatedImage = Tetragon:new{x = 0, y = 0, w = 0, h = 0, name = "", path = "", fr_count = 1, fr_duration = 40, fr_start = 1, middle = false}
+AnimatedImage = Tetragon:new{
+	x = 0, y = 0, w = 0, h = 0,
+	name = "", path = "", fr_count = 1, fr_duration = 40, fr_start = 1, middle = false}
 
 function AnimatedImage:render()
-	local buf = ""
+	local buf
 	if (self.middle) then
-		buf = string.format("%s;%s;%s;%g,%g,%g;%s", self:_partial(), self.name, self.path, self.fr_count, self.fr_duration, self.fr_start, self.middle)
+		buf = string.format(
+			"%s;%s;%s;%g,%g,%g;%s",
+			self:_partial(), self.name, self.path, self.fr_count, self.fr_duration, self.fr_start, self.middle)
 	else
-		buf = string.format("%s;%s;%s;%g,%g,%g", self:_partial(), self.name, self.path, self.fr_count, self.fr_duration, self.fr_start)
+		buf = string.format(
+			"%s;%s;%s;%g,%g,%g",
+			self:_partial(), self.name, self.path, self.fr_count, self.fr_duration, self.fr_start)
 	end
 	return self:_compose( "image", buf)
 end
@@ -242,7 +259,8 @@ end
 ItemImage = Component:new{x = 0, y = 0, w = 0, h = 0, name = ""}
 
 function ItemImage:render()
-	return self:_compose( "item_image", string.format("%d,%d;%d,%d;%s", self.x, self.y, self.w, self.h, self.name))
+	return self:_compose(
+		"item_image", string.format("%d,%d;%d,%d;%s", self.x, self.y, self.w, self.h, self.name))
 end
 
 --
@@ -252,10 +270,10 @@ BGColor = Component:new{color = "", fullscreen = false, fcolor = false}
 
 function BGColor:render()
 	local buf = self.color
-	if (fullscreen) then
+	if (self.fullscreen) then
 		buf = string.format("%s;%s", buf, self.fullscreen)
 	end
-	if (fcolor) then
+	if (self.fcolor) then
 		buf = string.format("%s;%s%s", buf, self.fullscreen and '' or ';', self.fcolor)
 	end
 	return self:_compose( "bgcolor", buf)
@@ -267,9 +285,9 @@ end
 Background = Component:new{x = 0, y = 0, w = 0, h = 0, name = "", autoclip = false}
 
 function Background:render()
-	local buf = ""
+	local buf
 	if (self.autoclip) then
-		buf = string.format("%d,%d;%d,%d;%s,%s", self.x, self.y, self.w, self.h, self.name, btos(autoclip))
+		buf = string.format("%d,%d;%d,%d;%s,%s", self.x, self.y, self.w, self.h, self.name, btos(self.autoclip))
 	else
 		buf = string.format("%d,%d;%d,%d;%s", self.x, self.y, self.w, self.h, self.name)
 	end
@@ -382,7 +400,9 @@ end
 BaseStyle = Component:new{_name= "abstract", selectors = {}, props = {} }
 
 function BaseStyle:render()
-	return self:_compose( self._name, string.format("%s;%s", self:_list(self.selectors), self:_withSep(";"):_list(self.props)))
+	return self:_compose( self._name,
+		string.format("%s;%s", self:_list(self.selectors), self:_withSep(";"):_list(self.props))
+	)
 end
 
 --
@@ -425,5 +445,8 @@ end
 Table = Tetragon:new{x = 0, y = 0, w = 0, h = 0, name = "", cells = {}, idx = 1}
 
 function Table:render()
-	return self:_compose( "table", string.format("%s;%s;%s;%d", self:_partial(), self.name, self:_list(self.cells), self.idx))
+	return self:_compose( "table", string.format(
+		"%s;%s;%s;%d",
+		self:_partial(), self.name, self:_list(self.cells), self.idx
+	))
 end

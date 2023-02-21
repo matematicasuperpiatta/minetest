@@ -70,7 +70,6 @@ local function get_whoareu_formspec(tabview, _, tabdata)
 		Size:new{w = 5.5, h = 4.5, fix = true}:render() ..
 		Label:new{x = 0.5, y = 1.5, label = fgettext("Username:")}:render() ..
 		Field:new{x = 0.5, y = 1.75, w = 4.5, h = 0.7, name = "username", value = whoareu}:render() ..
-		-- Button:new{x=0.5, y=2.25, w=3.5, h=0.75, name = "btn_unsafe_next", label = fgettext("Someone look at me")}:render() ..
 		Button:new{x=0.5, y=3.25, w=2.2, h=0.75, name = "btn_back", label = fgettext("Back")}:render() ..
 		Button:new{x=2.8, y=3.25, w=2.2, h=0.75, name = "btn_next", label = fgettext("Next")}:render() ..
 

@@ -33,6 +33,9 @@ mt_color_green = "#72FF63"
 mt_color_dark_green = "#25C191"
 mt_color_orange  = "#FF8800"
 
+update = nil
+boot_ts = nil
+
 --------------------------------------------------------------------------------
 local function check_updates()
 	local http = core.get_http_api()
