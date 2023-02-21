@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 android {
-	compileSdkVersion 30
+	compileSdkVersion 31
 	buildToolsVersion '30.0.3'
 	ndkVersion "$ndk_version"
 	defaultConfig {
-		applicationId 'net.minetest.minetest'
+		applicationId 'it.matematicasuperpiatta.minetest'
 		minSdkVersion 16
-		targetSdkVersion 30
+		targetSdkVersion 31
 		versionName "${versionMajor}.${versionMinor}.${versionPatch}"
 		versionCode project.versionCode
 	}
