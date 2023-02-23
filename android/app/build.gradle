@@ -4,7 +4,7 @@ android {
 	buildToolsVersion '32.0.0'
 	ndkVersion "$ndk_version"
 	defaultConfig {
-		applicationId 'it.matematicasuperpiatta.minetest'
+		applicationId 'net.minetest.minetest'
 		minSdkVersion 16
 		targetSdkVersion 32
 		versionName "${versionMajor}.${versionMinor}.${versionPatch}"

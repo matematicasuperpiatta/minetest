@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
-	package="it.matematicasuperpiatta.minetest"
+	package="net.minetest.minetest"
 	android:installLocation="auto">
 
 	<uses-permission android:name="android.permission.INTERNET" />
@@ -62,7 +62,7 @@
 
 		<provider
 			android:name="androidx.core.content.FileProvider"
-			android:authorities="it.matematicasuperpiatta.minetest.fileprovider"
+			android:authorities="net.minetest.minetest.fileprovider"
 			android:grantUriPermissions="true"
 			android:exported="false">
 			<meta-data
