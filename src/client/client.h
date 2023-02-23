@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/peerhandler.h"
 #include "gameparams.h"
 #include <fstream>
+#include "util/numeric.h"
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
@@ -313,7 +314,7 @@ public:
 	void addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server=false, bool urgent=false);
 
 	void updateCameraOffset(v3s16 camera_offset)
-	{ m_mesh_update_thread.m_camera_offset = camera_offset; }
+	{ m_mesh_update_manager.m_camera_offset = camera_offset; }
 
 	bool hasClientEvents() const { return !m_client_event_queue.empty(); }
 	// Get event from queue. If queue is empty, it triggers an assertion failure.
@@ -381,10 +382,7 @@ public:
 	{ return checkPrivilege(priv); }
 	virtual scene::IAnimatedMesh* getMesh(const std::string &filename, bool cache = false);
 	const std::string* getModFile(std::string filename);
-	ModMetadataDatabase *getModStorageDatabase() override { return m_mod_storage_database; }
-
-	bool registerModStorage(ModMetadata *meta) override;
-	void unregisterModStorage(const std::string &name) override;
+	ModStorageDatabase *getModStorageDatabase() override { return m_mod_storage_database; }
 
 	// Migrates away old files-based mod storage if necessary
 	void migrateModStorage();
@@ -440,6 +438,11 @@ public:
 	{
 		return m_env.getLocalPlayer()->formspec_prepend;
 	}
+	inline MeshGrid getMeshGrid()
+	{
+		return m_mesh_grid;
+	}
+
 private:
 	void loadMods();
 
@@ -486,7 +489,7 @@ private:
 	RenderingEngine *m_rendering_engine;
 
 
-	MeshUpdateThread m_mesh_update_thread;
+	MeshUpdateManager m_mesh_update_manager;
 	ClientEnvironment m_env;
 	ParticleManager m_particle_manager;
 	std::unique_ptr<con::Connection> m_con;
@@ -593,8 +596,7 @@ private:
 
 	// Client modding
 	ClientScripting *m_script = nullptr;
-	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
-	ModMetadataDatabase *m_mod_storage_database = nullptr;
+	ModStorageDatabase *m_mod_storage_database = nullptr;
 	float m_mod_storage_save_timer = 10.0f;
 	std::vector<ModSpec> m_mods;
 	StringMap m_mod_vfs;
@@ -606,4 +608,7 @@ private:
 	u32 m_csm_restriction_noderange = 8;
 
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
+
+	// The number of blocks the client will combine for mesh generation.
+	MeshGrid m_mesh_grid;
 };

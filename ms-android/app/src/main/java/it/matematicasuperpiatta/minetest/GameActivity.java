@@ -194,7 +194,7 @@ public class GameActivity extends NativeActivity {
 			return;
 		}
 
-		Uri fileUri = FileProvider.getUriForFile(this, "net.minetest.minetest.fileprovider", file);
+		Uri fileUri = FileProvider.getUriForFile(this, "it.matematicasuperpiatta.minetest.fileprovider", file);
 
 		Intent intent = new Intent(Intent.ACTION_SEND, fileUri);
 		intent.setDataAndType(fileUri, getContentResolver().getType(fileUri));
