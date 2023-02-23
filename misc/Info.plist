@@ -13,7 +13,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>Minetest</string>
 	<key>CFBundleIdentifier</key>
-	<string>net.minetest.minetest</string>
+	<string>it.matematicasuperpiatta.minetest</string>
 	<key>NSHighResolutionCapable</key>
 	<false/>
 </dict>

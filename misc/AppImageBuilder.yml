@@ -4,7 +4,7 @@ AppDir:
   path: ./AppDir
 
   app_info:
-    id: net.minetest.minetest
+    id: it.matematicasuperpiatta.minetest
     name: Minetest
     icon: minetest
     version: !ENV ${VERSION}

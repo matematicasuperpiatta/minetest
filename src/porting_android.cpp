@@ -69,11 +69,11 @@ void android_main(android_app *app)
  * ToDo: this doesn't work as expected, there's a workaround for it right now
  */
 extern "C" {
-	JNIEXPORT void JNICALL Java_net_minetest_minetest_GameActivity_putMessageBoxResult(
+	JNIEXPORT void JNICALL Java_it_matematicasuperpiatta_minetest_GameActivity_putMessageBoxResult(
 			JNIEnv *env, jclass thiz, jstring text)
 	{
 		errorstream <<
-			"Java_net_minetest_minetest_GameActivity_putMessageBoxResult got: " <<
+			"Java_it_matematicasuperpiatta_minetest_GameActivity_putMessageBoxResult got: " <<
 			std::string((const char*) env->GetStringChars(text, nullptr)) << std::endl;
 	}
 }
