@@ -26,35 +26,11 @@ local error_msg = ""
 
 local http = core.get_http_api()
 
-local function spawnPort()
---  GET PORT NUMBER BY HTTP REQUEST - START
-	local response = http.fetch_sync({ url = URL_GET })
-        if not response.succeeded then
-					-- lazy debug (but also) desperate choice
-                return 30000
-        end
-
---  GET PORT NUMBER BY HTTP REQUEST - END
-	return tonumber(response.data)
-end
-
 local function logon(response)
 	core.log("info", "Payload is " .. response.data)
 	local json = minetest.parse_json(response.data)
 	if json ~= nil and json.access ~= nil then
-		-- Minetest connection
-		gamedata.playername = whoareu
-		gamedata.password   = passwd
-		gamedata.address    = SERVER_ADDRESS
-		gamedata.port       = spawnPort()
-
-		gamedata.selected_world = 0
-		gamedata.serverdescription = json.refresh
-
-		core.settings:set("address",     "")
-		core.settings:set("remote_port", "")
-
-		core.start()
+		ms_mainmenu:play(whoareu, passwd)
 		return true
 	end
 	return false
@@ -146,7 +122,7 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 		})
 
 		if response.succeeded then
-			if os.time() - boot_ts > update.waiting_time then
+			if os.time() - ms_mainmenu.boot_ts > ms_mainmenu.update.waiting_time then
 				logon(response)
 				return true
 			end
@@ -156,14 +132,9 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 			this:hide()
 			flavor_dlg:show()
 
-			--[[
-			-- brutal
-			os.execute("sleep " .. update.waiting_time - (os.time() - boot_ts))
-			logon(response)
-			]]--
 			core.handle_async(function(params)
 				os.execute(params[1])
-			end, { "sleep " .. update.waiting_time - (os.time() - boot_ts) }, function()
+			end, { "sleep " .. ms_mainmenu.update.waiting_time - (os.time() - ms_mainmenu.boot_ts) }, function()
 				logon(response)
 			end)
 			return true;
@@ -203,7 +174,7 @@ local function get_flavor_formspec(tabview, _, tabdata)
 		Label:new{x = 0.5, y = 0.5, label = fgettext("Loading...")}:render() ..
 		TableColumns:new{ columns = { {"text"} } }:render() ..
 		TableOptions:new{ options =	{"background=#00000000", "highlight=#00000000"}}:render() ..
-		Table:new{ x = 0.5, y = 1, w = 11, h = 3.2, name = "news", cells = update.news}:render()
+		Table:new{ x = 0.5, y = 1, w = 11, h = 3.2, name = "news", cells = ms_mainmenu.update.news}:render()
 end
 
 function create_flavor_dlg()

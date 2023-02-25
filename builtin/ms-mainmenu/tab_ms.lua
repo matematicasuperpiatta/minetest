@@ -27,7 +27,7 @@ local function get_formspec(tabview, name, tabdata)
 		tabdata.search_for = ""
 	end
 
-	return FormspecVersion:new{version=6}:render() ..
+	local fs = FormspecVersion:new{version=6}:render() ..
 	    -- Title
 		Image:new{
 			x=2.20, y=-0.4, w=7.68, h=3.17,
@@ -37,23 +37,47 @@ local function get_formspec(tabview, name, tabdata)
 			x=0.10, y=3.6, w=2, h=2,
 			path = defaulttexturedir .. "ms" .. DIR_DELIM .."univaq_block_image_small.png"}:render() ..
 
-		Label:new{x=2.5, y=4.5, label = fgettext("Spinoff dell'Università degli Studi dell'Aquila")}:render() ..
-		StyleType:new{selectors = {"label"}, props = {"font=italic"}}:render() ..
-		Label:new{x=2.5, y=4.9, label = fgettext("per informazioni: matematicasuperpiatta@gmail.com")}:render() ..
+		Label:new{x=2.5, y=4.5, label = fgettext("Spinoff dell'Università degli Studi dell'Aquila")}:render()
 
+	if ms_mainmenu.update.update.required then
+		-- Update
+		fs = fs .. StyleType:new{selectors = {"label"}, props = {"font=bold"}}:render() ..
+			Label:new{x=2.5, y=2.5, label = fgettext(ms_mainmenu.update.update.message)}:render() ..
+
+			Style:new { selectors = { "btn_mp_update" }, props = { "bgcolor=#FF7F00", "font=bold", "alpha=false" } }:render() ..
+			Button:new { x = 9, y = 4.2, w = 2.5, h = 1.75, name = "btn_mp_update", label = fgettext("Update") }:render()
+	else
 		-- Connect
-		Style:new{selectors = {"btn_mp_connect"}, props = {"bgcolor=#FF7F00", "font=bold", "alpha=false"}}:render() ..
-		Button:new{x=9, y=4.2, w=2.5, h=1.75, name = "btn_mp_connect", label = fgettext("Connect")}:render()
+		fs = fs .. Style:new{selectors = {"btn_mp_connect"}, props = {"bgcolor=#FF7F00", "font=bold", "alpha=false"}}:render() ..
+			Button:new{x=9, y=4.2, w=2.5, h=1.75, name = "btn_mp_connect", label = fgettext("Connect")}:render()
+	end
+	return fs .. StyleType:new{selectors = {"label"}, props = {"font=italic"}}:render() ..
+			Label:new{x=2.5, y=4.9, label = fgettext("per informazioni: matematicasuperpiatta@gmail.com")}:render()
 end
 
 --------------------------------------------------------------------------------
 
 local function main_button_handler(tabview, fields, name, tabdata)
-	if (fields.btn_mp_connect or fields.key_enter) then
-		local whoareu_dlg = create_whoareu_dlg()
-		-- whoareu_dlg:set_parent(this)
-		tabview:hide()
-		whoareu_dlg:show()
+	if fields.key_enter then
+		fields.btn_mp_update = ms_mainmenu.update.update.required
+		fields.btn_mp_connect = not fields.btn_mp_update
+	end
+
+	if fields.btn_mp_connect then
+		if ms_mainmenu.update.version ~= null and ms_mainmenu.update.version >= 0.9 then
+			local whoareu_dlg = create_whoareu_dlg()
+			-- whoareu_dlg:set_parent(this)
+			tabview:hide()
+			whoareu_dlg:show()
+		else
+			-- legacy server. Pseudologin
+			ms_mainmenu:play("test", "")
+		end
+		return true
+	end
+
+	if fields.btn_mp_update then
+		core.open_url(ms_mainmenu.update.update.url)
 		return true
 	end
 

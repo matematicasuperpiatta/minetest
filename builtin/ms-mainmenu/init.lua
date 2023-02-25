@@ -33,13 +33,45 @@ mt_color_green = "#72FF63"
 mt_color_dark_green = "#25C191"
 mt_color_orange  = "#FF8800"
 
-update = nil
-boot_ts = nil
+ms_mainmenu = {
+	update = {},
+	boot_ts = nil
+}
+
+function ms_mainmenu.spawnPort()
+	local http = core.get_http_api()
+--  GET PORT NUMBER BY HTTP REQUEST - START
+	local response = http.fetch_sync({ url = URL_GET })
+        if not response.succeeded then
+					-- lazy debug (but also) desperate choice
+                return 30000
+        end
+
+--  GET PORT NUMBER BY HTTP REQUEST - END
+	return tonumber(response.data)
+end
+
+function ms_mainmenu:play(username, passwd)
+	-- Minetest connection
+	gamedata.playername = username
+	gamedata.password   = passwd
+	gamedata.address    = SERVER_ADDRESS
+	gamedata.port       = self.spawnPort()
+
+	gamedata.selected_world = 0
+	-- Move this away...
+	--gamedata.serverdescription = json.refresh
+
+	core.settings:set("address",     "")
+	core.settings:set("remote_port", "")
+
+	core.start()
+end
 
 --------------------------------------------------------------------------------
 local function check_updates()
 	local http = core.get_http_api()
-	local url = SERVICE_URL .. "dawn.json"
+	local url = SERVICE_URL .. "sunset.json" -- "dawn.json"
 	local res = http.fetch_sync({
 		url = url,
 		-- post_data = { version = '0.1', system = 'POSIX', lang = 'it' },
@@ -54,8 +86,8 @@ end
 
 local function bootstrap()
 	-- ASAP!
-	update = check_updates()
-	boot_ts = os.time()
+	ms_mainmenu.update = check_updates()
+	ms_mainmenu.boot_ts = os.time()
 
 	local default_menupath = core.get_mainmenu_path()
 	local basepath = core.get_builtin_path()
