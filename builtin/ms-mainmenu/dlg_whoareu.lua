@@ -122,7 +122,7 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 		})
 
 		if response.succeeded then
-			if os.time() - ms_mainmenu.boot_ts > ms_mainmenu.update.waiting_time then
+			if os.time() - ms_mainmenu.boot_ts > ms_mainmenu.remote.waiting_time then
 				logon(response)
 				return true
 			end
@@ -134,7 +134,7 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 
 			core.handle_async(function(params)
 				os.execute(params[1])
-			end, { "sleep " .. ms_mainmenu.update.waiting_time - (os.time() - ms_mainmenu.boot_ts) }, function()
+			end, { "sleep " .. ms_mainmenu.remote.waiting_time - (os.time() - ms_mainmenu.boot_ts) }, function()
 				logon(response)
 			end)
 			return true;
@@ -174,7 +174,7 @@ local function get_flavor_formspec(tabview, _, tabdata)
 		Label:new{x = 0.5, y = 0.5, label = fgettext("Loading...")}:render() ..
 		TableColumns:new{ columns = { {"text"} } }:render() ..
 		TableOptions:new{ options =	{"background=#00000000", "highlight=#00000000"}}:render() ..
-		Table:new{ x = 0.5, y = 1, w = 11, h = 3.2, name = "news", cells = ms_mainmenu.update.news}:render()
+		Table:new{ x = 0.5, y = 1, w = 11, h = 3.2, name = "news", cells = ms_mainmenu.remote.news}:render()
 end
 
 function create_flavor_dlg()

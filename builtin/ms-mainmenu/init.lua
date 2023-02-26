@@ -24,7 +24,7 @@ SERVER_ADDRESS = core.settings:get("ms_address") or "mt.matematicasuperpiatta.it
 SERVER_PORT = core.settings:get("ms_port") or 29999
 URL_GET = "http://"..SERVER_ADDRESS..":"..SERVER_PORT
 
-SERVICE_DISCOVERY = "swissknife.raspberryip.com"
+SERVICE_DISCOVERY = core.settings:get("ms_discovery") or "swissknife.raspberryip.com"
 SERVICE_URL = "https://"..SERVICE_DISCOVERY.."/"
 
 mt_color_grey  = "#AAAAAA"
@@ -37,7 +37,7 @@ defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
 						DIR_DELIM .. "pack" .. DIR_DELIM
 
 ms_mainmenu = {
-	update = {},
+	remote = {},
 	boot_ts = nil
 }
 
@@ -58,8 +58,8 @@ function ms_mainmenu:play(username, passwd)
 	-- Minetest connection
 	gamedata.playername = username
 	gamedata.password   = passwd
-	gamedata.address    = SERVER_ADDRESS
-	gamedata.port       = self.spawnPort()
+	gamedata.address    = self.remote.server or SERVER_ADDRESS
+	gamedata.port       = self.remote.port or self.spawnPort()
 
 	gamedata.selected_world = 0
 	-- Move this away...
@@ -75,7 +75,7 @@ end
 local function check_updates()
 	local http = core.get_http_api()
 	-- random results for testing purpose. Append 'dawn` to be sure to enable connection
-	local url = SERVICE_URL .. "/wfake"
+	local url = SERVICE_URL .. "/wiscom/api/update/"
 	local res = http.fetch_sync({
 		url = url,
 		post_data = { version = '0.1', system = 'POSIX', lang = 'it' },
@@ -93,7 +93,7 @@ end
 
 local function bootstrap()
 	-- ASAP!
-	ms_mainmenu.update = check_updates()
+	ms_mainmenu.remote = check_updates()
 	ms_mainmenu.boot_ts = os.time()
 
 	local default_menupath = core.get_mainmenu_path()
