@@ -33,6 +33,9 @@ mt_color_green = "#72FF63"
 mt_color_dark_green = "#25C191"
 mt_color_orange  = "#FF8800"
 
+defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
+						DIR_DELIM .. "pack" .. DIR_DELIM
+
 ms_mainmenu = {
 	update = {},
 	boot_ts = nil
@@ -71,17 +74,21 @@ end
 --------------------------------------------------------------------------------
 local function check_updates()
 	local http = core.get_http_api()
-	local url = SERVICE_URL .. "sunset.json" -- "dawn.json"
+	-- random results for testing purpose. Append 'dawn` to be sure to enable connection
+	local url = SERVICE_URL .. "/wfake"
 	local res = http.fetch_sync({
 		url = url,
-		-- post_data = { version = '0.1', system = 'POSIX', lang = 'it' },
+		post_data = { version = '0.1', system = 'POSIX', lang = 'it' },
 		timeout = 10
 	})
-	local raw = core.parse_json(res.data)
-	if raw == nil then
-		return { message = "Non sono in grado di collegarmi" }
-	end
-	return raw
+	return res.succeeded and res.code == 200 and
+		core.parse_json(res.data) or
+		{ update = {
+			required = true, -- DISABLE connect button
+			pending = true, -- maybe?
+			message = "Non sono in grado di collegarmi al server. Verifica se è disponibile un aggiornamento.",
+			url = "https://play.google.com/blabla"
+		}}
 end
 
 local function bootstrap()
@@ -92,8 +99,6 @@ local function bootstrap()
 	local default_menupath = core.get_mainmenu_path()
 	local basepath = core.get_builtin_path()
 	local menupath = basepath .. "ms-mainmenu" .. DIR_DELIM
-	defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
-						DIR_DELIM .. "pack" .. DIR_DELIM
 
 	dofile(basepath .. "common" .. DIR_DELIM .. "filterlist.lua")
 	dofile(basepath .. "fstk" .. DIR_DELIM .. "buttonbar.lua")

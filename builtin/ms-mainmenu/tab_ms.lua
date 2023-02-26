@@ -47,6 +47,13 @@ local function get_formspec(tabview, name, tabdata)
 			Style:new { selectors = { "btn_mp_update" }, props = { "bgcolor=#FF7F00", "font=bold", "alpha=false" } }:render() ..
 			Button:new { x = 9, y = 4.2, w = 2.5, h = 1.75, name = "btn_mp_update", label = fgettext("Update") }:render()
 	else
+		if ms_mainmenu.update.update.pending then
+			fs = fs .. StyleType:new{selectors = {"label"}, props = {"font=bold"}}:render() ..
+			Label:new{x=2.5, y=2.5, label = fgettext(ms_mainmenu.update.update.message)}:render() ..
+
+			Style:new { selectors = { "btn_mp_update" }, props = { "font=bold" } }:render() ..
+			Button:new { x = 9, y = 3.2, w = 2.5, h = 1.75, name = "btn_mp_update", label = fgettext("Update") }:render()
+		end
 		-- Connect
 		fs = fs .. Style:new{selectors = {"btn_mp_connect"}, props = {"bgcolor=#FF7F00", "font=bold", "alpha=false"}}:render() ..
 			Button:new{x=9, y=4.2, w=2.5, h=1.75, name = "btn_mp_connect", label = fgettext("Connect")}:render()
