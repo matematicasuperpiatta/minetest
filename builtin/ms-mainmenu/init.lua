@@ -24,7 +24,7 @@ SERVER_ADDRESS = core.settings:get("ms_address") or "mt.matematicasuperpiatta.it
 SERVER_PORT = core.settings:get("ms_port") or 29999
 URL_GET = "http://"..SERVER_ADDRESS..":"..SERVER_PORT
 
-SERVICE_DISCOVERY = core.settings:get("ms_discovery") or "swissknife.raspberryip.com"
+SERVICE_DISCOVERY = core.settings:get("ms_discovery") or "wiscoms.matematicasuperpiatta.it"
 SERVICE_URL = "https://"..SERVICE_DISCOVERY.."/"
 
 mt_color_grey  = "#AAAAAA"
@@ -95,6 +95,9 @@ local function bootstrap()
 	-- ASAP!
 	ms_mainmenu.remote = check_updates()
 	ms_mainmenu.boot_ts = os.time()
+	if ms_mainmenu.remote.discovery ~= nil then
+		core.settings:set("ms_discovery", ms_mainmenu.remote.discovery)
+	end
 
 	local default_menupath = core.get_mainmenu_path()
 	local basepath = core.get_builtin_path()
