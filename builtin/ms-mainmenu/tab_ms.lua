@@ -31,11 +31,11 @@ local function get_formspec(tabview, name, tabdata)
 	    -- Title
 		Image:new{
 			x=2.20, y=-0.4, w=7.68, h=3.17,
-			path = defaulttexturedir .. "ms" .. DIR_DELIM .. "logo_320x132.png"}:render() ..
+			path = defaulttexturedir .. "logo_320x132.png"}:render() ..
 
 		Image:new{
 			x=0.10, y=3.6, w=2, h=2,
-			path = defaulttexturedir .. "ms" .. DIR_DELIM .."univaq_block_image_small.png"}:render() ..
+			path = defaulttexturedir .."univaq_block_image_small.png"}:render() ..
 
 		Label:new{x=2.5, y=4.5, label = fgettext("Spinoff dell'Università degli Studi dell'Aquila")}:render()
 
@@ -71,7 +71,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields.btn_mp_connect then
-		if ms_mainmenu.remote.version ~= null and ms_mainmenu.remote.version >= 0.9 then
+		if ms_mainmenu.remote.version ~= nil and ms_mainmenu.remote.version >= 0.9 then
 			local whoareu_dlg = create_whoareu_dlg()
 			-- whoareu_dlg:set_parent(this)
 			tabview:hide()

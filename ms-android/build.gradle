@@ -14,7 +14,8 @@ buildscript {
 	ext.ndk_version = '25.2.9519653'
 	repositories {
 		google()
-		mavenCentral()
+		//mavenCentral()
+		jcenter()
 	}
 	dependencies {
 		classpath 'com.android.tools.build:gradle:7.4.1'
@@ -27,7 +28,8 @@ buildscript {
 allprojects {
 	repositories {
 		google()
-		mavenCentral()
+		//mavenCentral()
+		jcenter()
 	}
 }
 
