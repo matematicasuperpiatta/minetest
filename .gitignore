@@ -57,7 +57,7 @@ build/.cmake/
 /client/mod_storage/
 
 ## Configuration/log files
-minetest.conf
+#minetest.conf
 debug.txt
 debug.txt.1
 
