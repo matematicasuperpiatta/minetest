@@ -39,7 +39,7 @@ build/.cmake/
 
 ## Non-static Minetest directories or symlinks to these
 /bin/
-/games/*
+#/games/*
 #!/games/devtest/
 /cache
 /textures/*
