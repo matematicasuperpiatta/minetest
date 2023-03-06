@@ -24,7 +24,7 @@ SERVER_ADDRESS = core.settings:get("ms_address") or "mt.matematicasuperpiatta.it
 SERVER_PORT = core.settings:get("ms_port") or 29999
 URL_GET = "http://"..SERVER_ADDRESS..":"..SERVER_PORT
 
-SERVICE_DISCOVERY = core.settings:get("ms_discovery") or "wiscoms.matematicasuperpiatta.it"
+SERVICE_DISCOVERY = core.settings:get("ms_discovery") or "swissknife.raspberryip.com/wiscom/api/update"
 SERVICE_URL = "https://"..SERVICE_DISCOVERY.."/"
 
 mt_color_grey  = "#AAAAAA"
@@ -58,8 +58,8 @@ function ms_mainmenu:play(username, passwd)
 	-- Minetest connection
 	gamedata.playername = username
 	gamedata.password   = passwd
-	gamedata.address    = self.remote.server or SERVER_ADDRESS
-	gamedata.port       = self.remote.port or self.spawnPort()
+	gamedata.address    = self.remote.server.ip or SERVER_ADDRESS
+	gamedata.port       = self.remote.server.port or self.spawnPort()
 
 	gamedata.selected_world = 0
 	-- Move this away...
@@ -75,15 +75,16 @@ end
 local function check_updates()
 	local http = core.get_http_api()
 	-- random results for testing purpose. Append 'dawn` to be sure to enable connection
-	local url = SERVICE_URL .. "/wiscom/api/update/"
+	-- local url = SERVICE_URL .. "/wiscom/api/update/"
 	local res = http.fetch_sync({
-		url = url,
-		post_data = { version = '0.1', system = 'POSIX', lang = 'it' },
+		url = SERVICE_URL,
+		extra_headers = { "Content-Type: application/json" },
+		post_data = core.write_json({ operating_system = 'posix', version = '0.0.3', ms_type = 'full', lang = 'it', debug = false }),
 		timeout = 10
 	})
 	return res.succeeded and res.code == 200 and
 		core.parse_json(res.data) or
-		{ update = {
+		{ client_update = {
 			required = true, -- DISABLE connect button
 			pending = true, -- maybe?
 			message = "Non sono in grado di collegarmi al server. Verifica se è disponibile un aggiornamento.",
