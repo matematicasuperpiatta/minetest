@@ -1,0 +1,2 @@
+rootProject.name = "Matematica Superpiatta"
+include ':app', ':native'
