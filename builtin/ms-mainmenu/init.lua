@@ -79,7 +79,13 @@ local function check_updates()
 	local res = http.fetch_sync({
 		url = SERVICE_URL,
 		extra_headers = { "Content-Type: application/json" },
-		post_data = core.write_json({ operating_system = 'posix', version = '0.0.3', ms_type = 'full', lang = 'it', debug = false }),
+		post_data = core.write_json({
+			operating_system = 'posix',
+			version = '0.0.3',
+			ms_type = 'full',
+			lang = 'it',
+			debug = false
+		}),
 		timeout = 10
 	})
 	return res.succeeded and res.code == 200 and

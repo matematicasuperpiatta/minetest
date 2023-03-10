@@ -396,10 +396,17 @@ end
 --
 -- concrete ImageButton
 --
-ImageButton = BaseButton:new{x = 0, y = 0, w = 0, h = 0, name = "", label = "", path = "", noclip = true, border = false, pressed_path = ""}
+ImageButton = BaseButton:new{
+	x = 0, y = 0, w = 0, h = 0,
+	name = "", label = "", path = "",
+	noclip = true, border = false, pressed_path = ""
+}
 
 function ImageButton:_render()
-	return string.format("%s;%s;%s;%s;%s;%s;%s", self:_partial(), self.path, self.name, self.label, btos(self.noclip),  btos(self.border), self.pressed_path)
+	return string.format("%s;%s;%s;%s;%s;%s;%s",
+		self:_partial(), self.path, self.name, self.label,
+		btos(self.noclip),  btos(self.border), self.pressed_path
+	)
 end
 
 function ImageButton:render()

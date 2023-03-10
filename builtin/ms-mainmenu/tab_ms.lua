@@ -56,7 +56,10 @@ local function get_formspec(tabview, name, tabdata)
 			Button:new { x = 9, y = 3.2, w = 2.5, h = 1.75, name = "btn_mp_update", label = fgettext("Update") }:render()
 		end
 		-- Connect
-		fs = fs .. Style:new{selectors = {"btn_mp_connect"}, props = {"bgcolor=#FF7F00", "font=bold", "alpha=false"}}:render() ..
+		fs = fs .. Style:new{
+			selectors = {"btn_mp_connect"},
+			props = {"bgcolor=#FF7F00", "font=bold", "alpha=false"}
+		}:render() ..
 			Button:new{x=9, y=4.2, w=2.5, h=1.75, name = "btn_mp_connect", label = fgettext("Connect")}:render()
 	end
 	return fs .. StyleType:new{selectors = {"label"}, props = {"font=italic"}}:render() ..
