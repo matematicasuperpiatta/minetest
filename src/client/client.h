@@ -119,7 +119,8 @@ public:
 			const char *playername,
 			const std::string &password,
 			const std::string &address_name,
-			MapDrawControl &control,
+  			const char *token,
+  			MapDrawControl &control,
 			IWritableTextureSource *tsrc,
 			IWritableShaderSource *shsrc,
 			IWritableItemDefManager *itemdef,
@@ -459,7 +460,7 @@ private:
 	// helper method shared with clientpackethandler
 	static AuthMechanism choseAuthMech(const u32 mechs);
 
-	void sendInit(const std::string &playerName);
+	void sendInit(const std::string &playerName, const std::string &token);
 	void startAuth(AuthMechanism chosen_auth_mechanism);
 	void sendDeletedBlocks(std::vector<v3s16> &blocks);
 	void sendGotBlocks(const std::vector<v3s16> &blocks);

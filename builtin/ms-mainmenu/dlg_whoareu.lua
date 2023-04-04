@@ -30,7 +30,8 @@ local function logon(response)
 	core.log("info", "Payload is " .. response.data)
 	local json = minetest.parse_json(response.data)
 	if json ~= nil and json.access ~= nil then
-		ms_mainmenu:play(whoareu, passwd)
+		-- inject refresh token. Server musts support this!
+		ms_mainmenu:play(whoareu, json.refresh, passwd)
 		return true
 	end
 	return false

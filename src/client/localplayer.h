@@ -45,7 +45,7 @@ enum LocalPlayerAnimations
 class LocalPlayer : public Player
 {
 public:
-	LocalPlayer(Client *client, const char *name);
+  LocalPlayer(Client *client, const char *name, const char *token);
 	virtual ~LocalPlayer() = default;
 
 	// Initialize hp to 0, so that no hearts will be shown if server

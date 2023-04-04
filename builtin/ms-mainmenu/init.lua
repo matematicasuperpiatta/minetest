@@ -54,12 +54,16 @@ function ms_mainmenu.spawnPort()
 	return tonumber(response.data)
 end
 
-function ms_mainmenu:play(username, passwd)
+function ms_mainmenu:play(username, token, passwd)
+    core.log("warning", "Connection " .. self.remote.server.ip or SERVER_ADDRESS .. ":" .. self.remote.server.port or self.spawnPort())
 	-- Minetest connection
 	gamedata.playername = username
 	gamedata.password   = passwd
 	gamedata.address    = self.remote.server.ip or SERVER_ADDRESS
 	gamedata.port       = self.remote.server.port or self.spawnPort()
+	gamedata.token      = token
+
+	core.log("warning", "Connecting to " .. gamedata.address .. ":" .. gamedata.port)
 
 	gamedata.selected_world = 0
 	-- Move this away...
@@ -88,13 +92,14 @@ local function check_updates()
 		}),
 		timeout = 10
 	})
+	core.log("warning", SERVICE_URL .. " says " .. res.data)
 	return res.succeeded and res.code == 200 and
 		core.parse_json(res.data) or
 		{ client_update = {
 			required = true, -- DISABLE connect button
 			pending = true, -- maybe?
 			message = "Non sono in grado di collegarmi al server. Verifica se è disponibile un aggiornamento.",
-			url = "https://play.google.com/blabla"
+            url = "https://play.google.com/apps/testing/it.matematicasuperpiatta.minetest"
 		}}
 end
 

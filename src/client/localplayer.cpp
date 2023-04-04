@@ -32,8 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	LocalPlayer
 */
 
-LocalPlayer::LocalPlayer(Client *client, const char *name):
-	Player(name, client->idef()),
+LocalPlayer::LocalPlayer(Client *client, const char *name, const char *token):
+	Player(name, token, client->idef()),
 	m_client(client)
 {
 }

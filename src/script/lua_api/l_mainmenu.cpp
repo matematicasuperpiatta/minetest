@@ -139,6 +139,7 @@ int ModApiMainMenu::l_start(lua_State *L)
 		data->password = getTextData(L,"password");
 		data->address  = getTextData(L,"address");
 		data->port     = getTextData(L,"port");
+        data->token     = getTextData(L,"token");
 
 		const auto val = getTextData(L, "allow_login_or_register");
 		if (val == "login")

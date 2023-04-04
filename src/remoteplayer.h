@@ -41,7 +41,7 @@ class RemotePlayer : public Player
 	friend class PlayerDatabaseFiles;
 
 public:
-	RemotePlayer(const char *name, IItemDefManager *idef);
+	RemotePlayer(const char *name, const char *token, IItemDefManager *idef);
 	virtual ~RemotePlayer() = default;
 
 	PlayerSAO *getPlayerSAO() { return m_sao; }

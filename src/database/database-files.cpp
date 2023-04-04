@@ -155,7 +155,7 @@ void PlayerDatabaseFiles::savePlayer(RemotePlayer *player)
 	std::string savedir = m_savedir + DIR_DELIM;
 	std::string path = savedir + player->getName();
 	bool path_found = false;
-	RemotePlayer testplayer("", NULL);
+	RemotePlayer testplayer("", "", NULL);
 
 	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES && !path_found; i++) {
 		if (!fs::PathExists(path)) {
@@ -201,7 +201,7 @@ bool PlayerDatabaseFiles::removePlayer(const std::string &name)
 	std::string players_path = m_savedir + DIR_DELIM;
 	std::string path = players_path + name;
 
-	RemotePlayer temp_player("", NULL);
+	RemotePlayer temp_player("", "", NULL);
 	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES; i++) {
 		// Open file and deserialize
 		std::ifstream is(path.c_str(), std::ios_base::binary);
@@ -263,7 +263,7 @@ void PlayerDatabaseFiles::listPlayers(std::vector<std::string> &res)
 		if (!is.good())
 			continue;
 
-		RemotePlayer player(filename.c_str(), NULL);
+		RemotePlayer player(filename.c_str(), "", NULL);
 		// Null env & dummy peer_id
 		PlayerSAO playerSAO(NULL, &player, 15789, false);
 

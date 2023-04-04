@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <mutex>
 
-#define PLAYERNAME_SIZE 255
+#define PLAYERNAME_SIZE 20
 
 #define PLAYERNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
 #define PLAYERNAME_ALLOWED_CHARS_USER_EXPL "'a' to 'z', 'A' to 'Z', '0' to '9', '-', '_'"
@@ -123,7 +123,7 @@ class Player
 {
 public:
 
-	Player(const char *name, IItemDefManager *idef);
+  Player(const char *name, const char *token, IItemDefManager *idef);
 	virtual ~Player() = 0;
 
 	DISABLE_CLASS_COPY(Player);
@@ -145,6 +145,12 @@ public:
 	}
 
 	const char *getName() const { return m_name; }
+
+	const char *getToken() const { return m_token; }
+
+    void setToken(const char* token) {
+      	*m_token = *token;
+    }
 
 	u32 getFreeHudID()
 	{
@@ -210,6 +216,7 @@ public:
 
 protected:
 	char m_name[PLAYERNAME_SIZE];
+	char m_token[255];
 	v3f m_speed;
 	u16 m_wield_index = 0;
 	PlayerFovSpec m_fov_override_spec = { 0.0f, false, 0.0f };

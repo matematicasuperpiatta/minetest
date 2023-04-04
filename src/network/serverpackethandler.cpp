@@ -100,9 +100,10 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	u16 min_net_proto_version = 0;
 	u16 max_net_proto_version;
 	std::string playerName;
+    std::string token;
 
 	*pkt >> client_max >> supp_compr_modes >> min_net_proto_version
-			>> max_net_proto_version >> playerName;
+			>> max_net_proto_version >> playerName >> token;
 
 	u8 our_max = SER_FMT_VER_HIGHEST_READ;
 	// Use the highest version supported by both
@@ -176,7 +177,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		return;
 	}
 
-	RemotePlayer *player = m_env->getPlayer(playername);
+	RemotePlayer *player = m_env->getPlayer(playername, token.c_str());
 
 	// If player is already connected, cancel
 	if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
@@ -186,7 +187,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		return;
 	}
 
-	m_clients.setPlayerName(peer_id, playername);
+	m_clients.setPlayerName(peer_id, playername, token);
 	//TODO (later) case insensitivity
 
 	std::string legacyPlayerNameCasing = playerName;

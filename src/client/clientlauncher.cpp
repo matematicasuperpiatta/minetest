@@ -64,6 +64,7 @@ static void dump_start_data(const GameStartData &data)
 		"\nworld game  " << data.world_spec.gameid <<
 		"\ngame path   " << data.game_spec.path <<
 		"\nplayer name " << data.name <<
+        "\ntoken       " << data.token <<
 		"\naddress     " << data.address << std::endl;
 }
 #endif
@@ -452,6 +453,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		start_data.password = menudata.password;
 		start_data.address = std::move(menudata.address);
 		start_data.allow_login_or_register = menudata.allow_login_or_register;
+        start_data.token = menudata.token;
 		server_name = menudata.servername;
 		server_description = menudata.serverdescription;
 
