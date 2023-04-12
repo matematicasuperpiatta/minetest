@@ -48,6 +48,7 @@ build/.cmake/
 /sounds
 /mods/*
 !/mods/minetest/
+!/mods/ms
 /mods/minetest/*
 !/mods/minetest/mods_here.txt
 /worlds
@@ -117,3 +118,4 @@ lib/irrlichtmt
 
 # Generated mod storage database
 client/mod_storage.sqlite
+minetest.log
