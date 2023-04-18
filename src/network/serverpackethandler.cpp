@@ -102,10 +102,8 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	std::string playerName;
     std::string token;
 
-	actionstream << "Processing login..." << std::endl;
 	*pkt >> client_max >> supp_compr_modes >> min_net_proto_version
 			>> max_net_proto_version >> playerName >>= token;
-	actionstream << "Login data loaded" << std::endl;
 
 	u8 our_max = SER_FMT_VER_HIGHEST_READ;
 	// Use the highest version supported by both
