@@ -55,6 +55,7 @@ public:
 	}
 
 	NetworkPacket &operator>>(std::string &dst);
+	NetworkPacket &operator>>=(std::string &dst);
 	NetworkPacket &operator<<(const std::string &src);
 
 	void putLongString(const std::string &src);
