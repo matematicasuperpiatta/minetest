@@ -117,6 +117,32 @@ NetworkPacket& NetworkPacket::operator>>(std::string& dst)
 	return *this;
 }
 
+NetworkPacket& NetworkPacket::operator>>=(std::string& dst)
+{
+	try {
+		checkReadOffset(m_read_offset, 2);
+		u16 strLen = readU16(&m_data[m_read_offset]);
+		m_read_offset += 2;
+
+		dst.clear();
+
+		if (strLen == 0) {
+			return *this;
+		}
+
+		checkReadOffset(m_read_offset, strLen);
+
+		dst.reserve(strLen);
+		dst.append((char*)&m_data[m_read_offset], strLen);
+
+		m_read_offset += strLen;
+	} catch (PacketError &e) {
+		// Ignore!
+		dst.clear();
+	}
+	return *this;
+}
+
 NetworkPacket& NetworkPacket::operator<<(const std::string &src)
 {
 	if (src.size() > STRING_MAX_LEN) {
