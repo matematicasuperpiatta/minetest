@@ -55,7 +55,9 @@ function ms_mainmenu.spawnPort()
 end
 
 function ms_mainmenu:play(username, token, passwd)
-    core.log("warning", "Connection " .. self.remote.server.ip or SERVER_ADDRESS .. ":" .. self.remote.server.port or self.spawnPort())
+    core.log("warning", "Connection " ..
+		self.remote.server.ip or SERVER_ADDRESS .. ":" ..
+		self.remote.server.port or self.spawnPort())
 	-- Minetest connection
 	gamedata.playername = username
 	gamedata.password   = passwd
@@ -88,7 +90,7 @@ local function check_updates()
 			version = '0.0.3',
 			ms_type = 'full',
 			lang = 'it',
-			debug = false
+			debug = 'true'
 		}),
 		timeout = 10
 	})
