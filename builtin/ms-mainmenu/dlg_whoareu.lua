@@ -126,7 +126,7 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 			if ms_roadmap.server ~= nil then
 				if ms_roadmap.server.ip == nil then
 					local flavor_dlg = create_flavor_dlg()
-					-- flavor_dlg:set_parent(this)
+					flavor_dlg:set_parent(this)
 					this:hide()
 					flavor_dlg:show()
 				end
@@ -176,10 +176,14 @@ local function get_flavor_formspec(tabview, _, tabdata)
 		Table:new{ x = 0.5, y = 1, w = 11, h = 3.2, name = "news", cells = ms_roadmap.messages.news}:render()
 end
 
+local function handle_nothing(this, fields, tabname, tabdata)
+	return false
+end
+
 function create_flavor_dlg()
 	local dlg = dialog_create("flavor",
 				get_flavor_formspec,
-				nil,
+				handle_nothing,
 				nil)
 	return dlg
 end
