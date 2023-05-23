@@ -62,7 +62,7 @@ local function get_whoareu_formspec(tabview, _, tabdata)
 end
 
 local function handle_whoareu_buttons(this, fields, tabname, tabdata)
-	if (fields.btn_next or fields.key_enter) then
+	if (fields.key_enter or fields.btn_next) then
 		if (fields.username ~= "") then
 			whoareu = fields.username
 			local passwd_dlg = create_passwd_dlg()
@@ -113,7 +113,7 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 	gamedata.playername = whoareu
 	core.settings:set("name", whoareu)
 
-	if fields.passwd ~= "" and (fields.btn_play or fields.key_enter) then
+	if fields.passwd ~= "" and (fields.key_enter or fields.btn_play) then
 		-- Wiscom auth
 		passwd = fields.passwd
 		local response = http.fetch_sync({
@@ -126,7 +126,7 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 			if ms_roadmap.server ~= nil then
 				if ms_roadmap.server.ip == nil then
 					local flavor_dlg = create_flavor_dlg()
-					flavor_dlg:set_parent(this)
+					-- flavor_dlg:set_parent(this)
 					this:hide()
 					flavor_dlg:show()
 				end
@@ -169,7 +169,7 @@ end
 
 local function get_flavor_formspec(tabview, _, tabdata)
 	return FormspecVersion:new{version=6}:render() ..
-		Size:new{w = 12, h = 4.5, fix = true}:render() ..
+		Size:new{w = 12, h = 4.8, fix = true}:render() ..
 		Label:new{x = 0.5, y = 0.5, label = fgettext("Loading...")}:render() ..
 		TableColumns:new{ columns = { {"text"} } }:render() ..
 		TableOptions:new{ options =	{"background=#00000000", "highlight=#00000000"}}:render() ..

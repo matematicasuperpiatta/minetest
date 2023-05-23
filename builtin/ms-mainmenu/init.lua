@@ -35,7 +35,7 @@ mt_color_orange  = "#FF8800"
 defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
 						DIR_DELIM .. "pack" .. DIR_DELIM
 
-ms_roadmap = {server = { ticket = ""}}
+ms_roadmap = {is_booting = true, server = { ticket = ""}}
 
 ms_mainmenu = {
 	discover_ts = nil,
@@ -100,10 +100,8 @@ end
 --------------------------------------------------------------------------------
 function ms_mainmenu.check_updates()
 	core.log("warning", "I'm using the ticket: " .. (ms_roadmap.server.ticket == '' and '-' or ms_roadmap.server.ticket))
-	core.handle_async(function(params)
-		local http = core.get_http_api()
-		return http.fetch_sync(params)
-	end, {
+	local http = core.get_http_api()
+	local res = http.fetch_sync({
 		url = ms_mainmenu.service_url,
 		extra_headers = { "Content-Type: application/json" },
 		post_data = core.write_json({
@@ -115,10 +113,11 @@ function ms_mainmenu.check_updates()
 			ticket = ms_roadmap.server.ticket
 		}),
 		timeout = 30
-	}, function(res)
-		core.log("warning", ms_mainmenu.service_url .. " says " .. res.data)
-		ms_mainmenu.discover_ts = os.time()
-		ms_roadmap = res.succeeded and res.code == 200 and
+	})
+
+	core.log("warning", ms_mainmenu.service_url .. " says " .. res.data)
+	ms_mainmenu.discover_ts = os.time()
+	ms_roadmap = res.succeeded and res.code == 200 and
 		core.parse_json(res.data) or
 		{ client_update = {
 			required = true, -- DISABLE connect button
@@ -126,25 +125,23 @@ function ms_mainmenu.check_updates()
 			message = "Non sono in grado di collegarmi al server. Verifica se è disponibile un aggiornamento.",
 			url = "https://play.google.com/apps/testing/it.matematicasuperpiatta.minetest"
 		}}
-		if ms_roadmap.discovery ~= nil then
-			core.settings:set("ms_discovery", ms_roadmap.discovery)
-		end
-		if ms_roadmap.server ~= nil and ms_roadmap.server.waiting_time > 0 then
-			local delay = ms_roadmap.server.waiting_time - (os.time() - ms_mainmenu.discover_ts)
-			core.log("warning", "Delayed connection w/ ticket " .. ms_roadmap.server.ticket )
-			core.handle_async(
-				ms_mainmenu.sleep, {secs = delay, ret = ms_mainmenu},
-				ms_mainmenu.check_updates)
-		elseif ms_roadmap.server ~= nil and ms_roadmap.server.ticket == "" then
-			ms_roadmap = { client_update = {
-				required = true, -- DISABLE connect button
-				pending = true, -- maybe?
-				message = "Errore di comunicazione. Verifica se è disponibile un aggiornamento.",
-				url = "https://play.google.com/apps/testing/it.matematicasuperpiatta.minetest"
-			}}
-		end
-	end)
-	return ''
+	if ms_roadmap.discovery ~= nil then
+		core.settings:set("ms_discovery", ms_roadmap.discovery)
+	end
+	if ms_roadmap.server ~= nil and ms_roadmap.server.waiting_time > 0 then
+		local delay = ms_roadmap.server.waiting_time - (os.time() - ms_mainmenu.discover_ts)
+		core.log("warning", "Delayed connection w/ ticket " .. ms_roadmap.server.ticket )
+		core.handle_async(
+			ms_mainmenu.sleep, {secs = delay, ret = ms_mainmenu},
+			ms_mainmenu.check_updates)
+	elseif ms_roadmap.server ~= nil and ms_roadmap.server.ticket == "" then
+		ms_roadmap = { client_update = {
+			required = true, -- DISABLE connect button
+			pending = true, -- maybe?
+			message = "Errore di comunicazione. Verifica se è disponibile un aggiornamento.",
+			url = "https://play.google.com/apps/testing/it.matematicasuperpiatta.minetest"
+		}}
+	end
 end
 
 local function bootstrap()
