@@ -123,14 +123,14 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 		})
 
 		if response.succeeded then
-			if ms_mainmenu.remote.server ~= nil then
-				if ms_mainmenu.remote.server.ip == nil then
+			if ms_roadmap.server ~= nil then
+				if ms_roadmap.server.ip == nil then
 					local flavor_dlg = create_flavor_dlg()
 					flavor_dlg:set_parent(this)
 					this:hide()
 					flavor_dlg:show()
 				end
-				core.handle_async(logon, response, function() end)
+				logon(response)
 				return true
 			end
 			error_msg = "Something wrong, please restart the client"
@@ -171,7 +171,7 @@ local function get_flavor_formspec(tabview, _, tabdata)
 		Label:new{x = 0.5, y = 0.5, label = fgettext("Loading...")}:render() ..
 		TableColumns:new{ columns = { {"text"} } }:render() ..
 		TableOptions:new{ options =	{"background=#00000000", "highlight=#00000000"}}:render() ..
-		Table:new{ x = 0.5, y = 1, w = 11, h = 3.2, name = "news", cells = ms_mainmenu.remote.messages.news}:render()
+		Table:new{ x = 0.5, y = 1, w = 11, h = 3.2, name = "news", cells = ms_roadmap.messages.news}:render()
 end
 
 function create_flavor_dlg()

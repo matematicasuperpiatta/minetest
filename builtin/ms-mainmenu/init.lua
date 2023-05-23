@@ -35,8 +35,9 @@ mt_color_orange  = "#FF8800"
 defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
 						DIR_DELIM .. "pack" .. DIR_DELIM
 
+ms_roadmap = {server = { ticket = ""}}
+
 ms_mainmenu = {
-	remote = { server = { ticket = ""}},
 	discover_ts = nil,
 	service_url = "https://"..SERVICE_DISCOVERY.."/"
 }
@@ -53,22 +54,35 @@ function ms_mainmenu.spawnPort()
 	return tonumber(response.data)
 end
 
-local function sleep(secs)
-	os.execute("sleep " .. math.max(secs, 1))
+local function sleep(params)
+	core.log("warning", "Sleeping for " .. params.secs .. "secs")
+	os.execute("sleep " .. math.max(params.secs, 1))
+	return params.ret
 end
 
 function ms_mainmenu:play(username, token, passwd)
-	while self.remote.server.ip == nil do
-		sleep(self.remote.server.waiting_time - (os.time() - self.discover_ts))
+	local timeout = 95
+	local start_ts = os.time()
+	core.log("warning", "Inspect setup... " .. (ms_roadmap == nil and "ms_roadmap" or
+		(ms_roadmap.server == nil and "no server") or
+		(ms_roadmap.server.ip == nil and "no ip") or ms_roadmap.server.ip))
+	while ms_roadmap.server.ip == nil do
+		if os.time() - start_ts > timeout then
+			core.log("warning", "Connection timeout")
+			return
+		end
+		sleep({
+			secs = ms_roadmap.server.waiting_time - (os.time() - ms_mainmenu.discover_ts),
+			ret = ms_mainmenu})
 	end
     core.log("warning", "Connection " ..
-		self.remote.server.ip or SERVER_ADDRESS .. ":" ..
-		self.remote.server.port or self.spawnPort())
+		ms_roadmap.server.ip or SERVER_ADDRESS .. ":" ..
+		ms_roadmap.server.port or ms_mainmenu.spawnPort())
 	-- Minetest connection
 	gamedata.playername = username
 	gamedata.password   = passwd
-	gamedata.address    = self.remote.server.ip or SERVER_ADDRESS
-	gamedata.port       = self.remote.server.port or self.spawnPort()
+	gamedata.address    = ms_roadmap.server.ip or SERVER_ADDRESS
+	gamedata.port       = ms_roadmap.server.port or ms_mainmenu.spawnPort()
 	gamedata.token      = token
 
 	core.log("warning", "Connecting to " .. gamedata.address .. ":" .. gamedata.port)
@@ -84,9 +98,10 @@ function ms_mainmenu:play(username, token, passwd)
 end
 
 --------------------------------------------------------------------------------
-local function check_updates()
+function ms_mainmenu.check_updates()
 	local http = core.get_http_api()
 	-- random results for testing purpose. Append 'dawn` to be sure to enable connection
+	core.log("warning", "I'm using the ticket: " .. (ms_roadmap.server.ticket == '' and '-' or ms_roadmap.server.ticket))
 	local res = http.fetch_sync({
 		url = ms_mainmenu.service_url,
 		extra_headers = { "Content-Type: application/json" },
@@ -96,13 +111,13 @@ local function check_updates()
 			ms_type = 'full',
 			lang = 'it',
 			debug = 'true',
-			ticket = ms_mainmenu.remote.server.ticket
+			ticket = ms_roadmap.server.ticket
 		}),
 		timeout = 30
 	})
 	core.log("warning", ms_mainmenu.service_url .. " says " .. res.data)
 	ms_mainmenu.discover_ts = os.time()
-	ms_mainmenu.remote = res.succeeded and res.code == 200 and
+	ms_roadmap = res.succeeded and res.code == 200 and
 		core.parse_json(res.data) or
 		{ client_update = {
 			required = true, -- DISABLE connect button
@@ -110,16 +125,17 @@ local function check_updates()
 			message = "Non sono in grado di collegarmi al server. Verifica se è disponibile un aggiornamento.",
             url = "https://play.google.com/apps/testing/it.matematicasuperpiatta.minetest"
 		}}
-	if ms_mainmenu.remote.discovery ~= nil then
-		core.settings:set("ms_discovery", ms_mainmenu.remote.discovery)
+	if ms_roadmap.discovery ~= nil then
+		core.settings:set("ms_discovery", ms_roadmap.discovery)
 	end
-	if ms_mainmenu.remote.server ~= nil and ms_mainmenu.remote.server.waiting_time > 0 then
-		core.log("warning", "Delayed connection w/ ticket " .. ms_mainmenu.remote.server.ticket )
+	if ms_roadmap.server ~= nil and ms_roadmap.server.waiting_time > 0 then
+		local delay = ms_roadmap.server.waiting_time - (os.time() - ms_mainmenu.discover_ts)
+		core.log("warning", "Delayed connection w/ ticket " .. ms_roadmap.server.ticket )
 		core.handle_async(
-			sleep, ms_mainmenu.remote.server.waiting_time - (os.time() - ms_mainmenu.discover_ts),
-			check_updates)
-	elseif ms_mainmenu.remote.server ~= nil and ms_mainmenu.remote.server.ticket == "" then
-		ms_mainmenu.remote = { client_update = {
+			sleep, {secs = delay, ret = ms_mainmenu},
+			ms_mainmenu.check_updates)
+	elseif ms_roadmap.server ~= nil and ms_roadmap.server.ticket == "" then
+		ms_roadmap = { client_update = {
 			required = true, -- DISABLE connect button
 			pending = true, -- maybe?
 			message = "Errore di comunicazione. Verifica se è disponibile un aggiornamento.",
@@ -133,7 +149,7 @@ local function bootstrap()
 	local default_menupath = core.get_mainmenu_path()
 	dofile(default_menupath .. DIR_DELIM .. "async_event.lua")
 	-- ASAP!
-	check_updates()
+	ms_mainmenu:check_updates()
 
 	local basepath = core.get_builtin_path()
 	local menupath = basepath .. "ms-mainmenu" .. DIR_DELIM
@@ -158,7 +174,7 @@ local function bootstrap()
 
 	dofile(menupath .. "oop" .. DIR_DELIM .. "oo_formspec.lua")
 
-	dofile(menupath .. DIR_DELIM .. "dlg_whoareu.lua")
+	dofile(menupath .. "dlg_whoareu.lua")
 	-- dofile(menupath .. DIR_DELIM .. "dlg_passwd.lua")
 
 	return {
