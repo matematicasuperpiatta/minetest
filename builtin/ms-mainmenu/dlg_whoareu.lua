@@ -123,24 +123,20 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 		})
 
 		if response.succeeded then
-			if os.time() - ms_mainmenu.boot_ts > ms_mainmenu.remote.server.waiting_time then
-				logon(response)
+			if ms_mainmenu.remote.server ~= nil then
+				if ms_mainmenu.remote.server.ip == nil then
+					local flavor_dlg = create_flavor_dlg()
+					flavor_dlg:set_parent(this)
+					this:hide()
+					flavor_dlg:show()
+				end
+				core.handle_async(logon, response, function() end)
 				return true
 			end
-			passwd = fields.passwd
-			local flavor_dlg = create_flavor_dlg()
-			flavor_dlg:set_parent(this)
-			this:hide()
-			flavor_dlg:show()
-
-			core.handle_async(function(params)
-				os.execute(params[1])
-			end, { "sleep " .. ms_mainmenu.remote.server.waiting_time - (os.time() - ms_mainmenu.boot_ts) }, function()
-				logon(response)
-			end)
-			return true;
+			error_msg = "Something wrong, please restart the client"
+		else
+			error_msg = "Login failed, try again"
 		end
-		error_msg = "Login failed, try again"
 		local login_dlg = create_whoareu_dlg()
 		login_dlg:set_parent(this)
 		this:hide()
