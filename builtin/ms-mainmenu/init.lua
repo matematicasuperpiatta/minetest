@@ -54,7 +54,7 @@ function ms_mainmenu.spawnPort()
 	return tonumber(response.data)
 end
 
-local function sleep(params)
+function ms_mainmenu.sleep(params)
 	core.log("warning", "Sleeping for " .. params.secs .. "secs")
 	os.execute("sleep " .. math.max(params.secs, 1))
 	return params.ret
@@ -71,7 +71,7 @@ function ms_mainmenu:play(username, token, passwd)
 			core.log("warning", "Connection timeout")
 			return
 		end
-		sleep({
+		ms_mainmenu.sleep({
 			secs = ms_roadmap.server.waiting_time - (os.time() - ms_mainmenu.discover_ts),
 			ret = ms_mainmenu})
 	end
@@ -99,10 +99,11 @@ end
 
 --------------------------------------------------------------------------------
 function ms_mainmenu.check_updates()
-	local http = core.get_http_api()
-	-- random results for testing purpose. Append 'dawn` to be sure to enable connection
 	core.log("warning", "I'm using the ticket: " .. (ms_roadmap.server.ticket == '' and '-' or ms_roadmap.server.ticket))
-	local res = http.fetch_sync({
+	core.handle_async(function(params)
+		local http = core.get_http_api()
+		return http.fetch_sync(params)
+	end, {
 		url = ms_mainmenu.service_url,
 		extra_headers = { "Content-Type: application/json" },
 		post_data = core.write_json({
@@ -114,34 +115,35 @@ function ms_mainmenu.check_updates()
 			ticket = ms_roadmap.server.ticket
 		}),
 		timeout = 30
-	})
-	core.log("warning", ms_mainmenu.service_url .. " says " .. res.data)
-	ms_mainmenu.discover_ts = os.time()
-	ms_roadmap = res.succeeded and res.code == 200 and
+	}, function(res)
+		core.log("warning", ms_mainmenu.service_url .. " says " .. res.data)
+		ms_mainmenu.discover_ts = os.time()
+		ms_roadmap = res.succeeded and res.code == 200 and
 		core.parse_json(res.data) or
 		{ client_update = {
 			required = true, -- DISABLE connect button
 			pending = true, -- maybe?
 			message = "Non sono in grado di collegarmi al server. Verifica se è disponibile un aggiornamento.",
-            url = "https://play.google.com/apps/testing/it.matematicasuperpiatta.minetest"
-		}}
-	if ms_roadmap.discovery ~= nil then
-		core.settings:set("ms_discovery", ms_roadmap.discovery)
-	end
-	if ms_roadmap.server ~= nil and ms_roadmap.server.waiting_time > 0 then
-		local delay = ms_roadmap.server.waiting_time - (os.time() - ms_mainmenu.discover_ts)
-		core.log("warning", "Delayed connection w/ ticket " .. ms_roadmap.server.ticket )
-		core.handle_async(
-			sleep, {secs = delay, ret = ms_mainmenu},
-			ms_mainmenu.check_updates)
-	elseif ms_roadmap.server ~= nil and ms_roadmap.server.ticket == "" then
-		ms_roadmap = { client_update = {
-			required = true, -- DISABLE connect button
-			pending = true, -- maybe?
-			message = "Errore di comunicazione. Verifica se è disponibile un aggiornamento.",
 			url = "https://play.google.com/apps/testing/it.matematicasuperpiatta.minetest"
 		}}
-	end
+		if ms_roadmap.discovery ~= nil then
+			core.settings:set("ms_discovery", ms_roadmap.discovery)
+		end
+		if ms_roadmap.server ~= nil and ms_roadmap.server.waiting_time > 0 then
+			local delay = ms_roadmap.server.waiting_time - (os.time() - ms_mainmenu.discover_ts)
+			core.log("warning", "Delayed connection w/ ticket " .. ms_roadmap.server.ticket )
+			core.handle_async(
+				ms_mainmenu.sleep, {secs = delay, ret = ms_mainmenu},
+				ms_mainmenu.check_updates)
+		elseif ms_roadmap.server ~= nil and ms_roadmap.server.ticket == "" then
+			ms_roadmap = { client_update = {
+				required = true, -- DISABLE connect button
+				pending = true, -- maybe?
+				message = "Errore di comunicazione. Verifica se è disponibile un aggiornamento.",
+				url = "https://play.google.com/apps/testing/it.matematicasuperpiatta.minetest"
+			}}
+		end
+	end)
 	return ''
 end
 
@@ -175,12 +177,12 @@ local function bootstrap()
 	dofile(menupath .. "oop" .. DIR_DELIM .. "oo_formspec.lua")
 
 	dofile(menupath .. "dlg_whoareu.lua")
-	-- dofile(menupath .. DIR_DELIM .. "dlg_passwd.lua")
+	-- dofile(menupath .. "dlg_passwd.lua")
 
 	return {
-		ms       = dofile(menupath .. DIR_DELIM .. "tab_ms.lua"),
+		ms       = dofile(menupath .. "tab_ms.lua"),
 		settings = dofile(default_menupath .. DIR_DELIM .. "tab_settings.lua"),
-		about    = dofile(menupath .. DIR_DELIM .. "tab_about.lua")
+		about    = dofile(menupath .. "tab_about.lua")
 	}
 end
 

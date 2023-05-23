@@ -130,7 +130,9 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 					this:hide()
 					flavor_dlg:show()
 				end
-				logon(response)
+				core.handle_async(ms_mainmenu.sleep,
+					{ secs = ms_roadmap.server.waiting_time +1, ret = response },
+					logon)
 				return true
 			end
 			error_msg = "Something wrong, please restart the client"

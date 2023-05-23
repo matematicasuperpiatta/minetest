@@ -45,7 +45,7 @@ local function get_formspec(tabview, name, tabdata)
 		Label:new{x=2, y=4.1, label = fgettext("Università degli Studi of L'Aquila")}:render() ..
 		Label:new{x=2, y=4.5, label = fgettext("Spinoff")}:render()
 
-	if ms_roadmap.client_update.required then
+		if ms_roadmap.client_update ~= nil and ms_roadmap.client_update.required then
 		-- Update
 		fs = fs .. StyleType:new{selectors = {"label"}, props = {"font=bold"}}:render() ..
 			Label:new{x=2.5, y=2.5, label = fgettext(ms_roadmap.client_update.message)}:render() ..
@@ -53,7 +53,7 @@ local function get_formspec(tabview, name, tabdata)
 			Style:new { selectors = { "btn_mp_update" }, props = { "bgcolor=#FF7F00", "font=bold", "alpha=false" } }:render() ..
 			Button:new { x = 9, y = 4.2, w = 2.5, h = 1.75, name = "btn_mp_update", label = fgettext("Update") }:render()
 	else
-		if ms_roadmap.client_update.pending then
+		if ms_roadmap.client_update ~= nil and ms_roadmap.client_update.pending then
 			fs = fs .. StyleType:new{selectors = {"label"}, props = {"font=bold"}}:render() ..
 			Label:new{x=2.5, y=2.5, label = fgettext(ms_roadmap.client_update.message)}:render() ..
 
