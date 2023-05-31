@@ -26,17 +26,6 @@ local error_msg = ""
 
 local http = core.get_http_api()
 
-local function logon(response)
-	core.log("info", "Payload is " .. response.data)
-	local json = minetest.parse_json(response.data)
-	if json ~= nil and json.access ~= nil then
-		-- inject refresh token. Server musts support this!
-		ms_mainmenu:play(whoareu, json.refresh, passwd)
-		return true
-	end
-	return false
-end
-
 --------------------------------------------------------------------------------
 --
 -- Username dialog
@@ -123,17 +112,25 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 		})
 
 		if response.succeeded then
-			if ms_roadmap.server ~= nil then
-				if ms_roadmap.server.ip == nil then
-					local flavor_dlg = create_flavor_dlg()
-					flavor_dlg:set_parent(this)
-					this:hide()
-					flavor_dlg:show()
+			core.log("info", "Payload is " .. response.data)
+			local json = minetest.parse_json(response.data)
+			if json ~= nil and json.access ~= nil then
+				if handshake.roadmap.server ~= nil then
+					if handshake.roadmap.server.ip == nil then
+						local flavor_dlg = create_flavor_dlg()
+						flavor_dlg:set_parent(this)
+						this:hide()
+						flavor_dlg:show()
+					end
+					handshake:sleep(handshake.roadmap.server.waiting_time +1,
+						function(params)
+							-- inject refresh token. Server musts support this!
+							handshake:play(whoareu, json.refresh, passwd)
+						end)
+					return true
 				end
-				core.handle_async(ms_mainmenu.sleep,
-					{ secs = ms_roadmap.server.waiting_time +1, ret = response },
-					logon)
-				return true
+			else
+				error_msg = "Sorry. No access!"
 			end
 			error_msg = "Something wrong, please restart the client"
 		else
@@ -173,7 +170,7 @@ local function get_flavor_formspec(tabview, _, tabdata)
 		Label:new{x = 0.5, y = 0.5, label = fgettext("Loading...")}:render() ..
 		TableColumns:new{ columns = { {"text"} } }:render() ..
 		TableOptions:new{ options =	{"background=#00000000", "highlight=#00000000"}}:render() ..
-		Table:new{ x = 0.5, y = 1, w = 11, h = 3.2, name = "news", cells = ms_roadmap.messages.news}:render()
+		Table:new{ x = 0.5, y = 1, w = 11, h = 3.2, name = "news", cells = handshake.roadmap.messages.news}:render()
 end
 
 local function handle_nothing(this, fields, tabname, tabdata)

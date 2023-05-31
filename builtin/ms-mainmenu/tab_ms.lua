@@ -45,17 +45,17 @@ local function get_formspec(tabview, name, tabdata)
 		Label:new{x=2, y=4.1, label = fgettext("Università degli Studi of L'Aquila")}:render() ..
 		Label:new{x=2, y=4.5, label = fgettext("Spinoff")}:render()
 
-		if ms_roadmap.client_update ~= nil and ms_roadmap.client_update.required then
+		if handshake.roadmap.client_update ~= nil and handshake.roadmap.client_update.required then
 		-- Update
 		fs = fs .. StyleType:new{selectors = {"label"}, props = {"font=bold"}}:render() ..
-			Label:new{x=2.5, y=2.5, label = fgettext(ms_roadmap.client_update.message)}:render() ..
+			Label:new{x=2.5, y=2.5, label = fgettext(handshake.roadmap.client_update.message)}:render() ..
 
 			Style:new { selectors = { "btn_mp_update" }, props = { "bgcolor=#FF7F00", "font=bold", "alpha=false" } }:render() ..
 			Button:new { x = 9, y = 4.2, w = 2.5, h = 1.75, name = "btn_mp_update", label = fgettext("Update") }:render()
 	else
-		if ms_roadmap.client_update ~= nil and ms_roadmap.client_update.pending then
+		if handshake.roadmap.client_update ~= nil and handshake.roadmap.client_update.pending then
 			fs = fs .. StyleType:new{selectors = {"label"}, props = {"font=bold"}}:render() ..
-			Label:new{x=2.5, y=2.5, label = fgettext(ms_roadmap.client_update.message)}:render() ..
+			Label:new{x=2.5, y=2.5, label = fgettext(handshake.roadmap.client_update.message)}:render() ..
 
 			Style:new { selectors = { "btn_mp_update" }, props = { "font=bold" } }:render() ..
 			Button:new { x = 9, y = 3.2, w = 2.5, h = 1.75, name = "btn_mp_update", label = fgettext("Update") }:render()
@@ -76,25 +76,25 @@ end
 
 local function main_button_handler(tabview, fields, name, tabdata)
 	if fields.key_enter then
-		fields.btn_mp_update = ms_roadmap.client_update.required
+		fields.btn_mp_update = handshake.roadmap.client_update.required
 		fields.btn_mp_connect = not fields.btn_mp_update
 	end
 
 	if fields.btn_mp_connect then
-		if ms_roadmap.server.server_version ~= nil and ms_roadmap.server.server_version >= "1.0" then
+		if handshake.roadmap.server.server_version ~= nil and handshake.roadmap.server.server_version >= "1.0" then
 			local whoareu_dlg = create_whoareu_dlg()
 			-- whoareu_dlg:set_parent(this)
 			tabview:hide()
 			whoareu_dlg:show()
 		else
 			-- legacy server. Pseudologin
-			ms_mainmenu:play("test", "")
+			handshake:play("test", "")
 		end
 		return true
 	end
 
 	if fields.btn_mp_update then
-		core.open_url(ms_roadmap.client_update.url)
+		core.open_url(handshake.roadmap.client_update.url)
 		return true
 	end
 

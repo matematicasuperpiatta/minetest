@@ -1,0 +1,21 @@
+node_highlighting = halo
+mouse_sensitivity = 0.08
+enable_shaders = true
+
+debug_log_level = info
+
+#
+# OFFICIAL
+#
+#ms_discovery = yz3y3bpmcqptzoklqoz3eaylvq0lkkiv.lambda-url.eu-south-1.on.aws
+ms_discovery = jp4ffxegbm2n57igrjm5t7qjsa0ygyhi.lambda-url.eu-south-1.on.aws
+
+#
+# DEBUG
+#
+#ms_address = jp4ffxegbm2n57igrjm5t7qjsa0ygyhi.lambda-url.eu-south-1.on.aws
+ms_discovery = jp4ffxegbm2n57igrjm5t7qjsa0ygyhi.lambda-url.eu-south-1.on.aws
+
+secure.enable_security = true
+secure.trusted_mods = raspberryjammod,ms_tutorial,ms_l10n,ms_shelter,ms,ms_connect,ms_ui
+

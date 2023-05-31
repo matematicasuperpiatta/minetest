@@ -35,123 +35,18 @@ mt_color_orange  = "#FF8800"
 defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
 						DIR_DELIM .. "pack" .. DIR_DELIM
 
-ms_roadmap = {is_booting = true, server = { ticket = ""}}
-
-ms_mainmenu = {
-	discover_ts = nil,
-	service_url = "https://"..SERVICE_DISCOVERY.."/"
-}
-
-function ms_mainmenu.spawnPort()
-	local http = core.get_http_api()
-    --  GET PORT NUMBER BY HTTP REQUEST - START
-	local response = http.fetch_sync({ url = URL_GET })
-	if not response.succeeded then
-		-- lazy debug (but also) desperate choice
-		return 30000
-	end
-	--  GET PORT NUMBER BY HTTP REQUEST - END
-	return tonumber(response.data)
-end
-
-function ms_mainmenu.sleep(params)
-	core.log("warning", "Sleeping for " .. params.secs .. "secs")
-	os.execute("sleep " .. math.max(params.secs, 1))
-	return params.ret
-end
-
-function ms_mainmenu:play(username, token, passwd)
-	local timeout = 95
-	local start_ts = os.time()
-	core.log("warning", "Inspect setup... " .. (ms_roadmap == nil and "ms_roadmap" or
-		(ms_roadmap.server == nil and "no server") or
-		(ms_roadmap.server.ip == nil and "no ip") or ms_roadmap.server.ip))
-	while ms_roadmap.server.ip == nil do
-		if os.time() - start_ts > timeout then
-			core.log("warning", "Connection timeout")
-			return
-		end
-		ms_mainmenu.sleep({
-			secs = ms_roadmap.server.waiting_time - (os.time() - ms_mainmenu.discover_ts),
-			ret = ms_mainmenu})
-	end
-    core.log("warning", "Connection " ..
-		ms_roadmap.server.ip or SERVER_ADDRESS .. ":" ..
-		ms_roadmap.server.port or ms_mainmenu.spawnPort())
-	-- Minetest connection
-	gamedata.playername = username
-	gamedata.password   = passwd
-	gamedata.address    = ms_roadmap.server.ip or SERVER_ADDRESS
-	gamedata.port       = ms_roadmap.server.port or ms_mainmenu.spawnPort()
-	gamedata.token      = token
-
-	core.log("warning", "Connecting to " .. gamedata.address .. ":" .. gamedata.port)
-
-	gamedata.selected_world = 0
-	-- Move this away...
-	--gamedata.serverdescription = json.refresh
-
-	core.settings:set("address",     "")
-	core.settings:set("remote_port", "")
-
-	core.start()
-end
+ms_mainmenu = {}
 
 --------------------------------------------------------------------------------
-function ms_mainmenu.check_updates()
-	core.log("warning", "I'm using the ticket: " .. (ms_roadmap.server.ticket == '' and '-' or ms_roadmap.server.ticket))
-	local http = core.get_http_api()
-	local res = http.fetch_sync({
-		url = ms_mainmenu.service_url,
-		extra_headers = { "Content-Type: application/json" },
-		post_data = core.write_json({
-			operating_system = 'posix',
-			version = '0.0.3',
-			ms_type = 'full',
-			lang = 'it',
-			debug = 'true',
-			ticket = ms_roadmap.server.ticket
-		}),
-		timeout = 30
-	})
-
-	core.log("warning", ms_mainmenu.service_url .. " says " .. res.data)
-	ms_mainmenu.discover_ts = os.time()
-	ms_roadmap = res.succeeded and res.code == 200 and
-		core.parse_json(res.data) or
-		{ client_update = {
-			required = true, -- DISABLE connect button
-			pending = true, -- maybe?
-			message = "Non sono in grado di collegarmi al server. Verifica se è disponibile un aggiornamento.",
-			url = "https://play.google.com/apps/testing/it.matematicasuperpiatta.minetest"
-		}}
-	if ms_roadmap.discovery ~= nil then
-		core.settings:set("ms_discovery", ms_roadmap.discovery)
-	end
-	if ms_roadmap.server ~= nil and ms_roadmap.server.waiting_time > 0 then
-		local delay = ms_roadmap.server.waiting_time - (os.time() - ms_mainmenu.discover_ts)
-		core.log("warning", "Delayed connection w/ ticket " .. ms_roadmap.server.ticket )
-		core.handle_async(
-			ms_mainmenu.sleep, {secs = delay, ret = ms_mainmenu},
-			ms_mainmenu.check_updates)
-	elseif ms_roadmap.server ~= nil and ms_roadmap.server.ticket == "" then
-		ms_roadmap = { client_update = {
-			required = true, -- DISABLE connect button
-			pending = true, -- maybe?
-			message = "Errore di comunicazione. Verifica se è disponibile un aggiornamento.",
-			url = "https://play.google.com/apps/testing/it.matematicasuperpiatta.minetest"
-		}}
-	end
-end
-
 local function bootstrap()
-	local default_menupath = core.get_mainmenu_path()
-	dofile(default_menupath .. DIR_DELIM .. "async_event.lua")
-	-- ASAP!
-	ms_mainmenu:check_updates()
-
 	local basepath = core.get_builtin_path()
 	local menupath = basepath .. "ms-mainmenu" .. DIR_DELIM
+	dofile(menupath .. "oop" .. DIR_DELIM .. "handshake.lua")
+
+	local default_menupath = core.get_mainmenu_path()
+	dofile(default_menupath .. DIR_DELIM .. "async_event.lua")
+	
+	handshake:check_updates()
 
 	dofile(basepath .. "common" .. DIR_DELIM .. "filterlist.lua")
 	dofile(basepath .. "fstk" .. DIR_DELIM .. "buttonbar.lua")
@@ -174,7 +69,6 @@ local function bootstrap()
 	dofile(menupath .. "oop" .. DIR_DELIM .. "oo_formspec.lua")
 
 	dofile(menupath .. "dlg_whoareu.lua")
-	-- dofile(menupath .. "dlg_passwd.lua")
 
 	return {
 		ms       = dofile(menupath .. "tab_ms.lua"),
