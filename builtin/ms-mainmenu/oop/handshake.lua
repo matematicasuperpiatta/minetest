@@ -24,12 +24,13 @@ function Handshake:new(o)
 end
 
 local function locked_sleep(params)
-	local is_windows = (nil ~= string.find(defaulttexturedir, "\\"))
+	--local is_windows = (nil ~= string.find(defaulttexturedir, "\\"))
+	local OS = os.getenv("OS")
+	local is_windows = string.sub(OS or "", 1, 7) == "Windows"
+	print("OS: " .. OS)
 	if is_windows then
-		print("I'M USING WINDOWS")
 		os.execute("timeout /t " .. math.max(params.secs, 1) .. " > nul")
 	else
-		print("I'M NOT USING WINDOWS")
 		os.execute("sleep " .. math.max(params.secs, 1))
 	end
 	return params.me
