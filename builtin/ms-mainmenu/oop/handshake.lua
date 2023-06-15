@@ -17,14 +17,18 @@ function Handshake:new(o)
 	}
 	setmetatable(o, self)
 	self.__index = self
-	
+
 	self.http = core.get_http_api()
-	
+
 	return o
 end
 
 local function locked_sleep(params)
-	os.execute("sleep " .. math.max(params.secs, 1))
+	local startTime = os.time()
+	local elapsed_time = 0
+	while elapsed_time < math.max(params.secs, 1) do
+		elapsed_time = os.time() - startTime
+	end
 	return params.me
 end
 
@@ -102,7 +106,7 @@ function Handshake:play(username, token, passwd)
 	(handshake.roadmap == nil and "no handshake.roadmap" or
 	(handshake.roadmap.server == nil and "no server") or
 	(handshake.roadmap.server.ip == nil and "no ip") or handshake.roadmap.server.ip))
-	
+
 	while handshake.roadmap.server.ip == nil do
 		if os.time() - start_ts > timeout then
 			core.log("warning", "Connection timeout")
@@ -111,11 +115,11 @@ function Handshake:play(username, token, passwd)
 		locked_sleep({delay = handshake.roadmap.server.waiting_time - (os.time() - handshake.discover_ts),
 		me = handshake})
 	end
-	
+
 	core.log("warning", "Connection " ..
 		handshake.roadmap.server.ip or SERVER_ADDRESS .. ":" ..
 		handshake.roadmap.server.port or self.spawnPort())
-	
+
 	-- Minetest connection
 	gamedata.playername = username
 	gamedata.password   = passwd

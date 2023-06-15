@@ -18,6 +18,15 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+local is_windows = (nil ~= string.find(defaulttexturedir, "\\"))
+local texturedir = defaulttexturedir
+if is_windows then
+	print("USING WINDOWS")
+    texturedir = string.gsub(defaulttexturedir, "\\", "\\\\")
+else
+	print("DO NOT USING WINDOWS")
+end
+
 local function get_formspec(tabview, name, tabdata)
 	-- Update the cached supported proto info,
 	-- it may have changed after a change by the settings menu.
@@ -32,14 +41,14 @@ local function get_formspec(tabview, name, tabdata)
 		-- “image[2.2,0.3;7.68,3.17;” .. core.formspec_escape(defaulttexturedir .. “logo_320x132.png”)..“]”..
 		Image:new{
 			x=2.20, y=-0.4, w=7.68, h=3.17,
-			path = defaulttexturedir .. "logo_320x132.png"}:render() ..
+			path = texturedir .. "logo_320x132.png"}:render() ..
 		Image:new{
 			x=4.15, y=2.1, w=3, h=0.378,
-			path = defaulttexturedir .. "menu_header.png"}:render() ..
+			path = texturedir .. "menu_header.png"}:render() ..
 
 		Image:new{
 			x=0.10, y=3.6, w=2, h=2,
-			path = defaulttexturedir .."univaq_block_image_small.png"}:render() ..
+			path = texturedir .."univaq_block_image_small.png"}:render() ..
 
 		Label:new{x=4.9, y=1.7, label = fgettext("based on")}:render() ..
 		Label:new{x=2, y=4.1, label = fgettext("Università degli Studi of L'Aquila")}:render() ..
