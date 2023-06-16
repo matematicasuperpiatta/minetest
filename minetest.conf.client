@@ -1,0 +1,10 @@
+node_highlighting = halo
+mouse_sensitivity = 0.08
+enable_shaders = true
+enable_3d_clouds = false
+debug_log_level = info
+language = it
+
+
+
+

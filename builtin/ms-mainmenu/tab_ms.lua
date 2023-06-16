@@ -43,16 +43,16 @@ local function get_formspec(tabview, name, tabdata)
 			x=2.20, y=-0.4, w=7.68, h=3.17,
 			path = texturedir .. "logo_320x132.png"}:render() ..
 		Image:new{
-			x=4.15, y=2.1, w=3, h=0.378,
+			x=4.15, y=2.5, w=3, h=0.378,
 			path = texturedir .. "menu_header.png"}:render() ..
 
 		Image:new{
 			x=0.10, y=3.6, w=2, h=2,
 			path = texturedir .."univaq_block_image_small.png"}:render() ..
 
-		Label:new{x=4.9, y=1.7, label = fgettext("based on")}:render() ..
+		Label:new{x=4.9, y=2, label = fgettext("based on")}:render() ..
 		Label:new{x=2, y=4.1, label = fgettext("Università degli Studi of L'Aquila")}:render() ..
-		Label:new{x=2, y=4.5, label = fgettext("Spinoff")}:render()
+		Label:new{x=2, y=4.5, label = fgettext("Spin-off")}:render()
 
 		if handshake.roadmap.client_update ~= nil and handshake.roadmap.client_update.required then
 		-- Update
@@ -76,8 +76,8 @@ local function get_formspec(tabview, name, tabdata)
 		}:render() ..
 			Button:new{x=9, y=4.2, w=2.5, h=1.75, name = "btn_mp_connect", label = fgettext("Start")}:render()
 	end
-	return fs .. StyleType:new{selectors = {"label"}, props = {"font=italic"}}:render() ..
-	Label:new{x=2, y=4.9, label = fgettext("more info: matematicasuperpiatta@gmail.com")}:render()
+	return fs .. StyleType:new{selectors = {"label"}, props = {"font=italic"}}:render()
+	--Label:new{x=2, y=4.9, label = fgettext("more info: matematicasuperpiatta@gmail.com")}:render()
 	-- .. ImageButton:new{x=3.6, y=4.9, w=0.6, h=0.6, path=defaulttexturedir .."envelope.png", name="btn_email"}:render()
 end
 

@@ -151,7 +151,8 @@ local function formspec(tabview, name, tabdata)
 		"checkbox[0.25,0.5;cb_particles;" .. fgettext("Particles") .. ";"
 				.. dump(core.settings:get_bool("enable_particles")) .. "]" ..
 		"checkbox[0.25,1;cb_3d_clouds;" .. fgettext("3D Clouds") .. ";"
-				.. dump(core.settings:get_bool("enable_3d_clouds")) .. "]" ..
+				.. dump(false) .. "]" ..
+				--.. dump(core.settings:get_bool("enable_3d_clouds")) .. "]" ..
 		"checkbox[0.25,1.5;cb_opaque_water;" .. fgettext("Opaque Water") .. ";"
 				.. dump(core.settings:get_bool("opaque_water")) .. "]" ..
 		"checkbox[0.25,2.0;cb_connected_glass;" .. fgettext("Connected Glass") .. ";"
