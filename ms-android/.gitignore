@@ -2,6 +2,7 @@
 .externalNativeBuild
 .gradle
 app/build
+!app/build/assets/minetest.conf
 app/release
 app/src/main/assets
 build
