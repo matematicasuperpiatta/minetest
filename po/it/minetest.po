@@ -1017,7 +1017,7 @@ msgstr "Server Incompatibili"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
-msgstr "Unisciti al Gioco"
+msgstr "Il Gioco"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
@@ -1218,6 +1218,42 @@ msgstr "Liquidi Ondeggianti"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
 msgstr "Piante Ondeggianti"
+
+#: builtin/ms-mainmenu/dlg_whoareu.lua
+msgid "Username:"
+msgstr "Nome Utente:"
+
+#: builtin/ms-mainmenu/dlg_whoareu.lua
+msgid "You need a provided account"
+msgstr "Hai bisogno di un account valido"
+
+#: builtin/ms-mainmenu/dlg_whoareu.lua
+msgid "Welcome"
+msgstr "Benvenuto"
+
+#: builtin/ms-mainmenu/dlg_whoareu.lua
+msgid "Sorry. No access!"
+msgstr "Accesso negato!"
+
+#: builtin/ms-mainmenu/dlg_whoareu.lua
+msgid "Something wrong, please restart the client"
+msgstr "Si è verificato un errore:\nriavvia il client."
+
+#: builtin/ms-mainmenu/dlg_whoareu.lua
+msgid "Login failed, try again"
+msgstr "Login fallito, prova di nuovo"
+
+#: builtin/ms-mainmenu/dlg_whoareu.lua
+msgid "Play!"
+msgstr "Gioca!"
+
+#: builtin/ms-mainmenu/dlg_whoareu.lua
+msgid "Back"
+msgstr "Indietro"
+
+#: builtin/ms-mainmenu/dlg_whoareu.lua
+msgid "Next"
+msgstr "Avanti"
 
 #: src/client/client.cpp
 #, fuzzy
@@ -8040,9 +8076,6 @@ msgstr "Limite parallelo cURL"
 
 #~ msgid "Are you sure to reset your singleplayer world?"
 #~ msgstr "Sei sicuro di azzerare il tuo mondo locale?"
-
-#~ msgid "Back"
-#~ msgstr "Indietro"
 
 #~ msgid "Basic"
 #~ msgstr "Base"
