@@ -26,8 +26,16 @@ end
 local function locked_sleep(params)
 	local startTime = os.time()
 	local elapsed_time = 0
-	while elapsed_time < math.max(params.secs, 1) do
-		elapsed_time = os.time() - startTime
+	if params.secs then
+		local perc = math.floor(100 * elapsed_time / params.secs)
+		while elapsed_time < math.max(params.secs, 1) do
+			elapsed_time = os.time() - startTime
+			if perc ~= math.floor(100 * elapsed_time / params.secs) then
+				perc = math.floor(100 * elapsed_time / params.secs)
+				print( perc .. "%")
+			end
+		end
+		print("STOP")
 	end
 	return params.me
 end
