@@ -75,7 +75,8 @@ function Handshake:check_updates()
 			ms_type = 'full',
 			lang = 'it',
 			debug = 'true',
-			ticket = self.roadmap.server.ticket
+			ticket = self.roadmap.server.ticket,
+			local_server = 'true'
 		}),
 		timeout = 30
 	})
