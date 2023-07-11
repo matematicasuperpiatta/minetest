@@ -71,11 +71,10 @@ local function handle_whoareu_buttons(this, fields, tabname, tabdata)
 end
 
 function create_whoareu_dlg()
-	local dlg = dialog_create("whoareu",
+	return dialog_create("whoareu",
 				get_whoareu_formspec,
 				handle_whoareu_buttons,
 				nil)
-	return dlg
 end
 
 --------------------------------------------------------------------------------
@@ -122,10 +121,24 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 						this:hide()
 						flavor_dlg:show()
 					end
-					handshake:sleep(handshake.roadmap.server.waiting_time +1,
-						function(params)
-							-- inject refresh token. Server musts support this!
-							handshake:play(whoareu, json.refresh, passwd)
+
+					-- inject refresh token. Server musts support this!
+					local timeout = 95
+
+					-- Minetest connection
+					gamedata.playername = whoareu
+					gamedata.password   = passwd
+					gamedata.address    = handshake.roadmap.server.ip or SERVER_ADDRESS
+					gamedata.port       = handshake.roadmap.server.port or handshake.spawnPort()
+					gamedata.token      = json.refresh
+
+					gamedata.selected_world = 0
+
+					core.settings:set("address",     "")
+					core.settings:set("remote_port", "")
+
+					wait_go(function(core)
+							core.start()
 						end)
 					return true
 				end
@@ -137,7 +150,8 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 			error_msg = "Login failed, try again"
 		end
 		local login_dlg = create_whoareu_dlg()
-		login_dlg:set_parent(this)
+		login_dlg:set_parent(this)		login_dlg:set_parent(this)
+
 		this:hide()
 		login_dlg:show()
 		return true
@@ -152,11 +166,10 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 end
 
 function create_passwd_dlg()
-	local dlg = dialog_create("passwd",
+	return dialog_create("passwd",
 				get_passwd_formspec,
 				handle_passwd_buttons,
 				nil)
-	return dlg
 end
 
 --------------------------------------------------------------------------------
@@ -165,15 +178,19 @@ end
 --
 
 local function get_flavor_formspec(tabview, _, tabdata)
+	local flavor = handshake.roadmap.messages ~= nil and
+		handshake.roadmap.messages.news or
+		{"Sapevi che", "Nel computer anche questo testo è rappresentato con dei numeri"}
 	return FormspecVersion:new{version=6}:render() ..
 		Size:new{w = 12, h = 4.8, fix = true}:render() ..
 		Label:new{x = 0.5, y = 0.5, label = fgettext("Loading...")}:render() ..
 		TableColumns:new{ columns = { {"text"} } }:render() ..
 		TableOptions:new{ options =	{"background=#00000000", "highlight=#00000000"}}:render() ..
-		Table:new{ x = 0.5, y = 1, w = 11, h = 3.2, name = "news", cells = handshake.roadmap.messages.news}:render()
+		Table:new{ x = 0.5, y = 1, w = 11, h = 3.2, name = "news", cells = flavor}:render()
 end
 
 local function handle_nothing(this, fields, tabname, tabdata)
+	core.log("warning", "You've to wait some more time")
 	return false
 end
 

@@ -1,8 +1,3 @@
---
--- Note: Into async functions I need to use `handshake`
---       (the object, not the class Handshake)
---
-
 Handshake = {}
 
 function Handshake:new(o)
@@ -18,36 +13,56 @@ function Handshake:new(o)
 	setmetatable(o, self)
 	self.__index = self
 
-	self.http = core.get_http_api()
-
 	return o
 end
 
-local function locked_sleep(params)
-	local startTime = os.time()
-	local elapsed_time = 0
-	if params.secs then
-		local perc = math.floor(100 * elapsed_time / params.secs)
-		while elapsed_time < math.max(params.secs, 1) do
-			elapsed_time = os.time() - startTime
-			if perc ~= math.floor(100 * elapsed_time / params.secs) then
-				perc = math.floor(100 * elapsed_time / params.secs)
-				print( perc .. "%")
-			end
-		end
-		print("STOP")
+function Handshake:on_launch()
+	if self.roadmap.discovery ~= nil then
+		core.settings:set("ms_discovery", self.roadmap.discovery)
 	end
-	return params.me
+	if self.roadmap.server ~= nil and self.roadmap.server.waiting_time > 0 then
+		core.log("warning", "Delayed (" .. self.roadmap.server.waiting_time .. "secs)  connection w/ ticket " .. self.roadmap.server.ticket )
+		self.roadmap.server.ready_ts = os.time() + self.roadmap.server.waiting_time;
+		core.log("warning", "Server will be ready at " .. self.roadmap.server.ready_ts)
+	elseif self.roadmap.server ~= nil and self.roadmap.server.ticket == "" then
+		self.roadmap = { client_update = {
+			required = true, -- DISABLE connect button
+			pending = true, -- maybe?
+			message = "Errore di comunicazione. Verifica se è disponibile un aggiornamento.",
+			url = "https://play.google.com/apps/testing/it.matematicasuperpiatta.minetest"
+		}}
+	end
 end
 
-function Handshake:sleep(delay, callback)
-	core.log("warning", "Sleeping for " .. delay .. "secs")
-	if self == nil then
-		core.log("error", "I lost mySELF")
-	end
-	core.handle_async(locked_sleep,
-		{me = self, secs = delay},
-		callback)
+function Handshake:launchpad()
+	core.handle_async(function(params)
+		local http = core.get_http_api()
+		return http.fetch_sync(params)
+	end, {
+		url = self.service_url,
+		extra_headers = { "Content-Type: application/json" },
+		post_data = core.write_json({
+			operating_system = 'posix',
+			version = '0.0.3',
+			ms_type = 'full',
+			lang = 'it',
+			debug = 'true',
+			-- local_server = 'true',
+			ticket = self.roadmap.server.ticket
+		}),
+		timeout = 30
+	}, function(res)
+		core.log("warning", "checking: " .. res.data )
+		self.roadmap = (res.succeeded and res.code == 200 and
+			core.parse_json(res.data)) or
+			{ client_update = {
+				required = true, -- DISABLE connect button
+				pending = true, -- maybe?
+				message = "Non sono in grado di collegarmi al server. Verifica se è disponibile un aggiornamento.",
+				url = "https://play.google.com/apps/testing/it.matematicasuperpiatta.minetest"
+			}}
+		self:on_launch()
+	end)
 end
 
 function Handshake:spawnPort()
@@ -61,79 +76,33 @@ function Handshake:spawnPort()
 	return tonumber(response.data)
 end
 
-function Handshake:check_updates()
-	if self.roadmap.server.ticket ~= '' then
-		core.settings:set("ticket.last", self.roadmap.server.ticket)
-		core.log("warning", "I'm using the ticket: " .. self.roadmap.server.ticket)
-	end
-	local res = handshake.http.fetch_sync({
-		url = self.service_url,
-		extra_headers = { "Content-Type: application/json" },
-		post_data = core.write_json({
-			operating_system = 'posix',
-			version = '0.0.3',
-			ms_type = 'full',
-			lang = 'it',
-			debug = 'true',
-			ticket = self.roadmap.server.ticket,
-			local_server = 'true'
-		}),
-		timeout = 30
-	})
-
-	core.log("warning", self.service_url .. " says " .. res.data)
-	handshake.discover_ts = os.time()
-	handshake.roadmap = res.succeeded and res.code == 200 and
-		core.parse_json(res.data) or
-		{ client_update = {
-			required = true, -- DISABLE connect button
-			pending = true, -- maybe?
-			message = "Non sono in grado di collegarmi al server. Verifica se è disponibile un aggiornamento.",
-			url = "https://play.google.com/apps/testing/it.matematicasuperpiatta.minetest"
-		}}
-	if handshake.roadmap.discovery ~= nil then
-		core.settings:set("ms_discovery", handshake.roadmap.discovery)
-	end
-	if handshake.roadmap.server ~= nil and handshake.roadmap.server.waiting_time > 0 then
-		local delay = handshake.roadmap.server.waiting_time - (os.time() - handshake.discover_ts)
-		core.log("warning", "Delayed (" .. delay .. "secs)  connection w/ ticket " .. handshake.roadmap.server.ticket )
-		handshake:sleep(delay, handshake.check_updates)
-	elseif handshake.roadmap.server ~= nil and handshake.roadmap.server.ticket == "" then
-		handshake.roadmap = { client_update = {
-			required = true, -- DISABLE connect button
-			pending = true, -- maybe?
-			message = "Errore di comunicazione. Verifica se è disponibile un aggiornamento.",
-			url = "https://play.google.com/apps/testing/it.matematicasuperpiatta.minetest"
-		}}
-	end
-end
-
 function Handshake:play(username, token, passwd)
 	local timeout = 95
 	local start_ts = os.time()
 	core.log("warning", "Inspect setup... " ..
-	(handshake.roadmap == nil and "no handshake.roadmap" or
-	(handshake.roadmap.server == nil and "no server") or
-	(handshake.roadmap.server.ip == nil and "no ip") or handshake.roadmap.server.ip))
+	(self.roadmap == nil and "no Handshake.roadmap" or
+	(self.roadmap.server == nil and "no server") or
+	(self.roadmap.server.ip == nil and "no ip") or self.roadmap.server.ip))
 
-	while handshake.roadmap.server.ip == nil do
+	while self.roadmap.server.ip == nil do
 		if os.time() - start_ts > timeout then
 			core.log("warning", "Connection timeout")
 			return
 		end
-		locked_sleep({delay = handshake.roadmap.server.waiting_time - (os.time() - handshake.discover_ts),
-		me = handshake})
+		locked_sleep(
+		  {secs = self.roadmap.server.waiting_time - (os.time() - self.discover_ts),
+		  payload = self})
 	end
 
 	core.log("warning", "Connection " ..
-		handshake.roadmap.server.ip or SERVER_ADDRESS .. ":" ..
-		handshake.roadmap.server.port or self.spawnPort())
+		self.roadmap.server.ip or SERVER_ADDRESS .. ":" ..
+		self.roadmap.server.port or self.spawnPort())
 
 	-- Minetest connection
 	gamedata.playername = username
 	gamedata.password   = passwd
-	gamedata.address    = handshake.roadmap.server.ip or SERVER_ADDRESS
-	gamedata.port       = handshake.roadmap.server.port or self.spawnPort()
+	gamedata.address    = self.roadmap.server.ip or SERVER_ADDRESS
+	gamedata.port       = self.roadmap.server.port or self.spawnPort()
 	gamedata.token      = token
 
 	core.log("warning", "Connecting to " .. gamedata.address .. ":" .. gamedata.port)
@@ -148,4 +117,10 @@ function Handshake:play(username, token, passwd)
 	core.start()
 end
 
-handshake = Handshake:new()
+function Handshake:check_updates()
+	if self.roadmap.server.ticket ~= '' then
+		core.log("info", "I'm using the ticket: " .. self.roadmap.server.ticket)
+		core.settings:set("ticket.last", self.roadmap.server.ticket)
+	end
+	self:launchpad()
+end

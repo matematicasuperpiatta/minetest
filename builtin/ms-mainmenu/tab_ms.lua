@@ -21,10 +21,8 @@
 local is_windows = (nil ~= string.find(defaulttexturedir, "\\"))
 local texturedir = defaulttexturedir
 if is_windows then
-	print("USING WINDOWS")
+	core.log("info", "Windows release")
     texturedir = string.gsub(defaulttexturedir, "\\", "\\\\")
-else
-	print("DO NOT USING WINDOWS")
 end
 
 local function get_formspec(tabview, name, tabdata)
@@ -52,32 +50,14 @@ local function get_formspec(tabview, name, tabdata)
 
 		Label:new{x=4.9, y=2, label = fgettext("based on")}:render() ..
 		Label:new{x=2, y=4.1, label = fgettext("Università degli Studi of L'Aquila")}:render() ..
-		Label:new{x=2, y=4.5, label = fgettext("Spin-off")}:render()
-
-		if handshake.roadmap.client_update ~= nil and handshake.roadmap.client_update.required then
-		-- Update
-		fs = fs .. StyleType:new{selectors = {"label"}, props = {"font=bold"}}:render() ..
-			Label:new{x=2.5, y=2.5, label = fgettext(handshake.roadmap.client_update.message)}:render() ..
-
-			Style:new { selectors = { "btn_mp_update" }, props = { "bgcolor=#FF7F00", "font=bold", "alpha=false" } }:render() ..
-			Button:new { x = 9, y = 4.2, w = 2.5, h = 1.75, name = "btn_mp_update", label = fgettext("Update") }:render()
-	else
-		if handshake.roadmap.client_update ~= nil and handshake.roadmap.client_update.pending then
-			fs = fs .. StyleType:new{selectors = {"label"}, props = {"font=bold"}}:render() ..
-			Label:new{x=2.5, y=2.5, label = fgettext(handshake.roadmap.client_update.message)}:render() ..
-
-			Style:new { selectors = { "btn_mp_update" }, props = { "font=bold" } }:render() ..
-			Button:new { x = 9, y = 3.2, w = 2.5, h = 1.75, name = "btn_mp_update", label = fgettext("Update") }:render()
-		end
-		-- Connect
-		fs = fs .. Style:new{
+		Label:new{x=2, y=4.5, label = fgettext("Spinoff")}:render() .. Style:new{
 			selectors = {"btn_mp_connect"},
 			props = {"bgcolor=#FF7F00", "font=bold", "alpha=false"}
 		}:render() ..
-			Button:new{x=9, y=4.2, w=2.5, h=1.75, name = "btn_mp_connect", label = fgettext("Start")}:render()
-	end
-	return fs .. StyleType:new{selectors = {"label"}, props = {"font=italic"}}:render()
-	--Label:new{x=2, y=4.9, label = fgettext("more info: matematicasuperpiatta@gmail.com")}:render()
+		Button:new{x=9, y=4.2, w=2.5, h=1.75, name = "btn_mp_connect", label = fgettext("Start")}:render()
+
+	return fs .. StyleType:new{selectors = {"label"}, props = {"font=italic"}}:render() ..
+	Label:new{x=2, y=4.9, label = fgettext("more info: matematicasuperpiatta@gmail.com")}:render()
 	-- .. ImageButton:new{x=3.6, y=4.9, w=0.6, h=0.6, path=defaulttexturedir .."envelope.png", name="btn_email"}:render()
 end
 
@@ -90,15 +70,9 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields.btn_mp_connect then
-		if handshake.roadmap.server.server_version ~= nil and handshake.roadmap.server.server_version >= "1.0" then
-			local whoareu_dlg = create_whoareu_dlg()
-			-- whoareu_dlg:set_parent(this)
-			tabview:hide()
-			whoareu_dlg:show()
-		else
-			-- legacy server. Pseudologin
-			handshake:play("test", "")
-		end
+		local whoareu_dlg = create_whoareu_dlg()
+		tabview:hide()
+		whoareu_dlg:show()
 		return true
 	end
 

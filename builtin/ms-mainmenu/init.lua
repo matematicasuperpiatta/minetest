@@ -37,16 +37,18 @@ defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
 
 ms_mainmenu = {}
 
+local basepath = core.get_builtin_path()
+local menupath = basepath .. "ms-mainmenu" .. DIR_DELIM
+
+local default_menupath = core.get_mainmenu_path()
+dofile(default_menupath .. DIR_DELIM .. "async_event.lua")
+dofile(menupath .. "lib" .. DIR_DELIM .. "delay.lua")
+dofile(menupath .. "oop" .. DIR_DELIM .. "handshake.lua")
+
+handshake = Handshake:new()
+
 --------------------------------------------------------------------------------
 local function bootstrap()
-	local basepath = core.get_builtin_path()
-	local menupath = basepath .. "ms-mainmenu" .. DIR_DELIM
-	dofile(menupath .. "oop" .. DIR_DELIM .. "handshake.lua")
-
-	local default_menupath = core.get_mainmenu_path()
-	dofile(default_menupath .. DIR_DELIM .. "async_event.lua")
-	
-	handshake:check_updates()
 
 	dofile(basepath .. "common" .. DIR_DELIM .. "filterlist.lua")
 	dofile(basepath .. "fstk" .. DIR_DELIM .. "buttonbar.lua")
@@ -69,6 +71,7 @@ local function bootstrap()
 	dofile(menupath .. "oop" .. DIR_DELIM .. "oo_formspec.lua")
 
 	dofile(menupath .. "dlg_whoareu.lua")
+	dofile(menupath .. "dlg_version_info.lua")
 
 	return {
 		ms       = dofile(menupath .. "tab_ms.lua"),
@@ -140,8 +143,8 @@ local function init_globals(tabs)
 --	end
 
 	ui.set_default("maintab")
+	check_new_version(handshake)
 	tv_main:show()
-
 	ui.update()
 
 	mm_game_theme.reset()
