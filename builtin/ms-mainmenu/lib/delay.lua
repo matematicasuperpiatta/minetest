@@ -21,8 +21,7 @@ function wait_go(callback)
 		wait = 10
 		handshake:launchpad()
 	else
-		-- Damn hell...
-		callback(core)
+		callback(core, handshake, gamedata)
 		return
 	end
 	core.handle_async( locked_sleep,

@@ -76,47 +76,6 @@ function Handshake:spawnPort()
 	return tonumber(response.data)
 end
 
-function Handshake:play(username, token, passwd)
-	local timeout = 95
-	local start_ts = os.time()
-	core.log("warning", "Inspect setup... " ..
-	(self.roadmap == nil and "no Handshake.roadmap" or
-	(self.roadmap.server == nil and "no server") or
-	(self.roadmap.server.ip == nil and "no ip") or self.roadmap.server.ip))
-
-	while self.roadmap.server.ip == nil do
-		if os.time() - start_ts > timeout then
-			core.log("warning", "Connection timeout")
-			return
-		end
-		locked_sleep(
-		  {secs = self.roadmap.server.waiting_time - (os.time() - self.discover_ts),
-		  payload = self})
-	end
-
-	core.log("warning", "Connection " ..
-		self.roadmap.server.ip or SERVER_ADDRESS .. ":" ..
-		self.roadmap.server.port or self.spawnPort())
-
-	-- Minetest connection
-	gamedata.playername = username
-	gamedata.password   = passwd
-	gamedata.address    = self.roadmap.server.ip or SERVER_ADDRESS
-	gamedata.port       = self.roadmap.server.port or self.spawnPort()
-	gamedata.token      = token
-
-	core.log("warning", "Connecting to " .. gamedata.address .. ":" .. gamedata.port)
-
-	gamedata.selected_world = 0
-	-- Move this away...
-	--gamedata.serverdescription = json.refresh
-
-	core.settings:set("address",     "")
-	core.settings:set("remote_port", "")
-
-	core.start()
-end
-
 function Handshake:check_updates()
 	if self.roadmap.server.ticket ~= '' then
 		core.log("info", "I'm using the ticket: " .. self.roadmap.server.ticket)

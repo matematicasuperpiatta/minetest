@@ -128,16 +128,20 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 					-- Minetest connection
 					gamedata.playername = whoareu
 					gamedata.password   = passwd
+					gamedata.token      = json.refresh
+					gamedata.selected_world = 0
+
+					-- probably don't have these, yet
 					gamedata.address    = handshake.roadmap.server.ip or SERVER_ADDRESS
 					gamedata.port       = handshake.roadmap.server.port or handshake.spawnPort()
-					gamedata.token      = json.refresh
-
-					gamedata.selected_world = 0
 
 					core.settings:set("address",     "")
 					core.settings:set("remote_port", "")
 
-					wait_go(function(core)
+					wait_go(function(core, handshake, gamedata)
+							gamedata.address    = handshake.roadmap.server.ip or SERVER_ADDRESS
+							gamedata.port       = handshake.roadmap.server.port or handshake.spawnPort()
+							core.log("warning", gamedata.address .. ':' .. gamedata.port)
 							core.start()
 						end)
 					return true
@@ -145,7 +149,6 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 			else
 				error_msg = "Sorry. No access!"
 			end
-			error_msg = "Something wrong, please restart the client"
 		else
 			error_msg = "Login failed, try again"
 		end
