@@ -18,7 +18,7 @@ CLIENT
 	cd ms-client
 	git checkout feature-ticket
 	cd lib/
-	git clone https://github.com/matematicasuperpiatta/minetest.git irrlichtmt/
+	git clone https://github.com/minetest/irrlicht.git irrlichtmt
 	cd irrlichtmt/
 	git checkout 1.9.0mt8
 	cd ../../
@@ -28,7 +28,7 @@ SERVER
 	git checkout develop
 	cp minetest.conf.ms minetest.conf
 	cd lib/
-	git clone https://github.com/matematicasuperpiatta/minetest.git irrlichtmt/
+	git clone https://github.com/minetest/irrlicht.git irrlichtmt/	
 	cd irrlichtmt/
 	git checkout 1.9.0mt8
 	cd ../../ 
