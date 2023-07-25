@@ -8525,5 +8525,5 @@ msgstr "Università degli Studi dell'Aquila"
 msgid "Start"
 msgstr "Gioca"
 
-msgid "more info: matematicasuperpiatta@gmail.com"
-msgstr "per informazioni: matematicasuperpiatta@gmail.com"
+msgid "info@matematicasuperpiatta.it"
+msgstr "info@matematicasuperpiatta.it"

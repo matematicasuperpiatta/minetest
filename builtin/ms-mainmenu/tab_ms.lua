@@ -49,15 +49,16 @@ local function get_formspec(tabview, name, tabdata)
 			path = texturedir .."univaq_block_image_small.png"}:render() ..
 
 		Label:new{x=4.9, y=2, label = fgettext("based on")}:render() ..
-		Label:new{x=2, y=4.1, label = fgettext("Università degli Studi of L'Aquila")}:render() ..
-		Label:new{x=2, y=4.5, label = fgettext("Spinoff")}:render() .. Style:new{
+		Label:new{x=2, y=3.7, label = fgettext("Università degli Studi of L'Aquila")}:render() ..
+		Label:new{x=2, y=4.1, label = fgettext("Spinoff")}:render() .. Style:new{
 			selectors = {"btn_mp_connect"},
 			props = {"bgcolor=#FF7F00", "font=bold", "alpha=false"}
 		}:render() ..
-		Button:new{x=9, y=4.2, w=2.5, h=1.75, name = "btn_mp_connect", label = fgettext("Start")}:render()
-
+		Button:new{x=9, y=4.2, w=2.5, h=1.75, name = "btn_mp_connect", label = fgettext("Start")}:render() ..
+		Label:new{x=2, y=4.5, label = fgettext("info@matematicasuperpiatta.it")}:render()
 	return fs .. StyleType:new{selectors = {"label"}, props = {"font=italic"}}:render() ..
-	Label:new{x=2, y=4.9, label = fgettext("more info: matematicasuperpiatta@gmail.com")}:render()
+	Label:new{x=2, y=4.9, label = fgettext("https://www.matematicasuperpiatta.it")}:render()
+
 	-- .. ImageButton:new{x=3.6, y=4.9, w=0.6, h=0.6, path=defaulttexturedir .."envelope.png", name="btn_email"}:render()
 end
 
@@ -82,7 +83,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields.btn_email then
-		core.open_url("mailto:matematicasuperpiatta@gmail.com")
+		core.open_url("mailto:info@matematicasuperpiatta.it")
 		return true
 	end
 

@@ -1,13 +1,15 @@
 Handshake = {}
 
 function Handshake:new(o)
+	--local ticket = core.settings:get("ticket.last") or ""
+	local ticket = ""
 	local o = o or {
 		is_ready = false,
 		is_booting = true,
 		discover_ts = nil,
 		service_url = "https://"..SERVICE_DISCOVERY.."/",
 		roadmap = {
-			server = { ticket = core.settings:get("ticket.last") or ""}
+			server = { ticket = ticket}
 		}
 	}
 	setmetatable(o, self)
@@ -35,6 +37,7 @@ function Handshake:on_launch()
 end
 
 function Handshake:launchpad()
+	core.log("warning", "\nTicket: " .. self.roadmap.server.ticket)
 	core.handle_async(function(params)
 		local http = core.get_http_api()
 		return http.fetch_sync(params)
