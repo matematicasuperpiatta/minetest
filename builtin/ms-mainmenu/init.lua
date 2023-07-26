@@ -132,7 +132,15 @@ local function init_globals(tabs)
 	if last_tab and tv_main.current_tab ~= last_tab then
 		tv_main:set_tab(last_tab)
 	end
-
+	tv_main:set_tab("settings")
+	tv_main:show()
+	ui.update()
+	core.log("warning","Set tab on settings")
+	tv_main:set_tab("online")
+	tv_main:show()
+	ui.update()
+	core.log("warning","Set tab on online")
+	
 	-- In case the folder of the last selected game has been deleted,
 	-- display "Minetest" as a header
 --	if tv_main.current_tab == "local" then
