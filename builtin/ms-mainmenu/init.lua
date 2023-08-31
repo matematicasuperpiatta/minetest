@@ -24,7 +24,7 @@ SERVER_ADDRESS = core.settings:get("ms_address") or "mt.matematicasuperpiatta.it
 SERVER_PORT = core.settings:get("ms_port") or 29999
 URL_GET = "http://"..SERVER_ADDRESS..":"..SERVER_PORT
 
-SERVICE_DISCOVERY = core.settings:get("ms_discovery") or "jp4ffxegbm2n57igrjm5t7qjsa0ygyhi.lambda-url.eu-south-1.on.aws"
+SERVICE_DISCOVERY = core.settings:get("ms_discovery") or "xw5ha3z3o7.execute-api.eu-south-1.amazonaws.com/beta/taskaddress"
 
 mt_color_grey  = "#AAAAAA"
 mt_color_blue  = "#6389FF"
@@ -140,7 +140,7 @@ local function init_globals(tabs)
 	tv_main:show()
 	ui.update()
 	core.log("warning","Set tab on online")
-	
+
 	-- In case the folder of the last selected game has been deleted,
 	-- display "Minetest" as a header
 --	if tv_main.current_tab == "local" then
