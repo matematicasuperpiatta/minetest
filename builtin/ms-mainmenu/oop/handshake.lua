@@ -36,6 +36,8 @@ function Handshake:on_launch()
 	end
 end
 
+atLeastOnceLambda = false
+
 function Handshake:launchpad()
 	core.log("warning", "\nTicket: " .. self.roadmap.server.ticket)
 	core.handle_async(function(params)
@@ -55,16 +57,45 @@ function Handshake:launchpad()
 		}),
 		timeout = 10
 	}, function(res)
+		local jsonRes = core.parse_json(res.data)
 		core.log("warning", "checking: " .. res.data )
+		-- Check Connection
 		if res.code ~= 200 then
 			core.log("warning", "Error calling lambdaClient")
-			--local error_dlg = create_whoareu_dlg()
 			local error_dlg = create_fatal_error_dlg()
 			tv_main:show()
 			tv_main:hide()
 			error_dlg:show()
 			return true
 		end
+		-- Check Version
+		--[[
+		if not atLeastOnceLambda then
+			atLeastOnceLambda = true
+			local pending = jsonRes["client_update"]["pending"]
+			local required = jsonRes["client_update"]["required"]
+			if required then
+				core.log("warning", "Update required")
+				local error_dlg = create_required_version_dlg()
+				tv_main:show()
+				tv_main:hide()
+				error_dlg:show()
+				return true
+			else
+				if pending then
+					core.log("warning", "Update pending")
+					local error_dlg = create_pending_version_dlg()
+					--tv_main:set_tab("ms")
+					--ui.update()
+					--error_dlg:set_parent(tv_main)
+					tv_main:show()
+					tv_main:hide()
+					error_dlg:show()
+					return true
+				end
+			end
+		end
+		]]--
 		self.roadmap = (res.succeeded and res.code == 200 and
 			core.parse_json(res.data)) or
 			{ client_update = {

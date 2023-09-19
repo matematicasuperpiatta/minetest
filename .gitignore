@@ -57,6 +57,7 @@ build/.cmake/
 /clientmods/*
 !/clientmods/preview/
 /client/mod_storage/
+minetest.conf
 
 ## Configuration/log files
 #minetest.conf
