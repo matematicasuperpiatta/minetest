@@ -71,6 +71,7 @@ local function bootstrap()
 	dofile(menupath .. "oop" .. DIR_DELIM .. "oo_formspec.lua")
 
 	dofile(menupath .. "dlg_whoareu.lua")
+	dofile(menupath .. "errors.lua")
 	dofile(menupath .. "dlg_version_info.lua")
 
 	return {
@@ -117,7 +118,7 @@ local function init_globals(tabs)
 	mm_game_theme.init()
 
 	-- Create main tabview
-	local tv_main = tabview_create("maintab", {x = 12, y = 5.4}, {x = 0, y = 0})
+	tv_main = tabview_create("maintab", {x = 12, y = 5.4}, {x = 0, y = 0})
 
 	tv_main:set_autosave_tab(true)
 	tv_main:add(tabs.ms)

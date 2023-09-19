@@ -46,16 +46,25 @@ function Handshake:launchpad()
 		extra_headers = { "Content-Type: application/json" },
 		post_data = core.write_json({
 			operating_system = 'posix',
-			version = '0.0.3',
-			ms_type = 'full',
+			version = '1.0.0',
+			ms_type = 'full', --change with 'beta' for setting the beta version
 			lang = 'it',
 			debug = 'true',
 			-- local_server = 'true',
 			ticket = self.roadmap.server.ticket
 		}),
-		timeout = 30
+		timeout = 10
 	}, function(res)
 		core.log("warning", "checking: " .. res.data )
+		if res.code ~= 200 then
+			core.log("warning", "Error calling lambdaClient")
+			--local error_dlg = create_whoareu_dlg()
+			local error_dlg = create_fatal_error_dlg()
+			tv_main:show()
+			tv_main:hide()
+			error_dlg:show()
+			return true
+		end
 		self.roadmap = (res.succeeded and res.code == 200 and
 			core.parse_json(res.data)) or
 			{ client_update = {

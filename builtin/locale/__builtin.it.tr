@@ -244,6 +244,8 @@ A total of @1 sample(s) were taken.=
 The output is limited to '@1'.=
 Saving of profile failed: @1=
 Profile saved to @1=
+Connection Error! Please restart.=Errore di connessione! Riavvia il programma dopo esserti connesso ad internet.
+Quit=Esci
 
 
 ##### not used anymore #####

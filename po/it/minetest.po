@@ -1219,6 +1219,14 @@ msgstr "Liquidi Ondeggianti"
 msgid "Waving Plants"
 msgstr "Piante Ondeggianti"
 
+#: builtin/ms-mainmenu/fatal_error.lua
+msgid "Connection Error!\nPlease restart."
+msgstr "Errore di connessione!\nRiavvia il programma dopo esserti connesso ad internet."
+
+#: builtin/ms-mainmenu/fatal_error.lua
+msgid "Quit"
+msgstr "Esci"
+
 #: builtin/ms-mainmenu/dlg_whoareu.lua
 msgid "Username:"
 msgstr "Nome Utente:"
