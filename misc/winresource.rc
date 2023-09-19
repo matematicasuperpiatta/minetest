@@ -45,12 +45,12 @@ BEGIN
         BLOCK "040904b0"
     BEGIN
         VALUE "Comments", ""
-        VALUE "CompanyName", PROJECT_NAME_C " community"
-        VALUE "FileDescription", PROJECT_NAME_C " engine"
+        VALUE "CompanyName", "Stemblocks"
+        VALUE "FileDescription", "Videogioco per insegnamento e apprendimento della matematica."
         VALUE "FileVersion", VERSION_STRING
         VALUE "InternalName", PROJECT_NAME
-        VALUE "LegalCopyright", "(c) 2011-2015 celeron55"
-        VALUE "LegalTrademarks", """Minetest"" is the property of the Minetest community, don't use it without permission!"
+        VALUE "LegalCopyright", "This is a fork of the Minetest client."
+        VALUE "LegalTrademarks", "https://github.com/matematicasuperpiatta/minetest"
         VALUE "OriginalFilename", "minetest.exe"
         VALUE "PrivateBuild", VERSION_EXTRA
         VALUE "ProductName", PROJECT_NAME_C

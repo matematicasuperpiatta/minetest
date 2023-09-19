@@ -9,7 +9,7 @@ endif()
 
 # This can be read from ${PROJECT_NAME} after project() is called
 project(minetest)
-set(PROJECT_NAME_CAPITALIZED "Minetest")
+set(PROJECT_NAME_CAPITALIZED "Matematica Superpiatta")
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
@@ -17,9 +17,9 @@ set(GCC_MINIMUM_VERSION "5.1")
 set(CLANG_MINIMUM_VERSION "3.5")
 
 # Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
-set(VERSION_MAJOR 5)
-set(VERSION_MINOR 6)
-set(VERSION_PATCH 1)
+set(VERSION_MAJOR 1)
+set(VERSION_MINOR 0)
+set(VERSION_PATCH 0)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
 # Change to false for releases
@@ -140,10 +140,17 @@ endif()
 # Installation
 
 if(WIN32)
+	#if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+	#	set(CMAKE_INSTALL_PREFIX "$ENV{APPDATA}/Minetest" CACHE PATH "..." FORCE)
+	#endif()
+
+	#set(CMAKE_INSTALL_PREFIX "$ENV{APPDATA}/Minetest")
+
 	set(SHAREDIR ".")
 	set(BINDIR "bin")
 	set(DOCDIR "doc")
 	set(EXAMPLE_CONF_DIR ".")
+	#set(EXAMPLE_CONF_DIR "$ENV{APPDATA}/Minetest")
 	set(LOCALEDIR "locale")
 elseif(APPLE)
 	set(BUNDLE_NAME ${PROJECT_NAME}.app)
@@ -240,6 +247,9 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/minetest_game" DESTINATION 
 	COMPONENT "SUBGAME_MINETEST_GAME" OPTIONAL PATTERN ".git*" EXCLUDE )
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/devtest" DESTINATION "${SHAREDIR}/games/"
 	COMPONENT "SUBGAME_MINIMAL" OPTIONAL PATTERN ".git*" EXCLUDE )
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/matematicasuperpiatta" DESTINATION "${SHAREDIR}/games/"
+	COMPONENT "SUBGAME_MINIMAL" OPTIONAL PATTERN ".git*" EXCLUDE )
+
 
 if(BUILD_CLIENT)
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/client/shaders" DESTINATION "${SHAREDIR}/client")
@@ -256,7 +266,10 @@ install(FILES "doc/client_lua_api.txt" DESTINATION "${DOCDIR}" COMPONENT "Docs")
 install(FILES "doc/menu_lua_api.txt" DESTINATION "${DOCDIR}" COMPONENT "Docs")
 install(FILES "doc/texture_packs.txt" DESTINATION "${DOCDIR}" COMPONENT "Docs")
 install(FILES "doc/world_format.txt" DESTINATION "${DOCDIR}" COMPONENT "Docs")
-install(FILES "minetest.conf.example" DESTINATION "${EXAMPLE_CONF_DIR}")
+
+install(FILES "minetest.conf" DESTINATION "${EXAMPLE_CONF_DIR}")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/locale" DESTINATION "${SHAREDIR}")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/po" DESTINATION "${SHAREDIR}")
 
 if(UNIX AND NOT APPLE)
 	install(FILES "doc/minetest.6" "doc/minetestserver.6" DESTINATION "${MANDIR}/man6")
