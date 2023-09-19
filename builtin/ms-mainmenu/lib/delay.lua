@@ -1,6 +1,7 @@
 
 local function locked_sleep(params)
-	os.execute("sleep " .. math.max(params.secs, 1))
+	local http = core.get_http_api()
+	local response = http.fetch_sync({url = "https://wiscoms.matematicasuperpiatta.it:8888", timeout = params.secs})
 	return params.payload
 end
 
