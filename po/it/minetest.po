@@ -1219,11 +1219,19 @@ msgstr "Liquidi Ondeggianti"
 msgid "Waving Plants"
 msgstr "Piante Ondeggianti"
 
-#: builtin/ms-mainmenu/fatal_error.lua
+#: builtin/ms-mainmenu/errors.lua
+msgid "New version is available!"
+msgstr "E' disponibile una nuova versione!"
+
+#: builtin/ms-mainmenu/errors.lua
+msgid "Update the app to play!"
+msgstr "Aggiorna l'app per giocare!"
+
+#: builtin/ms-mainmenu/errors.lua
 msgid "Connection Error!\nPlease restart."
 msgstr "Errore di connessione!\nRiavvia il programma dopo esserti connesso ad internet."
 
-#: builtin/ms-mainmenu/fatal_error.lua
+#: builtin/ms-mainmenu/errors.lua
 msgid "Quit"
 msgstr "Esci"
 

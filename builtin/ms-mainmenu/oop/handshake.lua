@@ -63,39 +63,37 @@ function Handshake:launchpad()
 		if res.code ~= 200 then
 			core.log("warning", "Error calling lambdaClient")
 			local error_dlg = create_fatal_error_dlg()
-			tv_main:show()
-			tv_main:hide()
+			ui.cleanup()
 			error_dlg:show()
+			ui.update()
 			return true
 		end
 		-- Check Version
-		--[[
 		if not atLeastOnceLambda then
 			atLeastOnceLambda = true
 			local pending = jsonRes["client_update"]["pending"]
 			local required = jsonRes["client_update"]["required"]
+			local url = jsonRes["client_update"]["url"]
+			local message = jsonRes["client_update"]["message"]
 			if required then
 				core.log("warning", "Update required")
 				local error_dlg = create_required_version_dlg()
-				tv_main:show()
-				tv_main:hide()
+				ui.cleanup()
 				error_dlg:show()
+				ui.update()
 				return true
 			else
 				if pending then
 					core.log("warning", "Update pending")
 					local error_dlg = create_pending_version_dlg()
-					--tv_main:set_tab("ms")
-					--ui.update()
-					--error_dlg:set_parent(tv_main)
-					tv_main:show()
-					tv_main:hide()
+					ui.cleanup()
 					error_dlg:show()
+					ui.update()
 					return true
 				end
 			end
 		end
-		]]--
+
 		self.roadmap = (res.succeeded and res.code == 200 and
 			core.parse_json(res.data)) or
 			{ client_update = {

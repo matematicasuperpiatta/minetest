@@ -55,6 +55,12 @@ end
 -- Internal functions not to be called from user
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+function ui.cleanup()
+	for _,value in pairs(ui.childlist) do
+		value:hide()
+	end
+end
+
 
 function ui.update()
 	ui.overridden = false
