@@ -15,7 +15,8 @@ WINDOWS
 -- CREATE FOLDER --
 CLIENT
 	git clone https://github.com/matematicasuperpiatta/minetest.git ms_client
-	cd ms-client
+	cd ms_client
+	cp minetest.conf.client minetest.conf
 	git checkout feature-ticket
 	cd lib/
 	git clone https://github.com/minetest/irrlicht.git irrlichtmt
