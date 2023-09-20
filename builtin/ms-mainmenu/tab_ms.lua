@@ -55,6 +55,7 @@ local function get_formspec(tabview, name, tabdata)
 			props = {"bgcolor=#FF7F00", "font=bold", "alpha=false"}
 		}:render() ..
 		Button:new{x=9, y=4.2, w=2.5, h=1.75, name = "btn_mp_connect", label = fgettext("Start")}:render()
+		--Button:new{x=9, y=3.2, w=2.5, h=1.75, name = "btn_mp_debug", label = fgettext("Debug")}:render()
 		-- Label:new{x=2, y=4.5, label = fgettext("info@matematicasuperpiatta.it")}:render()
 	return fs .. StyleType:new{selectors = {"label"}, props = {"font=italic"}}:render() ..
 	Label:new{x=2, y=4.9, label = fgettext("www.matematicasuperpiatta.it")}:render()
@@ -70,10 +71,21 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		fields.btn_mp_connect = not fields.btn_mp_update
 	end
 
+	if fields.btn_mp_debug then
+		core.log("warning", "Update pending")
+		local error_dlg = create_pending_version_dlg()
+		ui.cleanup()
+		error_dlg:show()
+		ui.update()
+		return true
+	end
+
 	if fields.btn_mp_connect then
 		local whoareu_dlg = create_whoareu_dlg()
-		tabview:hide()
+		--tabview:hide()
+		ui.cleanup()
 		whoareu_dlg:show()
+		ui.update()
 		return true
 	end
 

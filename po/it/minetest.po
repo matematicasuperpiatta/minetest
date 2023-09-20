@@ -1224,8 +1224,8 @@ msgid "New version is available!"
 msgstr "E' disponibile una nuova versione!"
 
 #: builtin/ms-mainmenu/errors.lua
-msgid "Update the app to play!"
-msgstr "Aggiorna l'app per giocare!"
+msgid "The version of Superflat Math needs an update!\nPlease download and install new version from the website."
+msgstr "Matematica Superpiatta deve essere aggiornata!\nScarica ed installa la nuova versione dal sito."
 
 #: builtin/ms-mainmenu/errors.lua
 msgid "Connection Error!\nPlease restart."

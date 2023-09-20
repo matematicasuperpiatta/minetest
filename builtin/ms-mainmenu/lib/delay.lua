@@ -1,7 +1,9 @@
 
 local function locked_sleep(params)
-	local http = core.get_http_api()
-	local response = http.fetch_sync({url = "https://wiscoms.matematicasuperpiatta.it:8888", timeout = params.secs})
+	if not core == nil then
+		local http = core.get_http_api()
+		http.fetch_sync({url = "https://wiscoms.matematicasuperpiatta.it:8888", timeout = params.secs})
+	end
 	return params.payload
 end
 

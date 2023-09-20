@@ -28,8 +28,8 @@ end
 local function get_required_version_formspec(tabview, _, tabdata)
 	local fs = FormspecVersion:new{version=6}:render() ..
 		Size:new{w = 10, h = 4.5, fix = true}:render() ..
-		Label:new{x = 0.5, y = 0.5, label = fgettext("Update the app to play!")}:render() ..
-		Button:new{x=5 - 1.1, y=3.25, w=2.2, h=0.75, name = "btn_quit", label = fgettext("Quit")}:render()
+		Label:new{x = 0.5, y = 0.5, label = fgettext("The version of Superflat Math needs an update!\nPlease download and install new version from the website.")}:render() ..
+		Button:new{x=5 - 1.1, y=3.25, w=2.2, h=0.75, name = "btn_quit", label = fgettext("Update")}:render()
 	return fs
 end
 

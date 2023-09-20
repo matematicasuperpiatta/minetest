@@ -61,7 +61,6 @@ function ui.cleanup()
 	end
 end
 
-
 function ui.update()
 	ui.overridden = false
 	local formspec = {}

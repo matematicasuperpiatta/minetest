@@ -49,7 +49,7 @@ function Handshake:launchpad()
 		post_data = core.write_json({
 			operating_system = 'posix',
 			version = '1.0.0',
-			ms_type = 'full', --change with 'beta' for setting the beta version
+			ms_type = 'full', --change with 'full' for setting the full version
 			lang = 'it',
 			debug = 'true',
 			-- local_server = 'true',
@@ -73,8 +73,8 @@ function Handshake:launchpad()
 			atLeastOnceLambda = true
 			local pending = jsonRes["client_update"]["pending"]
 			local required = jsonRes["client_update"]["required"]
-			local url = jsonRes["client_update"]["url"]
-			local message = jsonRes["client_update"]["message"]
+			--local url = jsonRes["client_update"]["url"]
+			--local message = jsonRes["client_update"]["message"]
 			if required then
 				core.log("warning", "Update required")
 				local error_dlg = create_required_version_dlg()
@@ -84,12 +84,12 @@ function Handshake:launchpad()
 				return true
 			else
 				if pending then
-					core.log("warning", "Update pending")
-					local error_dlg = create_pending_version_dlg()
-					ui.cleanup()
-					error_dlg:show()
-					ui.update()
-					return true
+					--core.log("warning", "Update pending")
+					--local error_dlg = create_pending_version_dlg()
+					--ui.cleanup()
+					--error_dlg:show()
+					--ui.update()
+					--return true
 				end
 			end
 		end
