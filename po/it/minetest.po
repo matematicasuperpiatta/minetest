@@ -836,8 +836,8 @@ msgid "Unable to install a modpack as a $1"
 msgstr "Impossibile installare una raccolta di mod come un $1"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Caricamento..."
+msgid "Loading in... "
+msgstr "Caricamento in...  "
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"

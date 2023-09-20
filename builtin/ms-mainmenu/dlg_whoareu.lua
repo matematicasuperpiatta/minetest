@@ -184,9 +184,12 @@ local function get_flavor_formspec(tabview, _, tabdata)
 	local flavor = handshake.roadmap.messages ~= nil and
 		handshake.roadmap.messages.news or
 		{"Sapevi che", "Nel computer anche questo testo è rappresentato con dei numeri"}
+	local waitingTime = handshake.roadmap.server ~= nil and
+		handshake.roadmap.server["waiting_time"]+10 or 61
+	waitingTime = math.min(61, waitingTime)
 	return FormspecVersion:new{version=6}:render() ..
 		Size:new{w = 12, h = 4.8, fix = true}:render() ..
-		Label:new{x = 0.5, y = 0.5, label = fgettext("Loading...")}:render() ..
+		Label:new{x = 0.5, y = 0.5, label = fgettext("Loading in... ") .. waitingTime .. "''"}:render() ..
 		TableColumns:new{ columns = { {"text"} } }:render() ..
 		TableOptions:new{ options =	{"background=#00000000", "highlight=#00000000"}}:render() ..
 		Table:new{ x = 0.5, y = 1, w = 11, h = 3.2, name = "news", cells = flavor}:render()
