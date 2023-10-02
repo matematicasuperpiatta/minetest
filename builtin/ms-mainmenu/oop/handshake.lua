@@ -39,7 +39,7 @@ end
 atLeastOnceLambda = false
 
 function Handshake:launchpad()
-	core.log("warning", "\nTicket: " .. self.roadmap.server.ticket)
+	core.log("warning", "Ticket: " .. self.roadmap.server.ticket)
 	core.handle_async(function(params)
 		local http = core.get_http_api()
 		return http.fetch_sync(params)
@@ -49,7 +49,7 @@ function Handshake:launchpad()
 		post_data = core.write_json({
 			operating_system = 'posix',
 			version = '1.0.0',
-			ms_type = 'full', --change with 'full' for setting the full version
+			ms_type = 'full',
 			lang = 'it',
 			debug = 'true',
 			-- local_server = 'true',

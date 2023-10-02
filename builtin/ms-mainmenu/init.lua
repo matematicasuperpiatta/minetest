@@ -119,7 +119,7 @@ local function init_globals(tabs)
 	mm_game_theme.init()
 
 	-- Create main tabview
-	tv_main = tabview_create("maintab", {x = 12, y = 5.4}, {x = 0, y = 0})
+	local tv_main = tabview_create("maintab", {x = 12, y = 5.4}, {x = 0, y = 0})
 
 	tv_main:set_autosave_tab(true)
 	tv_main:add(tabs.ms)

@@ -22,6 +22,7 @@ function wait_go(callback)
 	if (os.time() < (handshake.roadmap.server.ready_ts or 0)) then
 	elseif (handshake.roadmap.server.ip == nil) then
 		wait = 10
+		core.log("wait_go callback: " .. tostring(callback))
 		handshake:launchpad()
 	else
 		callback(core, handshake, gamedata)
