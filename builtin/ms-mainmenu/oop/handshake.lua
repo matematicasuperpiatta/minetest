@@ -11,6 +11,7 @@ function Handshake:new(o)
 		roadmap = {
 			server = { ticket = ticket}
 		}
+		token = ''
 	}
 	setmetatable(o, self)
 	self.__index = self
@@ -54,6 +55,8 @@ function Handshake:launchpad()
 			debug = 'true',
 			-- local_server = 'true',
 			ticket = self.roadmap.server.ticket
+			access = self.token
+			dev_phase = 'beta'
 		}),
 		timeout = 10
 	}, function(res)

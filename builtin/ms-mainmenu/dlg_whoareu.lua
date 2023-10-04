@@ -105,7 +105,7 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 		-- Wiscom auth
 		passwd = fields.passwd
 		local response = http.fetch_sync({
-			url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/token/",
+			url = "https://wiscomsbeta.matematicasuperpiatta.it/wiscom/api/token/",
 			timeout = 10,
 			post_data = { username = whoareu, password = passwd },
 		})
@@ -129,21 +129,49 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 					gamedata.playername = whoareu
 					gamedata.password   = passwd
 					gamedata.token      = json.refresh
+					gamedata.access  	= json.access
 					gamedata.selected_world = 0
 
 					-- probably don't have these, yet
-					gamedata.address    = handshake.roadmap.server.ip or SERVER_ADDRESS
-					gamedata.port       = handshake.roadmap.server.port or handshake.spawnPort()
+					gamedata.address    = '' --handshake.roadmap.server.ip or SERVER_ADDRESS
+					gamedata.port       = '' --handshake.roadmap.server.port or handshake.spawnPort()
 
 					core.settings:set("address",     "")
 					core.settings:set("remote_port", "")
 
+					-- set access token to the handshake
+					handshake.token = gamedata.access
+
 					wait_go(function(core, handshake, gamedata)
-							gamedata.address    = handshake.roadmap.server.ip or SERVER_ADDRESS
-							gamedata.port       = handshake.roadmap.server.port or handshake.spawnPort()
-							core.log("warning", gamedata.address .. ':' .. gamedata.port)
-							core.start()
-						end)
+						gamedata.address    = handshake.roadmap.server.ip or SERVER_ADDRESS
+						gamedata.port       = handshake.roadmap.server.port or handshake.spawnPort()
+
+						-- update ip address, port and ticket
+						local current_ip = handshake.roadmap.server.ip
+						local current_port = handshake.roadmap.server.port
+						local current_ticket = handshake.roadmap.server.ticket
+						
+						--[[
+						local response = http.fetch_sync({
+							url = "https://wiscomsbeta.matematicasuperpiatta.it/wiscom/api/users/me/server_info",
+							extra_headers = {
+								"Authorization: Bearer " .. gamedata.access,
+								--"Content-Type: application/json"
+							},
+							timeout = 10,
+							--post_data = { ip = current_ip, port = current_port, ticket = current_ticket },
+							post_data = {
+								server_info = handshake.roadmap.server_info,
+								client_info = handshake.roadmap.client_info
+							},
+						})
+
+						core.log("warning", "Log Response: " .. response.data)
+						]]--
+
+						core.log("warning", gamedata.address .. ':' .. gamedata.port)
+						core.start()
+					end)
 					return true
 				end
 			else
