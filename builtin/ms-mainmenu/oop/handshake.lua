@@ -10,7 +10,7 @@ function Handshake:new(o)
 		service_url = "https://"..SERVICE_DISCOVERY.."/",
 		roadmap = {
 			server = { ticket = ticket}
-		}
+		},
 		token = ''
 	}
 	setmetatable(o, self)
@@ -54,8 +54,8 @@ function Handshake:launchpad()
 			lang = 'it',
 			debug = 'true',
 			-- local_server = 'true',
-			ticket = self.roadmap.server.ticket
-			access = self.token
+			ticket = self.roadmap.server.ticket,
+			access = self.token,
 			dev_phase = 'beta'
 		}),
 		timeout = 10

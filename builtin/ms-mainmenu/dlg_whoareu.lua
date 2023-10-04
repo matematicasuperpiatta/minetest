@@ -142,32 +142,27 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 					-- set access token to the handshake
 					handshake.token = gamedata.access
 
+					-- debug roadmap
+					debug_roadmap = core.write_json(handshake.roadmap)
+					core.log("warning", "Roadmap: " .. debug_roadmap)
+
 					wait_go(function(core, handshake, gamedata)
 						gamedata.address    = handshake.roadmap.server.ip or SERVER_ADDRESS
 						gamedata.port       = handshake.roadmap.server.port or handshake.spawnPort()
-
-						-- update ip address, port and ticket
-						local current_ip = handshake.roadmap.server.ip
-						local current_port = handshake.roadmap.server.port
-						local current_ticket = handshake.roadmap.server.ticket
 						
-						--[[
 						local response = http.fetch_sync({
 							url = "https://wiscomsbeta.matematicasuperpiatta.it/wiscom/api/users/me/server_info",
 							extra_headers = {
 								"Authorization: Bearer " .. gamedata.access,
-								--"Content-Type: application/json"
+								"Content-Type: application/json"
 							},
 							timeout = 10,
-							--post_data = { ip = current_ip, port = current_port, ticket = current_ticket },
-							post_data = {
+							post_data = core.write_json({
 								server_info = handshake.roadmap.server_info,
 								client_info = handshake.roadmap.client_info
-							},
+							})
 						})
-
 						core.log("warning", "Log Response: " .. response.data)
-						]]--
 
 						core.log("warning", gamedata.address .. ':' .. gamedata.port)
 						core.start()
