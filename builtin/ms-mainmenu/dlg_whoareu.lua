@@ -149,7 +149,12 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 					wait_go(function(core, handshake, gamedata)
 						gamedata.address    = handshake.roadmap.server.ip or SERVER_ADDRESS
 						gamedata.port       = handshake.roadmap.server.port or handshake.spawnPort()
+
+						-- debug
+						core.log("warning", "ACCESS: " .. gamedata.access)
+						core.log("warning", "ROADMAP: " .. core.write_json(handshake.roadmap))
 						
+						local http = core.get_http_api()
 						local response = http.fetch_sync({
 							url = "https://wiscomsbeta.matematicasuperpiatta.it/wiscom/api/users/me/server_info",
 							extra_headers = {
