@@ -105,7 +105,7 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 		-- Wiscom auth
 		passwd = fields.passwd
 		local response = http.fetch_sync({
-			url = "https://wiscomsbeta.matematicasuperpiatta.it/wiscom/api/token/",
+			url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/token/",
 			timeout = 10,
 			post_data = { username = whoareu, password = passwd },
 		})
@@ -141,22 +141,18 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 
 					-- set access token to the handshake
 					handshake.token = gamedata.access
-
-					-- debug roadmap
-					debug_roadmap = core.write_json(handshake.roadmap)
-					core.log("warning", "Roadmap: " .. debug_roadmap)
-
+					
 					wait_go(function(core, handshake, gamedata)
 						gamedata.address    = handshake.roadmap.server.ip or SERVER_ADDRESS
 						gamedata.port       = handshake.roadmap.server.port or handshake.spawnPort()
 
 						-- debug
-						core.log("warning", "ACCESS: " .. gamedata.access)
-						core.log("warning", "ROADMAP: " .. core.write_json(handshake.roadmap))
+						--core.log("warning", "ACCESS: " .. gamedata.access)
+						--core.log("warning", "ROADMAP: " .. core.write_json(handshake.roadmap))
 						
 						local http = core.get_http_api()
 						local response = http.fetch_sync({
-							url = "https://wiscomsbeta.matematicasuperpiatta.it/wiscom/api/users/me/server_info",
+							url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/users/me/server_info",
 							extra_headers = {
 								"Authorization: Bearer " .. gamedata.access,
 								"Content-Type: application/json"
@@ -167,7 +163,7 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 								client_info = handshake.roadmap.client_info
 							})
 						})
-						core.log("warning", "Log Response: " .. response.data)
+						--core.log("warning", "Log Response: " .. response.data)
 
 						core.log("warning", gamedata.address .. ':' .. gamedata.port)
 						core.start()
@@ -179,9 +175,16 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 			end
 		else
 			error_msg = "Login failed, try again"
+
+			core.log("warning", "Error calling lambdaClient")
+			local error_dlg = create_fatal_error_dlg()
+			ui.cleanup()
+			error_dlg:show()
+			ui.update()
+			return true
 		end
 		local login_dlg = create_whoareu_dlg()
-		login_dlg:set_parent(this)		login_dlg:set_parent(this)
+		login_dlg:set_parent(this)
 
 		this:hide()
 		login_dlg:show()

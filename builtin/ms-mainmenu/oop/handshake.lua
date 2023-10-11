@@ -27,6 +27,8 @@ function Handshake:on_launch()
 		core.log("warning", "Delayed (" .. self.roadmap.server.waiting_time .. "secs)  connection w/ ticket " .. self.roadmap.server.ticket )
 		self.roadmap.server.ready_ts = os.time() + self.roadmap.server.waiting_time;
 		core.log("warning", "Server will be ready at " .. self.roadmap.server.ready_ts)
+	end
+	--[[
 	elseif self.roadmap.server ~= nil and self.roadmap.server.ticket == "" then
 		self.roadmap = { client_update = {
 			required = true, -- DISABLE connect button
@@ -35,6 +37,7 @@ function Handshake:on_launch()
 			url = "https://play.google.com/apps/testing/it.matematicasuperpiatta.minetest"
 		}}
 	end
+	]]--
 end
 
 atLeastOnceLambda = false
@@ -48,20 +51,20 @@ function Handshake:launchpad()
 		url = self.service_url,
 		extra_headers = { "Content-Type: application/json" },
 		post_data = core.write_json({
-			operating_system = 'posix',
+			operating_system = 'windows',
 			version = '1.0.0',
 			ms_type = 'full',
+			dev_phase = 'beta',
+			server_type = 'ecs',
 			lang = 'it',
 			debug = 'true',
-			-- local_server = 'true',
 			ticket = self.roadmap.server.ticket,
-			access = self.token,
-			dev_phase = 'beta'
+			access = self.token
 		}),
 		timeout = 10
 	}, function(res)
 		local jsonRes = core.parse_json(res.data)
-		core.log("warning", "checking: " .. res.data )
+		core.log("warning", "Lambda response: [" .. res.code .. "] - " .. res.data)
 		-- Check Connection
 		if res.code ~= 200 then
 			core.log("warning", "Error calling lambdaClient")
@@ -71,13 +74,28 @@ function Handshake:launchpad()
 			ui.update()
 			return true
 		end
+
+		-- Check for messages/errors
+		local message_type = jsonRes["messages"]["custom_message_type"]
+		local message_text = jsonRes["messages"]["custom_message_text"]
+		if message_type == "error" then
+			core.log("warning", "Lambda error: [" .. message_type .. "] " .. message_text)
+			global_data.message_type = message_type
+			global_data.message_text = message_text
+
+			local error_dlg = create_fatal_error_dlg()
+			ui.cleanup()
+			error_dlg:show()
+			ui.update()
+			return true
+		end
+		--
+
 		-- Check Version
 		if not atLeastOnceLambda then
 			atLeastOnceLambda = true
 			local pending = jsonRes["client_update"]["pending"]
 			local required = jsonRes["client_update"]["required"]
-			--local url = jsonRes["client_update"]["url"]
-			--local message = jsonRes["client_update"]["message"]
 			if required then
 				core.log("warning", "Update required")
 				local error_dlg = create_required_version_dlg()
@@ -92,7 +110,7 @@ function Handshake:launchpad()
 					--ui.cleanup()
 					--error_dlg:show()
 					--ui.update()
-					--return true
+					return true
 				end
 			end
 		end

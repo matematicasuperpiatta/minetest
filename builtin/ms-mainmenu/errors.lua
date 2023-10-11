@@ -6,7 +6,8 @@ When player click the buttom, client kill himself.
 local function get_fatal_error_formspec(tabview, _, tabdata)
 	local fs = FormspecVersion:new{version=6}:render() ..
 		Size:new{w = 10, h = 4.5, fix = true}:render() ..
-		Label:new{x = 0.5, y = 0.5, label = fgettext("Connection Error!\nPlease restart.")}:render() ..
+		--Label:new{x = 0.5, y = 0.5, label = fgettext("Connection Error!\nPlease restart.")}:render() ..
+		Label:new{x = 0.5, y = 0.5, label = global_data.message_text}:render() ..
 		Button:new{x=5 - 1.1, y=3.25, w=2.2, h=0.75, name = "btn_quit", label = fgettext("Quit")}:render()
 	return fs
 end

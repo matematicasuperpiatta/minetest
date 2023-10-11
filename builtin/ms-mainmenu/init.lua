@@ -46,6 +46,10 @@ dofile(menupath .. "lib" .. DIR_DELIM .. "delay.lua")
 dofile(menupath .. "oop" .. DIR_DELIM .. "handshake.lua")
 
 handshake = Handshake:new()
+global_data = {
+	message_type = "default",
+	message_text = fgettext("Unable to connect to the server!\n\nCheck your internet connection and restart Matematica Superpiatta.\nIf the problem persists contact us at:\nassistenza@matematicasuperpiatta.it")
+}
 
 
 --------------------------------------------------------------------------------

@@ -1228,8 +1228,8 @@ msgid "The version of Superflat Math needs an update!\nPlease download and insta
 msgstr "Matematica Superpiatta deve essere aggiornata!\nScarica ed installa la nuova versione dal sito."
 
 #: builtin/ms-mainmenu/errors.lua
-msgid "Connection Error!\nPlease restart."
-msgstr "Errore di connessione!\nRiavvia il programma dopo esserti connesso ad internet."
+msgid "Unable to connect to the server!\n\nCheck your internet connection and restart Matematica Superpiatta.\nIf the problem persists contact us at:\nassistenza@matematicasuperpiatta.it"
+msgstr "Impossibile connettersi al server!\n\nVerifica la connessione internet e riavvia Matematica Superpiatta.\nSe il problema persiste contattaci all'indirizzo:\nassistenza@matematicasuperpiatta.it"
 
 #: builtin/ms-mainmenu/errors.lua
 msgid "Quit"
