@@ -52,9 +52,9 @@ function Handshake:launchpad()
 		extra_headers = { "Content-Type: application/json" },
 		post_data = core.write_json({
 			operating_system = 'windows',
-			version = '1.0.0',
+			version = '1.1.0',
 			ms_type = 'full',
-			dev_phase = 'beta',
+			dev_phase = 'release',
 			server_type = 'ecs',
 			lang = 'it',
 			debug = 'true',
