@@ -15,7 +15,7 @@ name = robin
 remote_port =
 enable_local_map_saving = false
 
-ms_discovery = xw5ha3z3o7.execute-api.eu-south-1.amazonaws.com/beta/taskaddress
+ms_discovery = xw5ha3z3o7.execute-api.eu-south-1.amazonaws.com/release_a/taskaddress
 
 language = it
 enable_3d_clouds = false
