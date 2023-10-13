@@ -11,11 +11,11 @@ debug_log_level = info
 
 maintab_LAST = online
 address =
-name = robin
+name =
 remote_port =
 enable_local_map_saving = false
 
-ms_discovery = xw5ha3z3o7.execute-api.eu-south-1.amazonaws.com/release_a/taskaddress
+ms_discovery = xw5ha3z3o7.execute-api.eu-south-1.amazonaws.com/beta/taskaddress
 
 language = it
 enable_3d_clouds = false
