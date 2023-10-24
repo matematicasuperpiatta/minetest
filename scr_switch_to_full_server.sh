@@ -1,2 +1,0 @@
-sed -i 's@https://wiscomsbeta.matematicasuperpiatta.it@https://wiscoms.matematicasuperpiatta.it@' mods/ms/ms_connect/init.lua
-sed -i 's@https://wiscomsbeta.matematicasuperpiatta.it@https://wiscoms.matematicasuperpiatta.it@' mods/ms/raspberryjammod/ms_mcpipy/MTUser.py
