@@ -1,8 +1,11 @@
 
 local function locked_sleep(params)
-	if not core == nil then
+	if (core ~= nil) then
 		local http = core.get_http_api()
-		http.fetch_sync({url = "https://wiscoms.matematicasuperpiatta.it:8888", timeout = params.secs})
+		-- timeout time must be greater than 0 otherwise fetch_sync will set the default timeout value
+		local wt = params.secs > 0 and params.secs or 5
+		core.log("locked_sleep: " .. tostring(wt) .. "s")
+		http.fetch_sync({url = "https://wiscoms.matematicasuperpiatta.it:8888", timeout = wt})
 	end
 	return params.payload
 end
@@ -19,10 +22,9 @@ end
 
 function wait_go(callback)
 	local wait = 0.5
-	if (os.time() < (handshake.roadmap.server.ready_ts or 0)) then
-	elseif (handshake.roadmap.server.ip == nil) then
-		wait = 10
-		core.log("wait_go callback: " .. tostring(callback))
+	if (handshake.roadmap.server.ip == nil) then
+		wait = handshake.roadmap.server.waiting_time
+		core.log("wait_go: " .. tostring(wait) .. "s")
 		handshake:launchpad()
 	else
 		callback(core, handshake, gamedata)

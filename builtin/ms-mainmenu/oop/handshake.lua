@@ -9,7 +9,10 @@ function Handshake:new(o)
 		discover_ts = nil,
 		service_url = "https://"..SERVICE_DISCOVERY.."/",
 		roadmap = {
-			server = { ticket = ticket}
+			server = {
+				ticket = ticket,
+				waiting_time = 5
+			}
 		},
 		token = ''
 	}
@@ -28,16 +31,6 @@ function Handshake:on_launch()
 		self.roadmap.server.ready_ts = os.time() + self.roadmap.server.waiting_time;
 		core.log("warning", "Server will be ready at " .. self.roadmap.server.ready_ts)
 	end
-	--[[
-	elseif self.roadmap.server ~= nil and self.roadmap.server.ticket == "" then
-		self.roadmap = { client_update = {
-			required = true, -- DISABLE connect button
-			pending = true, -- maybe?
-			message = "Errore di comunicazione. Verifica se è disponibile un aggiornamento.",
-			url = "https://play.google.com/apps/testing/it.matematicasuperpiatta.minetest"
-		}}
-	end
-	]]--
 end
 
 atLeastOnceLambda = false
