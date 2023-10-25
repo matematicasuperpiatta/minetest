@@ -141,7 +141,7 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 
 					-- set access token to the handshake
 					handshake.token = gamedata.access
-					
+
 					wait_go(function(core, handshake, gamedata)
 						gamedata.address    = handshake.roadmap.server.ip or SERVER_ADDRESS
 						gamedata.port       = handshake.roadmap.server.port or handshake.spawnPort()
@@ -149,7 +149,7 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 						-- debug
 						--core.log("warning", "ACCESS: " .. gamedata.access)
 						--core.log("warning", "ROADMAP: " .. core.write_json(handshake.roadmap))
-						
+
 						local http = core.get_http_api()
 						local response = http.fetch_sync({
 							url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/users/me/server_info",
@@ -216,7 +216,7 @@ local function get_flavor_formspec(tabview, _, tabdata)
 		handshake.roadmap.messages.news or
 		{"Sapevi che", "Nel computer anche questo testo è rappresentato con dei numeri"}
 	local waitingTime = handshake.roadmap.server ~= nil and
-		handshake.roadmap.server["waiting_time"] + 5 or 61
+		handshake.roadmap.server["waiting_time"] or 61
 	waitingTime = math.min(61, waitingTime)
 	return FormspecVersion:new{version=6}:render() ..
 		Size:new{w = 12, h = 4.8, fix = true}:render() ..

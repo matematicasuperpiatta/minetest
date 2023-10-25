@@ -16,13 +16,14 @@ WINDOWS
 CLIENT
 	git clone https://github.com/matematicasuperpiatta/minetest.git ms_client
 	cd ms_client
+        git checkout feature-ticket
 	cp minetest.conf.client minetest.conf
-	git checkout feature-ticket
 	cd lib/
 	git clone https://github.com/minetest/irrlicht.git irrlichtmt
 	cd irrlichtmt/
 	git checkout 1.9.0mt8
 	cd ../../
+	python3 configure.py
 SERVER
 	git clone https://github.com/matematicasuperpiatta/minetest.git ms_server
 	cd ms-server
