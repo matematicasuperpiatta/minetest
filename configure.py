@@ -8,23 +8,23 @@ api_dev = 'fvqyugucy1.execute-api.eu-south-1.wqct3t3amct3azonaws.com/dev'
 class Configurations:
    def __init__(self):
       self.api = ['release',
-                 ['release', 'dev']]
+                 ('release', 'dev')]
       self.operating_system = ['android',
-                              ['linux', 'machintosh', 'ios', 'windows', 'android']]
+                              ('linux', 'machintosh', 'ios', 'windows', 'android')]
       self.ms_type = ['full',
-                     ['full', 'acer', 'panel']]
+                     ('full', 'acer', 'panel')]
       self.dev_phase = ['release',
-                       ['beta', 'release']]
+                       ('beta', 'release')]
       self.server_type = ['ecs',
-                         ['local', 'multi', 'ecs']]
+                         ('local', 'multi', 'ecs')]
       self.version = ['1.1.1',
                       True]
       self.debug = ['false',
-                   ['true', 'false']]
+                   ('true', 'false')]
       self.monitor = ['false',
-                     ['true', 'false']]
+                     ('true', 'false')]
       self.slack = ['false',
-                   ['true', 'false']]
+                   ('true', 'false')]
    
    # Cambiare solo fino a qui.
    
