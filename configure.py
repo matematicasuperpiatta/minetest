@@ -1,8 +1,8 @@
 # Global Variables
 db_beta_url = "https://wiscomsbeta.matematicasuperpiatta.it"
 db_release_url = "https://wiscoms.matematicasuperpiatta.it"
-api_release = 'fvqyugucy1.execute-api.eu-south-1.wqct3t3amct3azonaws.com/release'
-api_dev = 'fvqyugucy1.execute-api.eu-south-1.wqct3t3amct3azonaws.com/dev'
+api_release = 'fvqyugucy1.execute-api.eu-south-1.amazonaws.com/release'
+api_dev = 'fvqyugucy1.execute-api.eu-south-1.amazonaws.com/dev'
 
 
 class Configurations:
