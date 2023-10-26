@@ -1,30 +1,52 @@
 # Global Variables
 db_beta_url = "https://wiscomsbeta.matematicasuperpiatta.it"
 db_release_url = "https://wiscoms.matematicasuperpiatta.it"
+api_release = 'fvqyugucy1.execute-api.eu-south-1.wqct3t3amct3azonaws.com/release'
+api_dev = 'fvqyugucy1.execute-api.eu-south-1.wqct3t3amct3azonaws.com/dev'
+
+
 class Configurations:
    def __init__(self):
+      self.api = ['release',
+                 ['release', 'dev']]
       self.operating_system = ['android',
-           ['linux', 'machintosh', 'ios', 'windows', 'android']]
+                              ['linux', 'machintosh', 'ios', 'windows', 'android']]
       self.ms_type = ['full',
-           ['full', 'acer', 'panel']]
+                     ['full', 'acer', 'panel']]
       self.dev_phase = ['release',
-           ['beta', 'release']]
+                       ['beta', 'release']]
       self.server_type = ['ecs',
-           ['local', 'multi', 'ecs']]
+                         ['local', 'multi', 'ecs']]
       self.version = ['1.1.1',
-           True]
+                      True]
       self.debug = ['false',
-           ['true', 'false']]
+                   ['true', 'false']]
       self.monitor = ['false',
-           ['true', 'false']]
+                     ['true', 'false']]
       self.slack = ['false',
-           ['true', 'false']]
-
-# Cambiare solo fino a qui.
-      
+                   ['true', 'false']]
+   
+   # Cambiare solo fino a qui.
+   
    def check(self, field):
       return not isinstance(field, list) or not isinstance(field[1], list) or (field[0] in field[1])
-      
+   
+   def push_api(self):
+      if self.check(self.operating_system):
+         with open("minetest.conf", "r") as minetest:
+            lines = minetest.readlines()
+         for i, line in enumerate(lines):
+            if len(line) >= 12 and line[:12] == 'ms_discovery':
+               pre, _ = line.split("=")
+               post = api_dev if self.api[0] == "dev" else api_release
+               lines[i] = pre + '= ' + post + '\n'
+         with open("minetest.conf", "w") as minetest:
+            for line in lines:
+               minetest.write(line)
+         return True
+      else:
+         return False
+   
    def push_operating_system(self):
       if self.check(self.operating_system):
          with open("builtin/ms-mainmenu/oop/handshake.lua", "r") as handshake:
@@ -54,6 +76,7 @@ class Configurations:
          return True
       else:
          return False
+   
    def push_dev_phase(self):
       if self.check(self.dev_phase):
          with open("builtin/ms-mainmenu/oop/handshake.lua", "r") as handshake:
@@ -77,7 +100,10 @@ class Configurations:
          with open("builtin/ms-mainmenu/dlg_whoareu.lua", "w") as dlg_whoareu:
             for line in lines:
                dlg_whoareu.write(line)
-
+         return True
+      else:
+         return False
+   
    def push_server_type(self):
       if self.check(self.server_type):
          with open("builtin/ms-mainmenu/oop/handshake.lua", "r") as handshake:
@@ -89,7 +115,10 @@ class Configurations:
          with open("builtin/ms-mainmenu/oop/handshake.lua", "w") as handshake:
             for line in lines:
                handshake.write(line)
-
+         return True
+      else:
+         return False
+   
    def push_version(self):
       if self.check(self.version):
          with open("builtin/ms-mainmenu/oop/handshake.lua", "r") as handshake:
@@ -114,7 +143,10 @@ class Configurations:
          with open("CMakeLists.txt", "w") as cmake:
             for line in lines:
                cmake.write(line)
-
+         return True
+      else:
+         return False
+   
    def push_debug(self):
       if self.check(self.debug):
          with open("builtin/ms-mainmenu/oop/handshake.lua", "r") as handshake:
@@ -126,7 +158,10 @@ class Configurations:
          with open("builtin/ms-mainmenu/oop/handshake.lua", "w") as handshake:
             for line in lines:
                handshake.write(line)
-
+         return True
+      else:
+         return False
+   
    def push_monitor(self):
       if self.check(self.monitor):
          with open("builtin/ms-mainmenu/oop/handshake.lua", "r") as handshake:
@@ -138,7 +173,10 @@ class Configurations:
          with open("builtin/ms-mainmenu/oop/handshake.lua", "w") as handshake:
             for line in lines:
                handshake.write(line)
-
+         return True
+      else:
+         return False
+   
    def push_slack(self):
       if self.check(self.slack):
          with open("builtin/ms-mainmenu/oop/handshake.lua", "r") as handshake:
@@ -150,17 +188,24 @@ class Configurations:
          with open("builtin/ms-mainmenu/oop/handshake.lua", "w") as handshake:
             for line in lines:
                handshake.write(line)
+         return True
+      else:
+         return False
+   
    def push(self):
-      self.push_operating_system()
-      self.push_ms_type()
-      self.push_dev_phase()
-      self.push_server_type()
-      self.push_version()
-      self.push_debug()
-      self.push_monitor()
-      self.push_slack()
-      
-      
+      x = True
+      x *= self.push_api()
+      x *= self.push_operating_system()
+      x *= self.push_ms_type()
+      x *= self.push_dev_phase()
+      x *= self.push_server_type()
+      x *= self.push_version()
+      x *= self.push_debug()
+      x *= self.push_monitor()
+      x *= self.push_slack()
+      print("Done!" if x else "Error with some setting.")
+
+
 if __name__ == "__main__":
    configurations = Configurations()
    configurations.push()
