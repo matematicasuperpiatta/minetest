@@ -16,6 +16,7 @@ remote_port =
 enable_local_map_saving = false
 
 ms_discovery = fvqyugucy1.execute-api.eu-south-1.amazonaws.com/release
+panel_data = 
 
 language = it
 enable_3d_clouds = false

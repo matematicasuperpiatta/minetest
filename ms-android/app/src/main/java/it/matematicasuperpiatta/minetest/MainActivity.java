@@ -41,6 +41,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
 			new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
 	private static final String SETTINGS = "MinetestSettings";
 	private static final String TAG_VERSION_CODE = "versionCode";
+	private static final String PANEL_PARAM = "panel_data";
 
 	private ProgressBar mProgressBar;
 	private TextView mTextView;
@@ -165,7 +167,48 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+	private void handlePanelParams() {
+		String strErrors = "Default";
+		String data = getIntent().getStringExtra("data");
+		if (data != null) {
+			strErrors = "Intent";
+
+			// how to get the app directory
+			// https://stackoverflow.com/questions/72381634/android-studio-get-application-directory-datadir
+			File mConf = new File(getExternalFilesDir(null).getAbsolutePath() + "/Minetest/minetest.conf");
+
+			StringBuilder inputBuffer = new StringBuilder();
+			try {
+				// read minetest.conf file and write string
+				BufferedReader br = new BufferedReader(new FileReader(mConf));
+				for(String line; (line = br.readLine()) != null; ) {
+					if (line.startsWith(PANEL_PARAM))
+						inputBuffer.append(PANEL_PARAM + " = ").append(data);
+					else
+						inputBuffer.append(line);
+					inputBuffer.append("\n");
+				}
+				br.close();
+
+				// update minetest.conf file
+				FileOutputStream fileOut = new FileOutputStream(mConf);
+				fileOut.write(inputBuffer.toString().getBytes());
+				fileOut.close();
+			} catch (IOException ioe) {
+				System.out.println("Error reading/writing minetest.conf");
+				strErrors = "Error reading/writing minetest.conf";
+				ioe.printStackTrace();
+			}
+		}
+
+		Toast.makeText(this, strErrors, Toast.LENGTH_LONG).show();
+	}
+
 	private void startNative() {
+		// check if the app has been launched by a Panel
+		handlePanelParams();
+
+		// launch game
 		sharedPreferences.edit().putInt(TAG_VERSION_CODE, versionCode).apply();
 		Intent intent = new Intent(this, GameActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);

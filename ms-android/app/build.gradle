@@ -1,10 +1,9 @@
 apply plugin: 'com.android.application'
 android {
-	compileSdkVersion 33
-	buildToolsVersion '33.0.2'
 	ndkVersion "$ndk_version"
 	defaultConfig {
 		applicationId 'it.matematicasuperpiatta.minetest'
+		compileSdk 33
 		minSdkVersion 21
 		targetSdkVersion 33
 		versionName "${versionMajor}.${versionMinor}.${versionPatch}"
@@ -48,6 +47,7 @@ android {
 		sourceCompatibility JavaVersion.VERSION_1_8
 		targetCompatibility JavaVersion.VERSION_1_8
 	}
+	namespace 'it.matematicasuperpiatta.minetest'
 }
 
 task prepareAssets() {
@@ -80,7 +80,8 @@ task prepareAssets() {
 		def moPath = "${assetsFolder}/locale/${poFile.parentFile.name}/LC_MESSAGES/"
 		file(moPath).mkdirs()
 		exec {
-			commandLine 'msgfmt', '-o', "${moPath}/minetest.mo", poFile
+			// commandLine 'C:\\dev\\gettext0.21-iconv1.16-static-64\\bin\\msgfmt.exe', '-o', "${moPath}/minetest.mo", poFile
+			commandLine 'C:\\dev\\gettext0.21-iconv1.16-static-64\\bin\\msgfmt.exe', '-o', "${moPath}/minetest.mo", poFile
 		}
 	}
 	copy {
@@ -90,9 +91,9 @@ task prepareAssets() {
 	file("${assetsFolder}/.nomedia").text = "";
 
 	task zipAssets(type: Zip) {
-		archiveName "Minetest.zip"
+		archiveFileName = "Minetest.zip"
 		from "${assetsFolder}"
-		destinationDir file("src/main/assets")
+		destinationDirectory = file("src/main/assets")
 	}
 }
 
