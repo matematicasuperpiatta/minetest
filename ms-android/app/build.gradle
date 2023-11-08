@@ -50,6 +50,8 @@ android {
 	namespace 'it.matematicasuperpiatta.minetest'
 }
 
+import org.gradle.internal.os.OperatingSystem
+
 task prepareAssets() {
 	def assetsFolder = "build/assets"
 	def projRoot = "../.."
@@ -79,9 +81,15 @@ task prepareAssets() {
 	fileTree("${projRoot}/po").include("**/*.po").forEach { poFile ->
 		def moPath = "${assetsFolder}/locale/${poFile.parentFile.name}/LC_MESSAGES/"
 		file(moPath).mkdirs()
-		exec {
-			// commandLine 'C:\\dev\\gettext0.21-iconv1.16-static-64\\bin\\msgfmt.exe', '-o', "${moPath}/minetest.mo", poFile
-			commandLine 'C:\\dev\\gettext0.21-iconv1.16-static-64\\bin\\msgfmt.exe', '-o', "${moPath}/minetest.mo", poFile
+		if (OperatingSystem.current().isLinux()) {
+			exec {
+				commandLine 'msgfmt', '-o', "${moPath}/minetest.mo", poFile
+			}
+		}
+		else if (OperatingSystem.current().isWindows()) {
+			exec {
+				commandLine 'C:\\dev\\gettext0.21-iconv1.16-static-64\\bin\\msgfmt.exe', '-o', "${moPath}/minetest.mo", poFile
+			}
 		}
 	}
 	copy {
