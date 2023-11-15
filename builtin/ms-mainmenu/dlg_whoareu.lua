@@ -35,7 +35,9 @@ local function get_whoareu_formspec(tabview, _, tabdata)
 	local fs = FormspecVersion:new{version=6}:render() ..
 		Size:new{w = 5.5, h = 4.5, fix = true}:render() ..
 		Label:new{x = 0.5, y = 1.5, label = fgettext("Username:")}:render() ..
-		StyleType:new{selectors = {"field"}, props = {"bgcolor=#0067dc"}}:render() ..
+		-- see here to edit field color
+		-- https://github.com/minetest/minetest/blob/8c7276c9d4fc8afa05f859297048c7153cc11f5b/src/client/clientlauncher.cpp#L176
+		StyleType:new{selectors = {"field"}, props = {"textcolor=#ffffff"}}:render() ..
 		Field:new{x = 0.5, y = 1.75, w = 4.5, h = 0.7, name = "username", value = whoareu}:render() ..
 		StyleType:new{selectors = {"button"}, props = {"bgcolor=#ffa900", "alpha=false"}}:render() .. --orig: #ff8000
 		Button:new{x=0.5, y=3.25, w=2.2, h=0.75, name = "btn_back", label = fgettext("Back")}:render() ..
@@ -192,16 +194,7 @@ end
 
 function handle_connection(this, json)
     if json ~= nil and json.access ~= nil then
-        if handshake.roadmap.server ~= nil then
-            --[[
-			if handshake.roadmap.server.ip == nil then
-                local flavor_dlg = create_flavor_dlg()
-                flavor_dlg:set_parent(this)
-                this:hide()
-                flavor_dlg:show()
-            end
-			]]--
-            
+        if handshake.roadmap.server ~= nil then            
             -- inject refresh token. Server musts support this!
             local timeout = 95
 
