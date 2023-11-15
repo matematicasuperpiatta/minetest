@@ -67,6 +67,8 @@ function Handshake:launchpad()
 			ui.cleanup()
 			error_dlg:show()
 			ui.update()
+			lambda_error = true
+			lambda_error = true
 			return true
 		end
 
@@ -82,6 +84,8 @@ function Handshake:launchpad()
 			ui.cleanup()
 			error_dlg:show()
 			ui.update()
+
+			lambda_error = true
 			return true
 		end
 
@@ -94,6 +98,7 @@ function Handshake:launchpad()
 			ui.cleanup()
 			error_dlg:show()
 			ui.update()
+			lambda_error = true
 			return true
 		else
 			if pending then

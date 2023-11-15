@@ -7,7 +7,7 @@ enable_shaders = true
 gameid = matematicasuperpiatta
 
 main_menu_script = builtin/ms-mainmenu/init.lua
-debug_log_level = info
+debug_log_level = 3
 
 maintab_LAST = online
 address =

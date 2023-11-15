@@ -23,7 +23,7 @@ end
 function wait_go(callback)
 	local wait = 0.5
 	if (handshake.roadmap.server.ip == nil) then
-		if lambda_read then
+		if lambda_read and not lambda_error then
 			handshake:launchpad()
 			lambda_read = false
 		end
@@ -36,7 +36,7 @@ function wait_go(callback)
 			wait = handshake.roadmap.server.waiting_time
 			core.log("wait_go: " .. tostring(wait) .. "s")
 		end
-		
+
 		-- update flavor time label
 		update_flavor()
 	else

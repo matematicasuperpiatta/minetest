@@ -53,6 +53,7 @@ global_data = {
 }
 lambda_waiting = false
 lambda_read = true
+lambda_error = false
 
 
 --------------------------------------------------------------------------------
