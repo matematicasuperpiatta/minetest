@@ -68,7 +68,6 @@ function Handshake:launchpad()
 			error_dlg:show()
 			ui.update()
 			lambda_error = true
-			lambda_error = true
 			return true
 		end
 
@@ -79,12 +78,10 @@ function Handshake:launchpad()
 			core.log("warning", "Lambda error: [" .. message_type .. "] " .. message_text)
 			global_data.message_type = message_type
 			global_data.message_text = message_text
-
 			local error_dlg = create_fatal_error_dlg()
 			ui.cleanup()
 			error_dlg:show()
 			ui.update()
-
 			lambda_error = true
 			return true
 		end
