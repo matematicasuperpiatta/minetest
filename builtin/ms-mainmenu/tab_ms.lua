@@ -36,7 +36,6 @@ local function get_formspec(tabview, name, tabdata)
 
 	local fs = FormspecVersion:new{version=6}:render() ..
 	    -- Title
-		-- “image[2.2,0.3;7.68,3.17;” .. core.formspec_escape(defaulttexturedir .. “logo_320x132.png”)..“]”..
 		Image:new{
 			x=2.20, y=-0.4, w=7.68, h=3.17,
 			path = texturedir .. "logo_320x132.png"}:render() ..
@@ -52,15 +51,11 @@ local function get_formspec(tabview, name, tabdata)
 		Label:new{x=2, y=4.1, label = fgettext("Università degli Studi of L'Aquila")}:render() ..
 		Label:new{x=2, y=4.5, label = fgettext("spin-off")}:render() .. Style:new{
 			selectors = {"btn_mp_connect"},
-			props = {"bgcolor=#FF7F00", "font=bold", "alpha=false"}
+			props = {"bgcolor=#00dc28", "font=bold", "alpha=false"} --orig: #00993b
 		}:render() ..
 		Button:new{x=9, y=4.2, w=2.5, h=1.75, name = "btn_mp_connect", label = fgettext("Start")}:render()
-		--Button:new{x=9, y=3.2, w=2.5, h=1.75, name = "btn_mp_debug", label = fgettext("Debug")}:render()
-		-- Label:new{x=2, y=4.5, label = fgettext("info@matematicasuperpiatta.it")}:render()
 	return fs .. StyleType:new{selectors = {"label"}, props = {"font=italic"}}:render() ..
 	Label:new{x=2, y=4.9, label = fgettext("www.matematicasuperpiatta.it")}:render()
-
-	-- .. ImageButton:new{x=3.6, y=4.9, w=0.6, h=0.6, path=defaulttexturedir .."envelope.png", name="btn_email"}:render()
 end
 
 --------------------------------------------------------------------------------
@@ -81,11 +76,27 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields.btn_mp_connect then
-		local whoareu_dlg = create_whoareu_dlg()
-		--tabview:hide()
-		ui.cleanup()
-		whoareu_dlg:show()
-		ui.update()
+		if PANEL_DATA == '' then
+			-- MS has been launched normally
+			local whoareu_dlg = create_whoareu_dlg()
+			--tabview:hide()
+			ui.cleanup()
+			whoareu_dlg:show()
+			ui.update()
+		else
+			-- MS has been launched from a panel
+			local http = core.get_http_api()
+			local response = http.fetch_sync({
+				--url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/panel/",
+				url = "http://127.0.0.1:8000/wiscom/api/panel/",
+				
+				timeout = 10,
+				post_data = core.parse_json(PANEL_DATA),
+			})
+			if response.succeeded then
+				core.log("info", "PANEL RESPONSE: " .. response.data)
+			end
+		end
 		return true
 	end
 

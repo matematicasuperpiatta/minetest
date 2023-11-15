@@ -8543,3 +8543,6 @@ msgstr "Gioca"
 
 msgid "info@matematicasuperpiatta.it"
 msgstr "info@matematicasuperpiatta.it"
+
+msgid "seconds"
+msgstr "secondi"

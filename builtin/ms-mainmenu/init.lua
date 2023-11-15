@@ -25,6 +25,7 @@ SERVER_PORT = core.settings:get("ms_port") or 29999
 URL_GET = "http://"..SERVER_ADDRESS..":"..SERVER_PORT
 
 SERVICE_DISCOVERY = core.settings:get("ms_discovery") or "fvqyugucy1.execute-api.eu-south-1.amazonaws.com/release"
+PANEL_DATA = core.settings:get("panel_data") or ""
 
 mt_color_grey  = "#AAAAAA"
 mt_color_blue  = "#6389FF"
@@ -50,6 +51,7 @@ global_data = {
 	message_type = "default",
 	message_text = fgettext("Unable to connect to the server!\n\nCheck your internet connection and restart Matematica Superpiatta.\nIf the problem persists contact us at:\nassistenza@matematicasuperpiatta.it")
 }
+waiting_lambda = false
 
 
 --------------------------------------------------------------------------------

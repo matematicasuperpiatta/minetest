@@ -35,8 +35,11 @@ local function get_whoareu_formspec(tabview, _, tabdata)
 	local fs = FormspecVersion:new{version=6}:render() ..
 		Size:new{w = 5.5, h = 4.5, fix = true}:render() ..
 		Label:new{x = 0.5, y = 1.5, label = fgettext("Username:")}:render() ..
+		StyleType:new{selectors = {"field"}, props = {"bgcolor=#0067dc"}}:render() ..
 		Field:new{x = 0.5, y = 1.75, w = 4.5, h = 0.7, name = "username", value = whoareu}:render() ..
+		StyleType:new{selectors = {"button"}, props = {"bgcolor=#ffa900", "alpha=false"}}:render() .. --orig: #ff8000
 		Button:new{x=0.5, y=3.25, w=2.2, h=0.75, name = "btn_back", label = fgettext("Back")}:render() ..
+		StyleType:new{selectors = {"button"}, props = {"bgcolor=#00dc28", "alpha=false"}}:render() .. --orig: #00993b
 		Button:new{x=2.8, y=3.25, w=2.2, h=0.75, name = "btn_next", label = fgettext("Next")}:render() ..
 
 		-- Styled stuff
@@ -88,10 +91,11 @@ local function get_passwd_formspec(tabview, _, tabdata)
 		Label:new{x = 0.5, y = 0.5, label = fgettext("Welcome") .. " " .. whoareu}:render() ..
 		Label:new{x = 0.5, y = 1.5, label = fgettext("Password:")}:render() ..
 		PasswdField:new{x = 0.5, y = 1.75, w = 4.5, h = 0.7, name = "passwd", value = ""}:render() ..
+		StyleType:new{selectors = {"button"}, props = {"bgcolor=#ffa900", "alpha=false"}}:render() ..
 		Button:new{x=0.5, y=3.25, w=2.2, h=0.75, name = "btn_back", label = fgettext("Back")}:render() ..
 
 		-- Styled stuff
-		StyleType:new{selectors = {"button"}, props = {"font=bold"}}:render() ..
+		StyleType:new{selectors = {"button"}, props = {"font=bold", "bgcolor=#00dc28", "alpha=false"}}:render() ..
 		Button:new{x=2.8, y=3.25, w=2.2, h=0.75, name = "btn_play", label = fgettext("Play!")}:render()
 end
 
@@ -105,7 +109,7 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 		-- Wiscom auth
 		passwd = fields.passwd
 		local response = http.fetch_sync({
-			url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/token/",
+			url = "https://wiscomsbeta.matematicasuperpiatta.it/wiscom/api/token/",
 			timeout = 10,
 			post_data = { username = whoareu, password = passwd },
 		})
@@ -113,66 +117,7 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 		if response.succeeded then
 			core.log("info", "Payload is " .. response.data)
 			local json = minetest.parse_json(response.data)
-			if json ~= nil and json.access ~= nil then
-				if handshake.roadmap.server ~= nil then
-					if handshake.roadmap.server.ip == nil then
-						local flavor_dlg = create_flavor_dlg()
-						flavor_dlg:set_parent(this)
-						this:hide()
-						flavor_dlg:show()
-					end
-
-					-- inject refresh token. Server musts support this!
-					local timeout = 95
-
-					-- Minetest connection
-					gamedata.playername = whoareu
-					gamedata.password   = passwd
-					gamedata.token      = json.refresh
-					gamedata.access  	= json.access
-					gamedata.selected_world = 0
-
-					-- probably don't have these, yet
-					gamedata.address    = '' --handshake.roadmap.server.ip or SERVER_ADDRESS
-					gamedata.port       = '' --handshake.roadmap.server.port or handshake.spawnPort()
-
-					core.settings:set("address",     "")
-					core.settings:set("remote_port", "")
-
-					-- set access token to the handshake
-					handshake.token = gamedata.access
-
-					wait_go(function(core, handshake, gamedata)
-						gamedata.address    = handshake.roadmap.server.ip or SERVER_ADDRESS
-						gamedata.port       = handshake.roadmap.server.port or handshake.spawnPort()
-
-						-- debug
-						--core.log("warning", "ACCESS: " .. gamedata.access)
-						--core.log("warning", "ROADMAP: " .. core.write_json(handshake.roadmap))
-
-						local http = core.get_http_api()
-						local response = http.fetch_sync({
-							url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/users/me/server_info",
-							extra_headers = {
-								"Authorization: Bearer " .. gamedata.access,
-								"Content-Type: application/json"
-							},
-							timeout = 10,
-							post_data = core.write_json({
-								server_info = handshake.roadmap.server_info,
-								client_info = handshake.roadmap.client_info
-							})
-						})
-						--core.log("warning", "Log Response: " .. response.data)
-
-						core.log("warning", gamedata.address .. ':' .. gamedata.port)
-						core.start()
-					end)
-					return true
-				end
-			else
-				error_msg = "Sorry. No access!"
-			end
+			return handle_connection(this, json)
 		else
 			error_msg = "Login failed, try again"
 
@@ -216,11 +161,11 @@ local function get_flavor_formspec(tabview, _, tabdata)
 		handshake.roadmap.messages.news or
 		{"Sapevi che", "Nel computer anche questo testo è rappresentato con dei numeri"}
 	local waitingTime = handshake.roadmap.server ~= nil and
-		handshake.roadmap.server["waiting_time"] or 61
-	waitingTime = math.min(61, waitingTime)
+		handshake.roadmap.server["waiting_time"] or 60
+	waitingTime = math.min(60, waitingTime)
 	return FormspecVersion:new{version=6}:render() ..
 		Size:new{w = 12, h = 4.8, fix = true}:render() ..
-		Label:new{x = 0.5, y = 0.5, label = fgettext("Loading in... ") .. tostring(waitingTime) .. "''"}:render() ..
+		Label:new{x = 0.5, y = 0.5, label = fgettext("Loading in... ") .. tostring(waitingTime) .. " " .. fgettext("seconds")}:render() ..
 		TableColumns:new{ columns = { {"text"} } }:render() ..
 		TableOptions:new{ options =	{"background=#00000000", "highlight=#00000000"}}:render() ..
 		Table:new{ x = 0.5, y = 1, w = 11, h = 3.2, name = "news", cells = flavor}:render()
@@ -237,4 +182,83 @@ function create_flavor_dlg()
 				handle_nothing,
 				nil)
 	return dlg
+end
+
+
+--------------------------------------------------------------------------------
+--
+-- Handle connection
+--
+
+function handle_connection(this, json)
+    if json ~= nil and json.access ~= nil then
+        if handshake.roadmap.server ~= nil then
+            --[[
+			if handshake.roadmap.server.ip == nil then
+                local flavor_dlg = create_flavor_dlg()
+                flavor_dlg:set_parent(this)
+                this:hide()
+                flavor_dlg:show()
+            end
+			]]--
+            
+            -- inject refresh token. Server musts support this!
+            local timeout = 95
+
+            -- Minetest connection
+            gamedata.playername = whoareu
+            gamedata.password   = passwd
+            gamedata.token      = json.refresh
+            gamedata.access  	= json.access
+            gamedata.selected_world = 0
+
+            -- probably don't have these, yet
+            gamedata.address    = '' --handshake.roadmap.server.ip or SERVER_ADDRESS
+            gamedata.port       = '' --handshake.roadmap.server.port or handshake.spawnPort()
+
+            core.settings:set("address",     "")
+            core.settings:set("remote_port", "")
+
+            -- set access token to the handshake
+            handshake.token = gamedata.access
+
+            wait_go(function(core, handshake, gamedata)
+                gamedata.address    = handshake.roadmap.server.ip or SERVER_ADDRESS
+                gamedata.port       = handshake.roadmap.server.port or handshake.spawnPort()
+
+                -- debug
+                --core.log("warning", "ACCESS: " .. gamedata.access)
+                --core.log("warning", "ROADMAP: " .. core.write_json(handshake.roadmap))
+
+                local http = core.get_http_api()
+                local response = http.fetch_sync({
+                    url = "https://wiscomsbeta.matematicasuperpiatta.it/wiscom/api/users/me/server_info",
+                    extra_headers = {
+                        "Authorization: Bearer " .. gamedata.access,
+                        "Content-Type: application/json"
+                    },
+                    timeout = 10,
+                    post_data = core.write_json({
+                        server_info = handshake.roadmap.server_info,
+                        client_info = handshake.roadmap.client_info
+                    })
+                })
+                
+                core.log("warning", gamedata.address .. ':' .. gamedata.port)
+                core.start()
+            end)
+            return true
+        end
+	end
+    return false
+end
+
+-- update flavor text with the new waiting_time
+function update_flavor(check_ver)
+	if not check_ver then
+		local flavor_dlg = create_flavor_dlg()
+		ui.cleanup()
+		flavor_dlg:show()
+		ui.update()
+	end
 end

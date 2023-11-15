@@ -18,11 +18,16 @@ local function handle_fatal_error_buttons(this, fields, tabname, tabdata)
 	end
 end
 
+local function handle_fatal_error_event(self, event)
+	-- https://github.com/minetest/minetest/blob/master/builtin/fstk/dialog.lua#L18
+	-- do nothing
+end
+
 function create_fatal_error_dlg()
 	return dialog_create("fatalError",
 				get_fatal_error_formspec,
 				handle_fatal_error_buttons,
-				nil)
+				handle_fatal_error_event)
 end
 
 -- Required new version error
@@ -30,12 +35,13 @@ local function get_required_version_formspec(tabview, _, tabdata)
 	local fs = FormspecVersion:new{version=6}:render() ..
 		Size:new{w = 10, h = 4.5, fix = true}:render() ..
 		Label:new{x = 0.5, y = 0.5, label = fgettext("The version of Superflat Math needs an update!\nPlease download and install new version from the website.")}:render() ..
-		Button:new{x=5 - 1.1, y=3.25, w=2.2, h=0.75, name = "btn_quit", label = fgettext("Update")}:render()
+		Button:new{x=5 - 1.1 -2, y=3.25, w=2.2, h=0.75, name = "btn_update", label = fgettext("Update")}:render() ..
+		Button:new{x=5 - 1.1 +2, y=3.25, w=2.2, h=0.75, name = "btn_quit", label = fgettext("Quit")}:render()
 	return fs
 end
 
 local function handle_required_version_buttons(this, fields, tabname, tabdata)
-	if (fields.key_enter or fields.btn_quit) then
+	if (fields.key_enter or fields.btn_update) then
 		local separator = package.config:sub(1,1)
 		local cmd = ""
 		if separator == '\\' then
@@ -48,14 +54,21 @@ local function handle_required_version_buttons(this, fields, tabname, tabdata)
 		this:delete()
 		core.close()
 		return true
+	elseif (fields.btn_quit) then
+		core.close()
 	end
+end
+
+local function handle_required_version_event(self, event)
+	-- https://github.com/minetest/minetest/blob/master/builtin/fstk/dialog.lua#L18
+	-- do nothing
 end
 
 function create_required_version_dlg()
 	return dialog_create("requiredVersion",
 				get_required_version_formspec,
 				handle_required_version_buttons,
-				nil)
+				handle_required_version_event)
 end
 
 -- Pending new version error
@@ -97,3 +110,4 @@ function create_pending_version_dlg()
 				handle_pending_version_buttons,
 				nil)
 end
+

@@ -37,6 +37,7 @@ atLeastOnceLambda = false
 
 function Handshake:launchpad()
 	core.log("warning", "Ticket: " .. self.roadmap.server.ticket)
+	waiting_lambda = true
 	core.handle_async(function(params)
 		local http = core.get_http_api()
 		return http.fetch_sync(params)
@@ -44,10 +45,10 @@ function Handshake:launchpad()
 		url = self.service_url,
 		extra_headers = { "Content-Type: application/json" },
 		post_data = core.write_json({
-			operating_system = "android",
+			operating_system = "windows",
 			version = "1.1.1",
 			ms_type = "full",
-			dev_phase = "release",
+			dev_phase = "beta",
 			server_type = "ecs",
 			lang = 'it',
 			debug = "false",
@@ -58,6 +59,8 @@ function Handshake:launchpad()
 	}, function(res)
 		local jsonRes = core.parse_json(res.data)
 		core.log("warning", "Lambda response: [" .. res.code .. "] - " .. res.data)
+		waiting_lambda = false
+		core.log("info", "WAITING_LAMBDA: " .. tostring(waiting_lambda))
 		-- Check Connection
 		if res.code ~= 200 then
 			core.log("warning", "Error calling lambdaClient")
@@ -82,29 +85,25 @@ function Handshake:launchpad()
 			ui.update()
 			return true
 		end
-		--
 
 		-- Check Version
-		if not atLeastOnceLambda then
-			atLeastOnceLambda = true
-			local pending = jsonRes["client_update"]["pending"]
-			local required = jsonRes["client_update"]["required"]
-			if required then
-				core.log("warning", "Update required")
-				local error_dlg = create_required_version_dlg()
-				ui.cleanup()
-				error_dlg:show()
-				ui.update()
+		local pending = jsonRes["client_update"]["pending"]
+		local required = jsonRes["client_update"]["required"]
+		if required then
+			core.log("warning", "Update required")
+			local error_dlg = create_required_version_dlg()
+			ui.cleanup()
+			error_dlg:show()
+			ui.update()
+			return true
+		else
+			if pending then
+				--core.log("warning", "Update pending")
+				--local error_dlg = create_pending_version_dlg()
+				--ui.cleanup()
+				--error_dlg:show()
+				--ui.update()
 				return true
-			else
-				if pending then
-					--core.log("warning", "Update pending")
-					--local error_dlg = create_pending_version_dlg()
-					--ui.cleanup()
-					--error_dlg:show()
-					--ui.update()
-					return true
-				end
 			end
 		end
 
@@ -118,6 +117,10 @@ function Handshake:launchpad()
 			}}
 		self:on_launch()
 	end)
+
+	-- update flavor if this is not called by check_version
+	-- self.token is empty when launchpad is called by check_version
+	update_flavor(self.token == '')
 end
 
 function Handshake:spawnPort()

@@ -167,43 +167,6 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	private void handlePanelParams() {
-		String strErrors = "Default";
-		String data = getIntent().getStringExtra("data");
-		if (data != null) {
-			strErrors = "Intent";
-
-			// how to get the app directory
-			// https://stackoverflow.com/questions/72381634/android-studio-get-application-directory-datadir
-			File mConf = new File(getExternalFilesDir(null).getAbsolutePath() + "/Minetest/minetest.conf");
-
-			StringBuilder inputBuffer = new StringBuilder();
-			try {
-				// read minetest.conf file and write string
-				BufferedReader br = new BufferedReader(new FileReader(mConf));
-				for(String line; (line = br.readLine()) != null; ) {
-					if (line.startsWith(PANEL_PARAM))
-						inputBuffer.append(PANEL_PARAM + " = ").append(data);
-					else
-						inputBuffer.append(line);
-					inputBuffer.append("\n");
-				}
-				br.close();
-
-				// update minetest.conf file
-				FileOutputStream fileOut = new FileOutputStream(mConf);
-				fileOut.write(inputBuffer.toString().getBytes());
-				fileOut.close();
-			} catch (IOException ioe) {
-				System.out.println("Error reading/writing minetest.conf");
-				strErrors = "Error reading/writing minetest.conf";
-				ioe.printStackTrace();
-			}
-		}
-
-		Toast.makeText(this, strErrors, Toast.LENGTH_LONG).show();
-	}
-
 	private void startNative() {
 		// check if the app has been launched by a Panel
 		handlePanelParams();
@@ -213,6 +176,50 @@ public class MainActivity extends AppCompatActivity {
 		Intent intent = new Intent(this, GameActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		startActivity(intent);
+	}
+
+	private void handlePanelParams() {
+		String strErrors = "Default";
+		String data = getIntent().getStringExtra("data");
+		if (data != null)
+			strErrors = updateConf(PANEL_PARAM + " = " + data);
+		else
+			strErrors += " - " + updateConf(PANEL_PARAM + " = ");
+
+		Toast.makeText(this, strErrors, Toast.LENGTH_LONG).show();
+	}
+
+	private String updateConf(String row) {
+		String strErrors = "Intent";
+
+		// how to get the app directory
+		// https://stackoverflow.com/questions/72381634/android-studio-get-application-directory-datadir
+		File mConf = new File(getExternalFilesDir(null).getAbsolutePath() + "/Minetest/minetest.conf");
+
+		StringBuilder inputBuffer = new StringBuilder();
+		try {
+			// read minetest.conf file and write string
+			BufferedReader br = new BufferedReader(new FileReader(mConf));
+			for(String line; (line = br.readLine()) != null; ) {
+				if (line.startsWith(PANEL_PARAM))
+					inputBuffer.append(row);
+				else
+					inputBuffer.append(line);
+				inputBuffer.append("\n");
+			}
+			br.close();
+
+			// update minetest.conf file
+			FileOutputStream fileOut = new FileOutputStream(mConf);
+			fileOut.write(inputBuffer.toString().getBytes());
+			fileOut.close();
+		} catch (IOException ioe) {
+			System.out.println("Error reading/writing minetest.conf");
+			strErrors = "Error reading/writing minetest.conf";
+			ioe.printStackTrace();
+		}
+
+		return strErrors;
 	}
 
 	@Override

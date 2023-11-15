@@ -7,13 +7,13 @@ api_dev = 'fvqyugucy1.execute-api.eu-south-1.amazonaws.com/dev'
 
 class Configurations:
    def __init__(self):
-      self.api = ['release',
+      self.api = ['dev',
                  ('release', 'dev')]
-      self.operating_system = ['android',
+      self.operating_system = ['windows',
                               ('linux', 'machintosh', 'ios', 'windows', 'android')]
       self.ms_type = ['full',
                      ('full', 'acer', 'panel')]
-      self.dev_phase = ['release',
+      self.dev_phase = ['beta',
                        ('beta', 'release')]
       self.server_type = ['ecs',
                          ('local', 'multi', 'ecs')]
@@ -58,6 +58,16 @@ class Configurations:
          with open("builtin/ms-mainmenu/oop/handshake.lua", "w") as handshake:
             for line in lines:
                handshake.write(line)
+         
+         with open("minetest.conf", "r") as conf:
+            lines = conf.readlines()
+         for i, line in enumerate(lines):
+            if 'debug_log_level =' in line:
+               dl = 0 if self.operating_system == 'linux' else 3
+               lines[i] = "debug_log_level = " + str(dl) + "\n"
+         with open("minetest.conf", "w") as conf:
+            for line in lines:
+               conf.write(line)
          return True
       else:
          return False
