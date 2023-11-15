@@ -37,7 +37,7 @@ atLeastOnceLambda = false
 
 function Handshake:launchpad()
 	core.log("warning", "Ticket: " .. self.roadmap.server.ticket)
-	waiting_lambda = true
+	lambda_waiting = true
 	core.handle_async(function(params)
 		local http = core.get_http_api()
 		return http.fetch_sync(params)
@@ -46,9 +46,9 @@ function Handshake:launchpad()
 		extra_headers = { "Content-Type: application/json" },
 		post_data = core.write_json({
 			operating_system = "windows",
-			version = "1.1.1",
+			version = "1.1.2",
 			ms_type = "full",
-			dev_phase = "beta",
+			dev_phase = "release",
 			server_type = "ecs",
 			lang = 'it',
 			debug = "false",
@@ -59,8 +59,7 @@ function Handshake:launchpad()
 	}, function(res)
 		local jsonRes = core.parse_json(res.data)
 		core.log("warning", "Lambda response: [" .. res.code .. "] - " .. res.data)
-		waiting_lambda = false
-		core.log("info", "WAITING_LAMBDA: " .. tostring(waiting_lambda))
+		lambda_waiting = false
 		-- Check Connection
 		if res.code ~= 200 then
 			core.log("warning", "Error calling lambdaClient")
@@ -120,7 +119,7 @@ function Handshake:launchpad()
 
 	-- update flavor if this is not called by check_version
 	-- self.token is empty when launchpad is called by check_version
-	update_flavor(self.token == '')
+	--update_flavor(self.token == '')
 end
 
 function Handshake:spawnPort()

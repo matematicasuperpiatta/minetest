@@ -109,7 +109,7 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 		-- Wiscom auth
 		passwd = fields.passwd
 		local response = http.fetch_sync({
-			url = "https://wiscomsbeta.matematicasuperpiatta.it/wiscom/api/token/",
+			url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/token/",
 			timeout = 10,
 			post_data = { username = whoareu, password = passwd },
 		})
@@ -232,7 +232,7 @@ function handle_connection(this, json)
 
                 local http = core.get_http_api()
                 local response = http.fetch_sync({
-                    url = "https://wiscomsbeta.matematicasuperpiatta.it/wiscom/api/users/me/server_info",
+                    url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/users/me/server_info",
                     extra_headers = {
                         "Authorization: Bearer " .. gamedata.access,
                         "Content-Type: application/json"
@@ -254,11 +254,9 @@ function handle_connection(this, json)
 end
 
 -- update flavor text with the new waiting_time
-function update_flavor(check_ver)
-	if not check_ver then
-		local flavor_dlg = create_flavor_dlg()
-		ui.cleanup()
-		flavor_dlg:show()
-		ui.update()
-	end
+function update_flavor()
+	local flavor_dlg = create_flavor_dlg()
+	ui.cleanup()
+	flavor_dlg:show()
+	ui.update()
 end

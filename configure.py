@@ -7,17 +7,17 @@ api_dev = 'fvqyugucy1.execute-api.eu-south-1.amazonaws.com/dev'
 
 class Configurations:
    def __init__(self):
-      self.api = ['dev',
+      self.api = ['release',
                  ('release', 'dev')]
       self.operating_system = ['windows',
                               ('linux', 'machintosh', 'ios', 'windows', 'android')]
       self.ms_type = ['full',
                      ('full', 'acer', 'panel')]
-      self.dev_phase = ['beta',
+      self.dev_phase = ['release',
                        ('beta', 'release')]
       self.server_type = ['ecs',
                          ('local', 'multi', 'ecs')]
-      self.version = ['1.1.1',
+      self.version = ['1.1.2',
                       True]
       self.debug = ['false',
                    ('true', 'false')]
