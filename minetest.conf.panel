@@ -18,7 +18,7 @@ enable_local_map_saving = false
 #ms_discovery = fvqyugucy1.execute-api.eu-south-1.amazonaws.com/dev
 #ms_discovery = fvqyugucy1.execute-api.eu-south-1.amazonaws.com/release
 ms_discovery = fvqyugucy1.execute-api.eu-south-1.amazonaws.com/release
-panel_data = 
+panel_data = {"time": "2023", "signature": "qwertyuiopasdfghjklzxcvbnm"}
 
 language = it
 enable_3d_clouds = false

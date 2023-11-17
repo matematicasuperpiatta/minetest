@@ -25,7 +25,7 @@ class Configurations:
                      ('true', 'false')]
       self.slack = ['false',
                    ('true', 'false')]
-      self.android_code = ['55',
+      self.android_code = ['56',
                       True]
    
    # Cambiare solo fino a qui.
