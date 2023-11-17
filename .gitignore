@@ -94,7 +94,6 @@ games/devtest/mods/testnodes/textures/testnodes_generated_*.png
 *.cbp
 *.layout
 *.o
-*.a
 *.ninja
 .ninja*
 *.gch

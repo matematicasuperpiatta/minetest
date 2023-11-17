@@ -6,5 +6,5 @@ app/release
 app/src/main/assets
 build
 local.properties
-native/.gradle
+native/.*
 native/build
