@@ -186,7 +186,9 @@ public class MainActivity extends AppCompatActivity {
 		else
 			strErrors += " - " + updateConf(PANEL_PARAM + " = ");
 
-		Toast.makeText(this, strErrors, Toast.LENGTH_LONG).show();
+		if (BuildConfig.DEBUG) {
+			Toast.makeText(this, strErrors, Toast.LENGTH_LONG).show();
+		}
 	}
 
 	private String updateConf(String row) {
