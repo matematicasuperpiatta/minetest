@@ -25,6 +25,8 @@ class Configurations:
                      ('true', 'false')]
       self.slack = ['false',
                    ('true', 'false')]
+      self.android_code = ['55',
+                      True]
    
    # Cambiare solo fino a qui.
    
@@ -151,6 +153,18 @@ class Configurations:
             if 'set(VERSION_PATCH ' in line:
                lines[i] = 'set(VERSION_PATCH ' + patch + ')\n'
          with open("CMakeLists.txt", "w") as cmake:
+            for line in lines:
+               cmake.write(line)
+         with open("ms-android/build.gradle", "r") as cmake:
+            lines = cmake.readlines()
+         for i, line in enumerate(lines):
+            if 'project.ext.set("versionMajor", ' in line:
+               lines[i] = 'project.ext.set("versionMajor", ' + major + ')\n'
+            if 'project.ext.set("versionMinor", ' in line:
+               lines[i] = 'project.ext.set("versionMinor", ' + minor + ')\n'
+            if 'project.ext.set("versionPatch", ' in line:
+               lines[i] = 'project.ext.set("versionPatch", ' + patch + ')\n'
+         with open("ms-android/build.gradle", "w") as cmake:
             for line in lines:
                cmake.write(line)
          return True

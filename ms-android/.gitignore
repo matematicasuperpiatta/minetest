@@ -1,6 +1,5 @@
 *.iml
 .externalNativeBuild
-.gradle
 app/build
 !app/build/assets/minetest.conf
 app/release
