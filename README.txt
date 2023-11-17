@@ -84,3 +84,10 @@ CLIENT
 
 	*Is a .jks file. When you obtain one, is common to save in .ssh folder
 
+-- INSTALLING --
+CLIENT
+	LINUX (using Appimage)
+	mkdir ms_version_linux
+	cd ms_version_linux
+	[...]
+
