@@ -57,16 +57,32 @@ function Handshake:launchpad()
 		}),
 		timeout = 10
 	}, function(res)
-		local jsonRes = core.parse_json(res.data)
-		core.log("warning", "Lambda response: [" .. res.code .. "] - " .. res.data)
 		lambda_waiting = false
-		-- Check Connection
-		if res.code ~= 200 then
-			core.log("warning", "Error calling lambdaClient")
+		core.log("warning", "Lambda response: [" .. res.code .. "] - " .. res.data)
+
+		-- Check for json 
+		local jsonRes = core.parse_json(res.data)
+		if jsonRes == nil then
+			core.log("warning", "Lambda error: cannot parse data.")
+
 			local error_dlg = create_fatal_error_dlg()
 			ui.cleanup()
 			error_dlg:show()
 			ui.update()
+			
+			lambda_error = true
+			return true
+		end
+
+		-- Check Connection
+		if res.code ~= 200 then
+			core.log("warning", "Error calling lambdaClient")
+			
+			local error_dlg = create_fatal_error_dlg()
+			ui.cleanup()
+			error_dlg:show()
+			ui.update()
+
 			lambda_error = true
 			return true
 		end
@@ -78,10 +94,12 @@ function Handshake:launchpad()
 			core.log("warning", "Lambda error: [" .. message_type .. "] " .. message_text)
 			global_data.message_type = message_type
 			global_data.message_text = message_text
+
 			local error_dlg = create_fatal_error_dlg()
 			ui.cleanup()
 			error_dlg:show()
 			ui.update()
+
 			lambda_error = true
 			return true
 		end
@@ -91,10 +109,12 @@ function Handshake:launchpad()
 		local required = jsonRes["client_update"]["required"]
 		if required then
 			core.log("warning", "Update required")
+			
 			local error_dlg = create_required_version_dlg()
 			ui.cleanup()
 			error_dlg:show()
 			ui.update()
+
 			lambda_error = true
 			return true
 		else

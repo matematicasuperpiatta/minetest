@@ -174,7 +174,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 	// Irrlicht 1.8 input colours
 	skin->setColor(gui::EGDC_EDITABLE, video::SColor(255, 128, 128, 128));
-	skin->setColor(gui::EGDC_FOCUSED_EDITABLE, video::SColor(255, 96, 134, 49));
+	skin->setColor(gui::EGDC_FOCUSED_EDITABLE, video::SColor(255, 100, 100, 100));
 
 	// Create the menu clouds
 	if (!g_menucloudsmgr)

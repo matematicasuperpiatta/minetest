@@ -80,7 +80,7 @@ local function bootstrap()
 	dofile(menupath .. "oop" .. DIR_DELIM .. "oo_formspec.lua")
 
 	dofile(menupath .. "dlg_whoareu.lua")
-	dofile(menupath .. "errors.lua")
+	dofile(menupath .. "dlg_errors.lua")
 	dofile(menupath .. "dlg_version_info.lua")
 
 	return {

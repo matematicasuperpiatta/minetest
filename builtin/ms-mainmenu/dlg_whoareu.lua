@@ -37,7 +37,7 @@ local function get_whoareu_formspec(tabview, _, tabdata)
 		Label:new{x = 0.5, y = 1.5, label = fgettext("Username:")}:render() ..
 		-- see here to edit field color
 		-- https://github.com/minetest/minetest/blob/8c7276c9d4fc8afa05f859297048c7153cc11f5b/src/client/clientlauncher.cpp#L176
-		StyleType:new{selectors = {"field"}, props = {"textcolor=#ffffff"}}:render() ..
+		StyleType:new{selectors = {"field"}, props = {"textcolor=#000000"}}:render() ..
 		Field:new{x = 0.5, y = 1.75, w = 4.5, h = 0.7, name = "username", value = whoareu}:render() ..
 		StyleType:new{selectors = {"button"}, props = {"bgcolor=#ffa900", "alpha=false"}}:render() .. --orig: #ff8000
 		Button:new{x=0.5, y=3.25, w=2.2, h=0.75, name = "btn_back", label = fgettext("Back")}:render() ..

@@ -10,7 +10,7 @@ class Configurations:
       self.api = ['release',
                  ('release', 'dev')]
       self.operating_system = ['windows',
-                              ('linux', 'machintosh', 'ios', 'windows', 'android')]
+                              ('linux', 'macintosh', 'ios', 'windows', 'android')]
       self.ms_type = ['full',
                      ('full', 'acer', 'panel')]
       self.dev_phase = ['release',

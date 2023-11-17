@@ -23,7 +23,11 @@ end
 function wait_go(callback)
 	local wait = 0.5
 	if (handshake.roadmap.server.ip == nil) then
-		if lambda_read and not lambda_error then
+		if lambda_error then
+			return
+		end
+		
+		if lambda_read then
 			handshake:launchpad()
 			lambda_read = false
 		end
