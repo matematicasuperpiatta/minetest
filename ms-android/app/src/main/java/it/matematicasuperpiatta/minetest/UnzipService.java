@@ -155,19 +155,23 @@ public class UnzipService extends IntentService {
 		int readLen;
 		byte[] readBuffer = new byte[16384];
 		try (FileInputStream fileInputStream = new FileInputStream(zipFile);
-		     ZipInputStream zipInputStream = new ZipInputStream(fileInputStream)) {
+			ZipInputStream zipInputStream = new ZipInputStream(fileInputStream)) {
 			ZipEntry ze;
 			while ((ze = zipInputStream.getNextEntry()) != null) {
-				if (ze.isDirectory()) {
-					++per;
-					Utils.createDirs(userDataDirectory, ze.getName());
-					continue;
-				}
-				publishProgress(notificationBuilder, R.string.loading, 100 * ++per / size);
-				try (OutputStream outputStream = new FileOutputStream(
+				File f = new File(userDataDirectory, ze.getName());
+				String canonicalPath = f.getCanonicalPath();
+				if (canonicalPath.startsWith(userDataDirectory.getPath())) {
+					if (ze.isDirectory()) {
+						++per;
+						Utils.createDirs(userDataDirectory, ze.getName());
+						continue;
+					}
+					publishProgress(notificationBuilder, R.string.loading, 100 * ++per / size);
+					try (OutputStream outputStream = new FileOutputStream(
 						new File(userDataDirectory, ze.getName()))) {
-					while ((readLen = zipInputStream.read(readBuffer)) != -1) {
-						outputStream.write(readBuffer, 0, readLen);
+						while ((readLen = zipInputStream.read(readBuffer)) != -1) {
+							outputStream.write(readBuffer, 0, readLen);
+						}
 					}
 				}
 			}
