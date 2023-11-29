@@ -83,11 +83,42 @@ CLIENT
 	chose 'release'
 
 	*Is a .jks file. When you obtain one, is common to save in .ssh folder
-
 -- INSTALLING --
-CLIENT
-	LINUX (using Appimage)
-	mkdir ms_version_linux
-	cd ms_version_linux
-	[...]
+	LINUX - create an AppImage
+	# From the same folder where ms_client has been created:
+	mkdir ms_1.1.2_linux
+	mkdir ms_1.1.2_linux/ms.AppDir
+	cp ms_client -r ms_client_linux/ms.AppDir/ms
+	cd ms_client_linux/ms.AppDir
+	# Incolla i files presenti in https://drive.google.com/file/d/1dmMeoErokvFzyeqlfIFUj-ChvRW6aUoR/view?usp=sharing, https://drive.google.com/file/d/1dppAshkcpgApG1FrFzcVymcHDehzeIW1/view?usp=sharing, https://drive.google.com/file/d/1kOzQfFeadNg3B8XRycBNbIzezIA4oJhl/view?usp=sharing, https://drive.google.com/file/d/1uPiXlvpKFIQce4EiiNFpbm2ZxP657bj6/view?usp=sharing
+	chmod +x AppRun
+	chmod +x MatematicaSuperpiatta.desktop
+	mkdir usr
+	cd ms
+	cp -rf bin builtin cache client clientmods doc fonts games locale misc mods po textures minetest.conf ../usr
+	cd ..
+	cp usr/misc/minetest-xorg-icon-128.png usr/icon.png
+	echo "" > usr/debug.txt
+	rm -rf ms
+	cd ..
+	ARCH=x86_64 appimagetool ms.AppDir
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
