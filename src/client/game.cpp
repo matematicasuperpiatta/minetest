@@ -1904,16 +1904,16 @@ void Game::processKeyInput()
 			showPauseMenu();
 		}
 	} else if (wasKeyDown(KeyType::CHAT)) {
-		openConsole(0.2, L"");
+		// openConsole(0.2, L"");
 	} else if (wasKeyDown(KeyType::CMD)) {
-		openConsole(0.2, L"/");
+		// openConsole(0.2, L"/");
 	} else if (wasKeyDown(KeyType::CMD_LOCAL)) {
-		if (client->modsLoaded())
+		/*if (client->modsLoaded())
 			openConsole(0.2, L".");
 		else
-			m_game_ui->showTranslatedStatusText("Client side scripting is disabled");
+			m_game_ui->showTranslatedStatusText("Client side scripting is disabled");*/
 	} else if (wasKeyDown(KeyType::CONSOLE)) {
-		openConsole(core::clamp(g_settings->getFloat("console_height"), 0.1f, 1.0f));
+		// openConsole(core::clamp(g_settings->getFloat("console_height"), 0.1f, 1.0f));
 	} else if (wasKeyDown(KeyType::FREEMOVE)) {
 		toggleFreeMove();
 	} else if (wasKeyDown(KeyType::JUMP)) {
