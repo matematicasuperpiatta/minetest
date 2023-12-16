@@ -76,27 +76,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields.btn_mp_connect then
-		if PANEL_DATA == '' then
-			-- MS has been launched normally
-			local whoareu_dlg = create_whoareu_dlg()
-			--tabview:hide()
-			ui.cleanup()
-			whoareu_dlg:show()
-			ui.update()
-		else
-			-- MS has been launched from a panel
-			local http = core.get_http_api()
-			local response = http.fetch_sync({
-				--url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/panel/",
-				url = "http://127.0.0.1:8000/wiscom/api/panel/",
-				
-				timeout = 10,
-				post_data = core.parse_json(PANEL_DATA),
-			})
-			if response.succeeded then
-				core.log("info", "PANEL RESPONSE: " .. response.data)
-			end
-		end
+		local whoareu_dlg = create_whoareu_dlg()
+		--tabview:hide()
+		ui.cleanup()
+		whoareu_dlg:show()
+		ui.update()
 		return true
 	end
 
@@ -104,6 +88,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		core.open_url(handshake.roadmap.client_update.url)
 		return true
 	end
+	
 	return false
 end
 

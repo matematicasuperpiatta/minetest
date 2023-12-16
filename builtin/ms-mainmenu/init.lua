@@ -151,19 +151,27 @@ local function init_globals(tabs)
 	ui.update()
 	core.log("warning","Set tab on online")
 
-	-- In case the folder of the last selected game has been deleted,
-	-- display "Minetest" as a header
---	if tv_main.current_tab == "local" then
---		local game = pkgmgr.find_by_gameid(core.settings:get("menu_last_game"))
---		if game == nil then
---			mm_texture.reset()
---		end
---	end
-
-	ui.set_default("maintab")
-	check_new_version(handshake)
-	tv_main:show()
-	ui.update()
+	if PANEL_DATA == '' then
+		-- MS has been launched normally
+		core.log("warning", "NO INTENT")
+		ui.set_default("maintab")
+		check_new_version(handshake)
+		tv_main:show()
+		ui.update()
+	else
+		-- MS has been launched from a panel
+		core.log("warning", "INTENT")
+		local http = core.get_http_api()
+		local response = http.fetch_sync({
+			url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/panel/token/",
+			timeout = 10,
+			post_data = core.parse_json(PANEL_DATA),
+		})
+		if response.succeeded then
+			core.log("warning", "PANEL RESPONSE: " .. response.data)
+			handle_connection(nil, core.parse_json(response.data))
+		end
+	end
 
 	mm_game_theme.reset()
 	mm_game_theme.update_game(pkgmgr.find_by_gameid(core.settings:get("menu_last_game")))
