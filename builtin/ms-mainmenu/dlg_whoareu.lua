@@ -102,10 +102,8 @@ local function get_passwd_formspec(tabview, _, tabdata)
 end
 
 local function handle_passwd_buttons(this, fields, tabname, tabdata)
-	-- whoareu was 'test'
-	-- fields.passwd was ''
-	gamedata.playername = whoareu
-	core.settings:set("name", whoareu)
+	--gamedata.playername = whoareu
+	--core.settings:set("name", whoareu)
 
 	if fields.passwd ~= "" and (fields.key_enter or fields.btn_play) then
 		-- Wiscom auth
@@ -119,10 +117,11 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 		if response.succeeded then
 			core.log("info", "Payload is " .. response.data)
 			local json = minetest.parse_json(response.data)
-			return handle_connection(this, json)
+			error_msg = handle_connection(json, whoareu, passwd)
+			if error_msg == '' then
+				return true
+			end
 		else
-			error_msg = "Login failed, try again"
-
 			core.log("warning", "Error calling lambdaClient")
 			local error_dlg = create_fatal_error_dlg()
 			ui.cleanup()
@@ -130,9 +129,9 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 			ui.update()
 			return true
 		end
+
 		local login_dlg = create_whoareu_dlg()
 		login_dlg:set_parent(this)
-
 		this:hide()
 		login_dlg:show()
 		return true
@@ -192,15 +191,15 @@ end
 -- Handle connection
 --
 
-function handle_connection(this, json)
+function handle_connection(json, user, pass)
     if json ~= nil and json.access ~= nil then
         if handshake.roadmap.server ~= nil then            
             -- inject refresh token. Server musts support this!
             local timeout = 95
 
             -- Minetest connection
-            gamedata.playername = whoareu
-            gamedata.password   = passwd
+            gamedata.playername = user --whoareu
+            gamedata.password   = pass --passwd
             gamedata.token      = json.refresh
             gamedata.access  	= json.access
             gamedata.selected_world = 0
@@ -216,8 +215,8 @@ function handle_connection(this, json)
             handshake.token = gamedata.access
 
             wait_go(function(core, handshake, gamedata)
-                gamedata.address    = handshake.roadmap.server.ip or SERVER_ADDRESS
-                gamedata.port       = handshake.roadmap.server.port or handshake.spawnPort()
+                gamedata.address    = handshake.roadmap.server.ip
+                gamedata.port       = handshake.roadmap.server.port
 
                 -- debug
                 --core.log("warning", "ACCESS: " .. gamedata.access)
@@ -240,10 +239,10 @@ function handle_connection(this, json)
                 core.log("warning", gamedata.address .. ':' .. gamedata.port)
                 core.start()
             end)
-            return true
+            return ""
         end
 	end
-    return false
+	return "Login failed, try again"
 end
 
 -- update flavor text with the new waiting_time

@@ -151,16 +151,20 @@ local function init_globals(tabs)
 	ui.update()
 	core.log("warning","Set tab on online")
 
+	-- check if the client needs to be updated
+	check_new_version(handshake)
+
 	if PANEL_DATA == '' then
 		-- MS has been launched normally
 		core.log("warning", "NO INTENT")
 		ui.set_default("maintab")
-		check_new_version(handshake)
 		tv_main:show()
 		ui.update()
 	else
 		-- MS has been launched from a panel
 		core.log("warning", "INTENT")
+		update_flavor()
+		
 		local http = core.get_http_api()
 		local response = http.fetch_sync({
 			url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/panel/token/",
@@ -169,7 +173,27 @@ local function init_globals(tabs)
 		})
 		if response.succeeded then
 			core.log("warning", "PANEL RESPONSE: " .. response.data)
-			handle_connection(nil, core.parse_json(response.data))
+			local json = core.parse_json(response.data)
+			if response.code == 200 then
+				local user = json.username
+				local error_msg = handle_connection(json, user, "")
+				if error_msg ~= '' then
+					core.log("warning", "HANDLE_CONNECTION: " .. error_msg)
+				end
+			else
+				global_data.message_type = message_type
+				global_data.message_text = json.code
+
+				local error_dlg = create_fatal_error_dlg()
+				ui.cleanup()
+				error_dlg:show()
+				ui.update()
+			end
+		else
+			local error_dlg = create_fatal_error_dlg()
+			ui.cleanup()
+			error_dlg:show()
+			ui.update()
 		end
 	end
 

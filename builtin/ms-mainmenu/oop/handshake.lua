@@ -1,7 +1,6 @@
 Handshake = {}
 
 function Handshake:new(o)
-	--local ticket = core.settings:get("ticket.last") or ""
 	local ticket = ""
 	local o = o or {
 		is_ready = false,
