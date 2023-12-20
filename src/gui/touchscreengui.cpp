@@ -39,7 +39,8 @@ const char **button_imagenames = (const char *[]) {
 	"jump_btn.png",
 	"down.png",
 	"zoom.png",
-	"aux1_btn.png"
+	"aux1_btn.png",
+	"inventory_btn.png"
 };
 
 const char **joystick_imagenames = (const char *[]) {
@@ -413,8 +414,8 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver)
 	m_device(device),
 	m_guienv(device->getGUIEnvironment()),
 	m_receiver(receiver),
-	m_settingsbar(device, receiver),
-	m_rarecontrolsbar(device, receiver)
+	m_settingsbar(device, receiver)
+	//m_rarecontrolsbar(device, receiver)
 {
 	for (auto &button : m_buttons) {
 		button.guibutton     = nullptr;
@@ -481,8 +482,8 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 	} else {
 		m_joystick_btn_off = initJoystickButton(joystick_off_id,
 				rect<s32>(button_size,
-						m_screensize.Y - button_size * 3,
-						button_size * 3,
+						m_screensize.Y - button_size * 4,
+						button_size * 4,
 						m_screensize.Y - button_size), 0);
 	}
 
@@ -513,14 +514,17 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 			L"H", false);
 
 	// init zoom button
+	/*
 	initButton(zoom_id,
 			rect<s32>(m_screensize.X - (1.25 * button_size),
 					m_screensize.Y - (4 * button_size),
 					m_screensize.X - (0.25 * button_size),
 					m_screensize.Y - (3 * button_size)),
 			L"z", false);
+	*/
 
 	// init aux1 button
+	/*
 	if (!m_joystick_triggers_aux1)
 		initButton(aux1_id,
 				rect<s32>(m_screensize.X - (1.25 * button_size),
@@ -528,6 +532,16 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 						m_screensize.X - (0.25 * button_size),
 						m_screensize.Y - (1.5 * button_size)),
 				L"spc1", false);
+	*/
+
+	// init inv button
+	initButton(inventory_id,
+				rect<s32>(
+					0.25 * button_size,
+					m_screensize.Y - ((RARE_CONTROLS_BAR_Y_OFFSET + 1.0) * button_size) + (0.5 * button_size),
+					1.25 * button_size,
+					m_screensize.Y - (RARE_CONTROLS_BAR_Y_OFFSET * button_size) + (0.5 * button_size)),
+			L"inv", false);
 
 	m_settingsbar.init(m_texturesource, "gear_icon.png", settings_starter_id,
 		v2s32(m_screensize.X - (1.25 * button_size),
@@ -538,18 +552,20 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 				+ (0.5 * button_size)),
 		AHBB_Dir_Right_Left, 3.0);
 
-	m_settingsbar.addButton(fly_id,     L"fly",       "fly_btn.png");
-	m_settingsbar.addButton(noclip_id,  L"noclip",    "noclip_btn.png");
-	m_settingsbar.addButton(fast_id,    L"fast",      "fast_btn.png");
+	//m_settingsbar.addButton(fly_id,     L"fly",       "fly_btn.png");
+	//m_settingsbar.addButton(noclip_id,  L"noclip",    "noclip_btn.png");
+	//m_settingsbar.addButton(fast_id,    L"fast",      "fast_btn.png");
 	m_settingsbar.addButton(debug_id,   L"debug",     "debug_btn.png");
 	m_settingsbar.addButton(camera_id,  L"camera",    "camera_btn.png");
 	m_settingsbar.addButton(range_id,   L"rangeview", "rangeview_btn.png");
 	m_settingsbar.addButton(minimap_id, L"minimap",   "minimap_btn.png");
+	m_settingsbar.addButton(zoom_id,    L"z",         "zoom.png");
 
 	// Chat is shown by default, so chat_hide_btn.png is shown first.
-	m_settingsbar.addToggleButton(toggle_chat_id, L"togglechat",
-			"chat_hide_btn.png", "chat_show_btn.png");
+	//m_settingsbar.addToggleButton(toggle_chat_id, L"togglechat",
+	//		"chat_hide_btn.png", "chat_show_btn.png");
 
+	/*
 	m_rarecontrolsbar.init(m_texturesource, "rare_controls.png",
 		rare_controls_starter_id,
 		v2s32(0.25 * button_size,
@@ -563,6 +579,7 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 	// m_rarecontrolsbar.addButton(chat_id,      L"Chat", "chat_btn.png");
 	m_rarecontrolsbar.addButton(inventory_id, L"inv",  "inventory_btn.png");
 	m_rarecontrolsbar.addButton(drop_id,      L"drop", "drop_btn.png");
+	*/
 }
 
 touch_gui_button_id TouchScreenGUI::getButtonID(s32 x, s32 y)
@@ -752,30 +769,40 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 		if (button != after_last_element_id) {
 			handleButtonEvent(button, eventID, true);
 			m_settingsbar.deactivate();
-			m_rarecontrolsbar.deactivate();
+			//m_rarecontrolsbar.deactivate();
 		} else if (isHUDButton(event)) {
 			m_settingsbar.deactivate();
-			m_rarecontrolsbar.deactivate();
+			//m_rarecontrolsbar.deactivate();
 			// already handled in isHUDButton()
 		} else if (m_settingsbar.isButton(event)) {
-			m_rarecontrolsbar.deactivate();
+			//m_rarecontrolsbar.deactivate();
 			// already handled in isSettingsBarButton()
-		} else if (m_rarecontrolsbar.isButton(event)) {
+		}
+		/*
+		else if (m_rarecontrolsbar.isButton(event)) {
 			m_settingsbar.deactivate();
 			// already handled in isSettingsBarButton()
-		} else {
+		}
+		*/
+		else {
 			// handle non button events
 			m_settingsbar.deactivate();
-			m_rarecontrolsbar.deactivate();
+			//m_rarecontrolsbar.deactivate();
 
 			s32 dxj = event.TouchInput.X - button_size * 5.0f / 2.0f;
 			s32 dyj = event.TouchInput.Y - m_screensize.Y + button_size * 5.0f / 2.0f;
 
 			/* Select joystick when left 1/3 of screen dragged or
 			 * when joystick tapped (fixed joystick position)
+			 *
+			 * Edited for MS:
+			 * 1/4 of the screen horizontally
+			 * 1/3 of the screen vertically
 			 */
 			if ((m_fixed_joystick && dxj * dxj + dyj * dyj <= button_size * button_size * 1.5 * 1.5) ||
-					(!m_fixed_joystick && event.TouchInput.X < m_screensize.X / 3.0f)) {
+					(!m_fixed_joystick &&
+					event.TouchInput.X < m_screensize.X / 4.0f &&
+					event.TouchInput.Y > m_screensize.Y / 3.0f * 2.0f)) {
 				// If we don't already have a starting point for joystick make this the one.
 				if (!m_has_joystick_id) {
 					m_has_joystick_id           = true;
@@ -978,7 +1005,7 @@ void TouchScreenGUI::handleChangedButton(const SEvent &event)
 
 	int current_button_id = getButtonID(event.TouchInput.X, event.TouchInput.Y);
 
-	if (current_button_id == after_last_element_id)
+	if (current_button_id == 17)
 		return;
 
 	button_info *btn = &m_buttons[current_button_id];
@@ -1146,7 +1173,7 @@ void TouchScreenGUI::step(float dtime)
 	}
 
 	m_settingsbar.step(dtime);
-	m_rarecontrolsbar.step(dtime);
+	//m_rarecontrolsbar.step(dtime);
 }
 
 void TouchScreenGUI::resetHud()
@@ -1176,10 +1203,10 @@ void TouchScreenGUI::Toggle(bool visible)
 			handleReleaseEvent(m_known_ids.begin()->id);
 
 		m_settingsbar.hide();
-		m_rarecontrolsbar.hide();
+		//m_rarecontrolsbar.hide();
 	} else {
 		m_settingsbar.show();
-		m_rarecontrolsbar.show();
+		//m_rarecontrolsbar.show();
 	}
 }
 

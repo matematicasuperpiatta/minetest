@@ -182,9 +182,16 @@ class Configurations:
          with open("builtin/ms-mainmenu/oop/handshake.lua", "w") as handshake:
             for line in lines:
                handshake.write(line)
+         with open("ms-android/build.gradle", "r") as build_gradle:
+            lines = build_gradle.readlines()
+         for i, line in enumerate(lines):
+            if 'project.ext.set("developmentBuild", ' in line:
+               lines[i] = 'project.ext.set("developmentBuild", ' + '1' if self.debug[0] == 'true' else 0 + ')\n'
+         with open("ms-android/build.gradle", "w") as build_gradle:
+            for line in lines:
+               build_gradle.write(line)
          return True
-      else:
-         return False
+      return False
    
    def push_monitor(self):
       if self.check(self.monitor):
