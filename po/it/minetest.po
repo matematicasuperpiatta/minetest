@@ -1557,6 +1557,10 @@ msgid "Exit to OS"
 msgstr "Torna al S.O."
 
 #: src/client/game.cpp
+msgid "Exit to Verse"
+msgstr "Torna a Verse"
+
+#: src/client/game.cpp
 msgid "Fast mode disabled"
 msgstr "Modalità rapida disabilitata"
 

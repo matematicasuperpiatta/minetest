@@ -4196,6 +4196,8 @@ void Game::showDeathFormspec()
 void Game::showPauseMenu()
 {
 #ifdef HAVE_TOUCHSCREENGUI
+	static const std::string control_text = "";
+	/*
 	static const std::string control_text = strgettext("Default Controls:\n"
 		"No menu visible:\n"
 		"- single tap: button activate\n"
@@ -4209,6 +4211,7 @@ void Game::showPauseMenu()
 		"- touch&drag, tap 2nd finger\n"
 		" --> place single item to slot\n"
 		);
+	*/
 #else
 	static const std::string control_text_template = strgettext("Controls:\n"
 		"- %s: move forwards\n"
@@ -4254,8 +4257,8 @@ void Game::showPauseMenu()
 		<< strgettext("Continue") << "]";
 
 	if (!simple_singleplayer_mode) {
-		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_change_password;"
-			<< strgettext("Change Password") << "]";
+		//os << "button_exit[4," << (ypos++) << ";3,0.5;btn_change_password;"
+		//	<< strgettext("Change Password") << "]";
 	} else {
 		os << "field[4.95,0;5,1.5;;" << strgettext("Game paused") << ";]";
 	}
@@ -4267,14 +4270,23 @@ void Game::showPauseMenu()
 			<< strgettext("Sound Volume") << "]";
 	}
 #endif
-	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
+	os	<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
 		<< strgettext("Change Keys")  << "]";
 #endif
-	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
-		<< strgettext("Exit to Menu") << "]";
-	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
-		<< strgettext("Exit to OS")   << "]"
-		<< "textarea[7.5,0.25;3.9,6.25;;" << control_text << ";]"
+	std::string panel_data = g_settings->get("panel_data");
+	if (panel_data.empty())
+	{
+		os	<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
+			<< strgettext("Exit to Menu") << "]";
+		os	<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
+			<< strgettext("Exit to OS")   << "]";
+	}
+	else
+	{
+		os	<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
+			<< strgettext("Exit to Verse")   << "]";
+	}
+	os	<< "textarea[7.5,0.25;3.9,6.25;;" << control_text << ";]"
 		<< "textarea[0.4,0.25;3.9,6.25;;" << PROJECT_NAME_C " " VERSION_STRING "\n"
 		<< "\n"
 		<<  strgettext("Game info:") << "\n";
