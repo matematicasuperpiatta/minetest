@@ -51,7 +51,7 @@ global_data = {
 	message_type = "default",
 	message_text = fgettext("Unable to connect to the server!\n\nCheck your internet connection and restart Matematica Superpiatta.\nIf the problem persists contact us at:\nassistenza@matematicasuperpiatta.it")
 }
-global_ms_type = "full",
+global_ms_type = "full"
 lambda_waiting = false
 lambda_read = true
 lambda_error = false

@@ -76,13 +76,13 @@ class Configurations:
    
    def push_ms_type(self):
       if self.check(self.ms_type):
-         with open("builtin/ms-mainmenu/init.lua", "r") as handshake:
+         with open("builtin/ms-mainmenu/oop/handshake.lua", "r") as handshake:
             lines = handshake.readlines()
          for i, line in enumerate(lines):
             if 'ms_type =' in line:
                pre, post = line.split("=")
                lines[i] = pre + '= "' + self.ms_type[0] + '",\n'
-         with open("builtin/ms-mainmenu/init.lua", "w") as handshake:
+         with open("builtin/ms-mainmenu/oop/handshake.lua", "w") as handshake:
             for line in lines:
                handshake.write(line)
          return True
