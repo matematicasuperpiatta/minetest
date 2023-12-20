@@ -17,7 +17,7 @@ class Configurations:
                        ('beta', 'release')]
       self.server_type = ['ecs',
                          ('local', 'multi', 'ecs')]
-      self.version = ['1.1.2',
+      self.version = ['1.1.3',
                       True]
       self.debug = ['false',
                    ('true', 'false')]
@@ -25,7 +25,7 @@ class Configurations:
                      ('true', 'false')]
       self.slack = ['false',
                    ('true', 'false')]
-      self.android_code = ['56',
+      self.android_code = ['60',
                       True]
    
    # Cambiare solo fino a qui.
@@ -76,13 +76,13 @@ class Configurations:
    
    def push_ms_type(self):
       if self.check(self.ms_type):
-         with open("builtin/ms-mainmenu/oop/handshake.lua", "r") as handshake:
+         with open("builtin/ms-mainmenu/init.lua", "r") as handshake:
             lines = handshake.readlines()
          for i, line in enumerate(lines):
             if 'ms_type =' in line:
                pre, post = line.split("=")
                lines[i] = pre + '= "' + self.ms_type[0] + '",\n'
-         with open("builtin/ms-mainmenu/oop/handshake.lua", "w") as handshake:
+         with open("builtin/ms-mainmenu/init.lua", "w") as handshake:
             for line in lines:
                handshake.write(line)
          return True
@@ -215,18 +215,32 @@ class Configurations:
          return True
       else:
          return False
+
+   def push_android_code(self):
+      if self.check(self.android_code):
+         with open("ms-android/build.gradle", "r") as build_gradle:
+            lines = build_gradle.readlines()
+         for i, line in enumerate(lines):
+            if 'project.ext.set("versionCode", ' in line:
+               lines[i] = 'project.ext.set("versionCode", ' + self.android_code[0] + ')\n'
+         with open("ms-android/build.gradle", "w") as build_gradle:
+            for line in lines:
+               build_gradle.write(line)
+         return True
+      return False
    
    def push(self):
       x = True
       x *= self.push_api()
       x *= self.push_operating_system()
-      x *= self.push_ms_type()
+      # x *= self.push_ms_type()
       x *= self.push_dev_phase()
       x *= self.push_server_type()
       x *= self.push_version()
       x *= self.push_debug()
       x *= self.push_monitor()
       x *= self.push_slack()
+      x *= self.push_android_code()
       print("Done!" if x else "Error with some setting.")
 
 

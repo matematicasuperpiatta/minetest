@@ -51,6 +51,7 @@ global_data = {
 	message_type = "default",
 	message_text = fgettext("Unable to connect to the server!\n\nCheck your internet connection and restart Matematica Superpiatta.\nIf the problem persists contact us at:\nassistenza@matematicasuperpiatta.it")
 }
+global_ms_type = "full",
 lambda_waiting = false
 lambda_read = true
 lambda_error = false
@@ -157,12 +158,14 @@ local function init_globals(tabs)
 	if PANEL_DATA == '' then
 		-- MS has been launched normally
 		core.log("warning", "NO INTENT")
+		global_ms_type = "full",
 		ui.set_default("maintab")
 		tv_main:show()
 		ui.update()
 	else
 		-- MS has been launched from a panel
 		core.log("warning", "INTENT")
+		global_ms_type = "panel",
 		update_flavor()
 		
 		local http = core.get_http_api()
