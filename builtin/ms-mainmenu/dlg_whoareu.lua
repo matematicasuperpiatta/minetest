@@ -32,17 +32,24 @@ local http = core.get_http_api()
 --
 
 local function get_whoareu_formspec(tabview, _, tabdata)
+	local bkg_w = 7.5
+	local btn_w = 2.2
+	local btn_halign_right = true
+	local btn_abs_x = 0.5
+	if btn_halign_right  then
+		btn_abs_x = bkg_w - (0.5 + btn_w * 2 + 0.1)
+	end
 	local fs = FormspecVersion:new{version=6}:render() ..
-		Size:new{w = 5.5, h = 4.5, fix = true}:render() ..
+		Size:new{w = bkg_w, h = 4.5, fix = true}:render() ..
 		Label:new{x = 0.5, y = 1.5, label = fgettext("Username:")}:render() ..
 		-- see here to edit field color
 		-- https://github.com/minetest/minetest/blob/8c7276c9d4fc8afa05f859297048c7153cc11f5b/src/client/clientlauncher.cpp#L176
 		StyleType:new{selectors = {"field"}, props = {"textcolor=#ffffff"}}:render() ..
-		Field:new{x = 0.5, y = 1.75, w = 4.5, h = 0.7, name = "username", value = whoareu}:render() ..
+		Field:new{x = 0.5, y = 1.75, w = bkg_w - 1.0, h = 0.7, name = "username", value = whoareu}:render() ..
 		StyleType:new{selectors = {"button"}, props = {"bgcolor=#ffa900", "alpha=false"}}:render() .. --orig: #ff8000
-		Button:new{x=0.5, y=3.25, w=2.2, h=0.75, name = "btn_back", label = fgettext("Back")}:render() ..
+		Button:new{x=btn_abs_x, y=3.25, w=btn_w, h=0.75, name = "btn_back", label = fgettext("Back")}:render() ..
 		StyleType:new{selectors = {"button"}, props = {"bgcolor=#00dc28", "alpha=false"}}:render() .. --orig: #00993b
-		Button:new{x=2.8, y=3.25, w=2.2, h=0.75, name = "btn_next", label = fgettext("Next")}:render() ..
+		Button:new{x=btn_abs_x + btn_w + 0.1, y=3.25, w=btn_w, h=0.75, name = "btn_next", label = fgettext("Next")}:render() ..
 
 		-- Styled stuff
 		StyleType:new{selectors = {"label"}, props = {"font=italic"}}:render() ..
@@ -88,17 +95,24 @@ end
 --
 
 local function get_passwd_formspec(tabview, _, tabdata)
+	local bkg_w = 7.5
+	local btn_w = 2.2
+	local btn_halign_right = true
+	local btn_abs_x = 0.5
+	if btn_halign_right  then
+		btn_abs_x = bkg_w - (0.5 + btn_w * 2 + 0.1)
+	end
 	return FormspecVersion:new{version=6}:render() ..
-		Size:new{w = 5.5, h = 4.5, fix = true}:render() ..
+		Size:new{w = bkg_w, h = 4.5, fix = true}:render() ..
 		Label:new{x = 0.5, y = 0.5, label = fgettext("Welcome") .. " " .. whoareu}:render() ..
 		Label:new{x = 0.5, y = 1.5, label = fgettext("Password:")}:render() ..
-		PasswdField:new{x = 0.5, y = 1.75, w = 4.5, h = 0.7, name = "passwd", value = ""}:render() ..
+		PasswdField:new{x = 0.5, y = 1.75, w = bkg_w - 1.0, h = 0.7, name = "passwd", value = ""}:render() ..
 		StyleType:new{selectors = {"button"}, props = {"bgcolor=#ffa900", "alpha=false"}}:render() ..
-		Button:new{x=0.5, y=3.25, w=2.2, h=0.75, name = "btn_back", label = fgettext("Back")}:render() ..
+		Button:new{x=btn_abs_x, y=3.25, w=btn_w, h=0.75, name = "btn_back", label = fgettext("Back")}:render() ..
 
 		-- Styled stuff
 		StyleType:new{selectors = {"button"}, props = {"font=bold", "bgcolor=#00dc28", "alpha=false"}}:render() ..
-		Button:new{x=2.8, y=3.25, w=2.2, h=0.75, name = "btn_play", label = fgettext("Play!")}:render()
+		Button:new{x=btn_abs_x + btn_w + 0.1, y=3.25, w=btn_w, h=0.75, name = "btn_play", label = fgettext("Play!")}:render()
 end
 
 local function handle_passwd_buttons(this, fields, tabname, tabdata)
