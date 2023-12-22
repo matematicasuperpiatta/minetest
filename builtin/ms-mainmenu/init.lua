@@ -185,7 +185,10 @@ local function init_globals(tabs)
 				end
 			else
 				global_data.message_type = message_type
-				global_data.message_text = "Autenticazione non riuscita.\nCodice errore: " .. json.code
+				global_data.message_text = "Autenticazione non riuscita.\nErrore sconosciuto."
+				if json.code ~= nil then
+					global_data.message_text = "Autenticazione non riuscita.\nCodice errore: " .. json.code
+				end
 
 				local error_dlg = create_fatal_error_dlg()
 				ui.cleanup()
