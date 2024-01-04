@@ -1,0 +1,1 @@
+invisiblocks.hide_recipes (Hide Invisiblocks Recipes) bool false

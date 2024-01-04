@@ -47,13 +47,10 @@ build/.cmake/
 !/textures/base/
 /screenshots
 /sounds
-/mods/*
 !/mods/minetest/
 !/mods/ms
 /mods/minetest/*
 !/mods/minetest/mods_here.txt
-/worlds
-/world/
 /clientmods/*
 !/clientmods/preview/
 /client/mod_storage/

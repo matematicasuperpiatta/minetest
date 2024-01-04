@@ -1,0 +1,18 @@
+
+v1.2
+----
+- changed wdata.write method to take table parameter "flags" instead of boolean "styled"
+- added flag option "null_to_table" for wdata.write that converts null values to tables
+- removed "core" methods aliases
+
+
+v1.1
+----
+- changed "error" message to "warning" when file not found for reading
+
+
+v1.0
+----
+- initial release
+- added method for reading json data from world directory
+- added method for writing json data to world directory

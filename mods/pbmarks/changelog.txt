@@ -1,0 +1,22 @@
+
+v1.2
+----
+- added "textdomain" line to localization template
+- added Spanish translation
+- fixed "Close" button to not change to "Back" when using /pbmarks chat command
+
+
+v1.1
+----
+- added unified_inventory support
+- added i3 support
+- formspec can be displayed with "pbmarks" chat command
+
+
+v1.0
+----
+- initial release
+- created formspec that allows for managing 5 personal bookmarks
+- added localization support
+- added inventory support with sfinv_buttons
+- added protection support with simple_protection
