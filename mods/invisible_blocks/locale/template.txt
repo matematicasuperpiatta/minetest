@@ -1,5 +1,0 @@
-# textdomain: invisiblocks
-Invisible Barrier Block=
-Invisible Light Source=
-Invisible Mob Wall=
-Show Stick (USE to Show, PLACE to Remove)=
