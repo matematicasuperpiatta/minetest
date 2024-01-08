@@ -9,10 +9,10 @@ class Configurations:
    def __init__(self):
       self.api = ['release',
                  ('release', 'dev')]
-      self.operating_system = ['windows',
+      self.operating_system = ['linux',
                               ('linux', 'macintosh', 'ios', 'windows', 'android')]
       self.ms_type = ['full',
-                     ('full', 'acer', 'panel')]
+                     ('full', 'acer', 'verse')]
       self.dev_phase = ['release',
                        ('beta', 'release')]
       self.server_type = ['ecs',
@@ -25,7 +25,7 @@ class Configurations:
                      ('true', 'false')]
       self.slack = ['false',
                    ('true', 'false')]
-      self.android_code = ['60',
+      self.android_code = ['61',
                       True]
    
    # Cambiare solo fino a qui.
@@ -186,7 +186,7 @@ class Configurations:
             lines = build_gradle.readlines()
          for i, line in enumerate(lines):
             if 'project.ext.set("developmentBuild", ' in line:
-               lines[i] = 'project.ext.set("developmentBuild", ' + '1' if self.debug[0] == 'true' else 0 + ')\n'
+               lines[i] = 'project.ext.set("developmentBuild", ' + (('1' if self.debug[0] == 'true' else '0') + ')\n')
          with open("ms-android/build.gradle", "w") as build_gradle:
             for line in lines:
                build_gradle.write(line)
