@@ -165,9 +165,9 @@ local function init_globals(tabs)
 	else
 		-- MS has been launched from a panel
 		core.log("warning", "INTENT")
-		global_ms_type = "panel",
+		global_ms_type = "verse",
 		update_flavor()
-		
+
 		local http = core.get_http_api()
 		local response = http.fetch_sync({
 			url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/panel/token/",
