@@ -12,7 +12,7 @@ class Configurations:
       self.operating_system = ['linux',
                               ('linux', 'macintosh', 'ios', 'windows', 'android')]
       self.ms_type = ['full',
-                     ('full', 'acer', 'verse')]
+                     ('full', 'acer', 'panel')]
       self.dev_phase = ['release',
                        ('beta', 'release')]
       self.server_type = ['ecs',
@@ -25,7 +25,7 @@ class Configurations:
                      ('true', 'false')]
       self.slack = ['false',
                    ('true', 'false')]
-      self.android_code = ['61',
+      self.android_code = ['63',
                       True]
    
    # Cambiare solo fino a qui.

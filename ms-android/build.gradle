@@ -4,7 +4,7 @@ project.ext.set("versionMajor", 1)
 project.ext.set("versionMinor", 1)
 project.ext.set("versionPatch", 3)
 project.ext.set("versionExtra", "") // Version Extra
-project.ext.set("versionCode", 60)
+project.ext.set("versionCode", 63)
 // Whether it is a development build, or a release
 project.ext.set("developmentBuild", 0)
 // NOTE: +2 after each release!

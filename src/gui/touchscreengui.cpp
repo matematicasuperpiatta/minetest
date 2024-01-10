@@ -535,21 +535,26 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 	*/
 
 	// init inv button
-	initButton(inventory_id,
+	/*initButton(inventory_id,
 				rect<s32>(
 					0.25 * button_size,
 					m_screensize.Y - ((RARE_CONTROLS_BAR_Y_OFFSET + 1.0) * button_size) + (0.5 * button_size),
 					1.25 * button_size,
 					m_screensize.Y - (RARE_CONTROLS_BAR_Y_OFFSET * button_size) + (0.5 * button_size)),
+			L"inv", false);*/
+	initButton(inventory_id,
+				rect<s32>(
+					m_screensize.X - (1.25 * button_size),
+					m_screensize.Y - (3 * button_size),
+					m_screensize.X - (0.25 * button_size),
+					m_screensize.Y - (2 * button_size)),
 			L"inv", false);
 
 	m_settingsbar.init(m_texturesource, "gear_icon.png", settings_starter_id,
 		v2s32(m_screensize.X - (1.25 * button_size),
-			m_screensize.Y - ((SETTINGS_BAR_Y_OFFSET + 1.0) * button_size)
-				+ (0.5 * button_size)),
+			  m_screensize.Y - (4 * button_size)),
 		v2s32(m_screensize.X - (0.25 * button_size),
-			m_screensize.Y - (SETTINGS_BAR_Y_OFFSET * button_size)
-				+ (0.5 * button_size)),
+			  m_screensize.Y - (3 * button_size)),
 		AHBB_Dir_Right_Left, 3.0);
 
 	//m_settingsbar.addButton(fly_id,     L"fly",       "fly_btn.png");
@@ -797,12 +802,12 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			 *
 			 * Edited for MS:
 			 * 1/4 of the screen horizontally
-			 * 1/3 of the screen vertically
+			 * 1/2 of the screen vertically
 			 */
 			if ((m_fixed_joystick && dxj * dxj + dyj * dyj <= button_size * button_size * 1.5 * 1.5) ||
 					(!m_fixed_joystick &&
 					event.TouchInput.X < m_screensize.X / 4.0f &&
-					event.TouchInput.Y > m_screensize.Y / 3.0f * 2.0f)) {
+					event.TouchInput.Y > m_screensize.Y / 2.0f * 1.0f)) {
 				// If we don't already have a starting point for joystick make this the one.
 				if (!m_has_joystick_id) {
 					m_has_joystick_id           = true;

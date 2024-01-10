@@ -165,7 +165,7 @@ local function init_globals(tabs)
 	else
 		-- MS has been launched from a panel
 		core.log("warning", "INTENT")
-		global_ms_type = "verse",
+		global_ms_type = "panel",
 		update_flavor()
 
 		local http = core.get_http_api()
