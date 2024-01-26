@@ -94,8 +94,8 @@ CLIENT
 	sudo pip3 install appimage-builder
 	
 	# From main directory>
-	cp -rf bin builtin client clientmods doc fonts games locale misc mods po textures minetest.conf ms-linux/ms.AppDir/usr
 	mkdir -p ms-linux/ms.AppDir/usr/cache/cdb ms-linux/ms.AppDir/usr/cache/media
+	cp -rf bin builtin client clientmods doc fonts games locale misc mods po textures minetest.conf ms-linux/ms.AppDir/usr
 	echo "" > ms-linux/ms.AppDir/usr/debug.txt
 	cd ms-linux
 	ARCH=x86_64 appimagetool ms.AppDir
