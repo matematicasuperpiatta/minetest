@@ -1,4 +1,4 @@
--- INSTALL LIBRARIES --
+﻿-- INSTALL LIBRARIES --
 LINUX
 	sudo apt-get update
 	sudo apt-get install lua5.1 luarocks -y
@@ -92,21 +92,8 @@ CLIENT
 	sudo wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /usr/local/bin/appimagetool
 	sudo chmod +x /usr/local/bin/appimagetool
 	sudo pip3 install appimage-builder
-
-	# From the same folder where ms_client has been created:
-	mkdir ms_1.1.2_linux
-	mkdir ms_1.1.2_linux/ms.AppDir
-	cp ms_client -r ms_client_linux/ms.AppDir/ms
-	cd ms_client_linux/ms.AppDir
-	# Incolla i files presenti in: https://drive.google.com/file/d/1kOzQfFeadNg3B8XRycBNbIzezIA4oJhl/view?usp=sharing
-	chmod +x AppRun
-	chmod +x MatematicaSuperpiatta.desktop
-	mkdir usr
-	cd ms
-	cp -rf bin builtin cache client clientmods doc fonts games locale misc mods po textures minetest.conf ../usr
-	cd ..
-	cp usr/misc/minetest-xorg-icon-128.png usr/icon.png
-	echo "" > usr/debug.txt
-	rm -rf ms
-	cd ..
-	ARCH=x86_64 appimagetool ms.AppDir
+	
+	# From main directory>
+	cp -rf bin builtin client clientmods doc fonts games locale misc mods po textures minetest.conf ms-linux/ms.AppDir/usr
+	cd ms-linux
+	ARC=x86_64 appimagetool ms.AppDir
