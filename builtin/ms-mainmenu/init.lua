@@ -184,10 +184,13 @@ local function init_globals(tabs)
 					core.log("warning", "HANDLE_CONNECTION: " .. error_msg)
 				end
 			else
-				global_data.message_type = message_type
+				global_data.message_type = "error"
 				global_data.message_text = "Autenticazione non riuscita.\nErrore sconosciuto."
-				if json.code ~= nil then
-					global_data.message_text = "Autenticazione non riuscita.\nCodice errore: " .. json.code
+				
+				if response.code == 401 then
+					if json.code ~= nil then
+						global_data.message_text = "Autenticazione non riuscita.\nCodice errore: " .. json.code
+					end
 				end
 
 				local error_dlg = create_fatal_error_dlg()
