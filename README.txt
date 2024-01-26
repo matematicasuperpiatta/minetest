@@ -95,5 +95,7 @@ CLIENT
 	
 	# From main directory>
 	cp -rf bin builtin client clientmods doc fonts games locale misc mods po textures minetest.conf ms-linux/ms.AppDir/usr
+	mkdir -p ms-linux/ms.AppDir/usr/cache/cdb ms-linux/ms.AppDir/usr/cache/media
+	echo "" > ms-linux/ms.AppDir/usr/debug.txt
 	cd ms-linux
-	ARC=x86_64 appimagetool ms.AppDir
+	ARCH=x86_64 appimagetool ms.AppDir

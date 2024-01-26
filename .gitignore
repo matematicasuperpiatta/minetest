@@ -107,7 +107,6 @@ CMakeDoxy*
 compile_commands.json
 *.apk
 *.zip
-ms-linux/ms.AppDir/usr/
 
 # Visual Studio
 *.vcxproj*
