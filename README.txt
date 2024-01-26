@@ -85,12 +85,20 @@ CLIENT
 	*Is a .jks file. When you obtain one, is common to save in .ssh folder
 -- INSTALLING --
 	LINUX - create an AppImage
+
+	sudo apt install -y binutils coreutils desktop-file-utils fakeroot fuse libgdk-pixbuf2.0-dev patchelf python3-pip python3-setuptools squashfs-tools strace util-linux zsync
+
+	# Install appimagetool AppImage (only for appimage-buidler < v1.0.3)
+	sudo wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /usr/local/bin/appimagetool
+	sudo chmod +x /usr/local/bin/appimagetool
+	sudo pip3 install appimage-builder
+
 	# From the same folder where ms_client has been created:
 	mkdir ms_1.1.2_linux
 	mkdir ms_1.1.2_linux/ms.AppDir
 	cp ms_client -r ms_client_linux/ms.AppDir/ms
 	cd ms_client_linux/ms.AppDir
-	# Incolla i files presenti in https://drive.google.com/file/d/1dmMeoErokvFzyeqlfIFUj-ChvRW6aUoR/view?usp=sharing, https://drive.google.com/file/d/1dppAshkcpgApG1FrFzcVymcHDehzeIW1/view?usp=sharing, https://drive.google.com/file/d/1kOzQfFeadNg3B8XRycBNbIzezIA4oJhl/view?usp=sharing, https://drive.google.com/file/d/1uPiXlvpKFIQce4EiiNFpbm2ZxP657bj6/view?usp=sharing
+	# Incolla i files presenti in: https://drive.google.com/file/d/1kOzQfFeadNg3B8XRycBNbIzezIA4oJhl/view?usp=sharing
 	chmod +x AppRun
 	chmod +x MatematicaSuperpiatta.desktop
 	mkdir usr
@@ -102,23 +110,3 @@ CLIENT
 	rm -rf ms
 	cd ..
 	ARCH=x86_64 appimagetool ms.AppDir
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
