@@ -27,6 +27,9 @@ URL_GET = "http://"..SERVER_ADDRESS..":"..SERVER_PORT
 SERVICE_DISCOVERY = core.settings:get("ms_discovery") or "fvqyugucy1.execute-api.eu-south-1.amazonaws.com/release"
 PANEL_DATA = core.settings:get("panel_data") or ""
 
+CMD_USR = core.settings:get("cmd_usr") or ""
+CMD_PWD = core.settings:get("cmd_pwd") or ""
+
 mt_color_grey  = "#AAAAAA"
 mt_color_blue  = "#6389FF"
 mt_color_green = "#72FF63"
@@ -158,14 +161,50 @@ local function init_globals(tabs)
 	if PANEL_DATA == '' then
 		-- MS has been launched normally
 		core.log("warning", "NO INTENT")
-		global_ms_type = "full",
-		ui.set_default("maintab")
-		tv_main:show()
-		ui.update()
+		global_ms_type = "full"
+
+		if CMD_USR == '' and CMD_PWD == '' then
+			ui.set_default("maintab")
+			tv_main:show()
+			ui.update()
+		else
+			core.log("warning", "CMD ARGS")
+			update_flavor()
+
+			local http = core.get_http_api()
+			local response = http.fetch_sync({
+				url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/token/",
+				timeout = 10,
+				post_data = { username = CMD_USR, password = CMD_PWD },
+			})
+	
+			if response.succeeded then
+				core.log("info", "Payload is " .. response.data)
+				local json = minetest.parse_json(response.data)
+				error_msg = handle_connection(json, CMD_USR, CMD_PWD)
+				if response.code ~= 200 then
+					global_data.message_type = "error"
+					global_data.message_text = "Autenticazione non riuscita.\nCodice errore: " .. response.code
+
+					core.log("warning", "Error calling lambdaClient")
+					local error_dlg = create_fatal_error_dlg()
+					ui.cleanup()
+					error_dlg:show()
+					ui.update()
+				end
+			else
+				core.log("warning", "Error calling lambdaClient")
+				local error_dlg = create_fatal_error_dlg()
+				ui.cleanup()
+				error_dlg:show()
+				ui.update()
+				--return true
+			end
+		end
 	else
 		-- MS has been launched from a panel
 		core.log("warning", "INTENT")
-		global_ms_type = "panel",
+		global_ms_type = "panel"
 		update_flavor()
 
 		local http = core.get_http_api()

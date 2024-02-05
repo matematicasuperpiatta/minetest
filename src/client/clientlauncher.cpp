@@ -378,6 +378,16 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 	if (cmd_args.exists("password"))
 		start_data.password = cmd_args.get("password");
+	
+	// [MS] Update minetest.conf name and password
+	g_settings->set("cmd_usr", "");
+	g_settings->set("cmd_pwd", "");
+	if (cmd_args.exists("name") && cmd_args.exists("password"))
+	{
+		g_settings->set("cmd_usr", start_data.name);
+		g_settings->set("cmd_pwd", start_data.password);
+	}
+	g_settings->updateConfigFile(g_settings_path.c_str());
 
 	if (cmd_args.exists("password-file")) {
 		std::ifstream passfile(cmd_args.get("password-file"));
