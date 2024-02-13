@@ -25,7 +25,7 @@ class Configurations:
                      ('true', 'false')]
       self.slack = ['false',
                    ('true', 'false')]
-      self.android_code = ['63',
+      self.android_code = ['64',
                       True]
    
    # Cambiare solo fino a qui.
@@ -112,6 +112,20 @@ class Configurations:
          with open("builtin/ms-mainmenu/dlg_whoareu.lua", "w") as dlg_whoareu:
             for line in lines:
                dlg_whoareu.write(line)
+         with open("builtin/ms-mainmenu/init.lua", "r") as handshake:
+            lines = handshake.readlines()
+         for i, line in enumerate(lines):
+            if 'matematicasuperpiatta.it/wiscom/api' in line:
+               pre, post = line.split("wiscoms")
+               if self.dev_phase[0] == "beta":
+                  ok = post.startswith("beta")
+                  lines[i] = line if ok else pre + "wiscomsbeta" + post
+               elif self.dev_phase[0] == "release":
+                  ok = not post.startswith("beta")
+                  lines[i] = line if ok else pre + "wiscoms" + post[4:]
+         with open("builtin/ms-mainmenu/init.lua", "w") as handshake:
+            for line in lines:
+               handshake.write(line)
          return True
       else:
          return False
