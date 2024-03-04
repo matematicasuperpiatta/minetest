@@ -52,3 +52,10 @@ apps:
   matematicasuperpiatta:
     command: usr/local/bin/minetest
     extensions: [gnome]
+    plugs:
+      - x11
+      - opengl
+      - network
+      - network-bind
+      - audio-playback
+      - joystick
