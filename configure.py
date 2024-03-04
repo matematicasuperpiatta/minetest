@@ -181,6 +181,14 @@ class Configurations:
          with open("ms-android/build.gradle", "w") as cmake:
             for line in lines:
                cmake.write(line)
+         with open("snapcraft.yaml", "r") as snapcraft:
+            lines = snapcraft.readlines()
+         for i, line in enumerate(lines):
+            if "version:" in line:
+               lines[i] = "version: " + self.version[0] + "\n"
+         with open("snapcraft.yaml", "w") as snapcraft:
+            for line in lines:
+               snapcraft.write(line)
          return True
       else:
          return False

@@ -32,6 +32,9 @@ parts:
       - libcurl4-openssl-dev
       - libfreetype-dev
       - libzstd-dev
+      - libpq-dev
+      - libgmp3-dev
+      - libncurses5-dev
     stage-packages:
       - libcurl4
       - libcurl3-gnutls
