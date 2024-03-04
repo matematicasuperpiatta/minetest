@@ -271,6 +271,14 @@ install(FILES "minetest.conf" DESTINATION "${EXAMPLE_CONF_DIR}")
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/locale" DESTINATION "${SHAREDIR}")
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/po" DESTINATION "${SHAREDIR}")
 
+# test
+#install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/misc" DESTINATION "${SHAREDIR}")
+#install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/cache" DESTINATION "${SHAREDIR}")
+#install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/client/mod_storage.sqlite" DESTINATION "${SHAREDIR}/client")
+install(DIRECTORY DESTINATION "${SHAREDIR}/cache/cdb")
+install(DIRECTORY DESTINATION "${SHAREDIR}/cache/media")
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/client/mod_storage.sqlite" DESTINATION "${SHAREDIR}/client")
+
 if(UNIX AND NOT APPLE)
 	install(FILES "doc/minetest.6" "doc/minetestserver.6" DESTINATION "${MANDIR}/man6")
 	install(FILES "misc/net.minetest.minetest.desktop" DESTINATION "${XDG_APPS_DIR}")

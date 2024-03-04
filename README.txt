@@ -7,6 +7,7 @@ LINUX
 	pip3 install jsonpickle sympy sockets requests tabulate openpyxl
 	sudo apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev
 	libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev
+	libxi-dev libcurl4-openssl-dev libfreetype-dev
 
 WINDOWS
 	follow instruction from

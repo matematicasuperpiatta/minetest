@@ -1,0 +1,54 @@
+name: matematicasuperpiatta
+version: 1.1.3
+summary: Matematica Superpiatta
+description: |
+  Videogioco per insegnamento e apprendimento della matematica.
+confinement: strict
+base: core22
+
+parts:
+  matematicasuperpiatta:
+    plugin: cmake
+    cmake-parameters:
+      - -DRUN_IN_PLACE=TRUE
+      - -DBUILD_SERVER=FALSE
+      - -DBUILD_CLIENT=TRUE
+    source-type: local
+    source: .
+    build-packages:
+      - gcc
+      - cmake
+      - libirrlicht-dev
+      - libbz2-dev
+      - libpng-dev
+      - libjpeg-dev
+      - libxxf86vm-dev
+      - libgl1-mesa-dev
+      - libsqlite3-dev
+      - libogg-dev
+      - libvorbis-dev
+      - libopenal-dev
+      - libxi-dev
+      - libcurl4-openssl-dev
+      - libfreetype-dev
+      - libzstd-dev
+    stage-packages:
+      - libcurl4
+      - libcurl3-gnutls
+      - libldap-2.5-0
+      - libnghttp2-14
+      - libpsl-dev
+      - librtmp1
+      - libsasl2-2
+      - libx11-dev
+      - libxi-dev
+      - libjpeg-dev
+      - libjsoncpp-dev
+      - libopenal-dev
+      - libpq-dev
+      - libvorbis-dev
+
+apps:
+  matematicasuperpiatta:
+    command: usr/local/bin/minetest
+    extensions: [gnome]
