@@ -24,7 +24,7 @@ maintab_LAST = online
 enable_local_map_saving = false
 # ms_discovery = fvqyugucy1.execute-api.eu-south-1.amazonaws.com/dev
 # ms_discovery = fvqyugucy1.execute-api.eu-south-1.amazonaws.com/release
-ms_discovery = fvqyugucy1.execute-api.eu-south-1.amazonaws.com/dev
+ms_discovery = fvqyugucy1.execute-api.eu-south-1.amazonaws.com/release
 world_config_selected_mod = 2
 # VOID
 update_last_known =
