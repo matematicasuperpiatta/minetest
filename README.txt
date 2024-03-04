@@ -100,3 +100,26 @@ CLIENT
 	echo "" > ms-linux/ms.AppDir/usr/debug.txt
 	cd ms-linux
 	ARCH=x86_64 appimagetool ms.AppDir
+
+	LINUX SNAPCRAFT
+	git clone https://github.com/matematicasuperpiatta/minetest.git ms_client
+	cd ms_client
+        git checkout feature-ticket
+	cp minetest.conf.client minetest.conf
+	cd lib/
+	git clone https://github.com/minetest/irrlicht.git irrlichtmt
+	cd irrlichtmt/
+	git checkout 1.9.0mt8
+	cd ../../
+	python3 configure.py
+	sudo snapcraft
+	# ---- if you need to a profile ----
+	snapcraft export-login creds
+	export SNAPCRAFT_STORE_CREDENTIALS=$(cat creds)
+	snapcraft login
+	# ---- end if ----
+	snapcraft upload --release=stable matematicasuperpiatta_x.x.x.snap
+	# for testing
+	sudo snap install matematicasuperpiatta
+
+
