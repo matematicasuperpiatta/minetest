@@ -25,6 +25,9 @@ SERVER_PORT = core.settings:get("ms_port") or 29999
 URL_GET = "http://"..SERVER_ADDRESS..":"..SERVER_PORT
 
 SERVICE_DISCOVERY = core.settings:get("ms_discovery") or "fvqyugucy1.execute-api.eu-south-1.amazonaws.com/release"
+SERVICE_DISCOVERY_LOCAL = core.settings:get("ms_discovery_local") or "168.192.0.4"
+WISCOMS_URL = core.settings:get("wiscoms_url") or "https://wiscoms.matematicasuperpiatta.it/wiscom"
+WISCOMS_URL_LOCAL = core.settings:get("wiscoms_url_local") or "http://" .. SERVICE_DISCOVERY_LOCAL .. ":8000/wiscom"
 PANEL_DATA = core.settings:get("panel_data") or ""
 
 CMD_USR = core.settings:get("cmd_usr") or ""
@@ -173,11 +176,20 @@ local function init_globals(tabs)
 
 			local http = core.get_http_api()
 			local response = http.fetch_sync({
-				url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/token/",
+				url = WISCOMS_URL .. "/api/token/",
 				timeout = 10,
 				post_data = { username = CMD_USR, password = CMD_PWD },
 			})
-	
+			if response == nil then
+				if string.find(CMD_USR, "demo") then
+					response = http.fetch_sync({
+						url = WISCOMS_URL_LOCAL .. "/api/token/",
+						timeout = 10,
+						post_data = { username = CMD_USR, password = CMD_PWD },
+					})
+				end
+			end
+
 			if response.succeeded then
 				core.log("info", "Payload is " .. response.data)
 				local json = minetest.parse_json(response.data)
@@ -209,7 +221,7 @@ local function init_globals(tabs)
 
 		local http = core.get_http_api()
 		local response = http.fetch_sync({
-			url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/panel/token/",
+			url = WISCOMS_URL .. "/api/token/",
 			timeout = 10,
 			post_data = core.parse_json(PANEL_DATA),
 		})
@@ -225,7 +237,7 @@ local function init_globals(tabs)
 			else
 				global_data.message_type = "error"
 				global_data.message_text = "Autenticazione non riuscita.\nErrore sconosciuto."
-				
+
 				if response.code == 401 then
 					if json.code ~= nil then
 						global_data.message_text = "Autenticazione non riuscita.\nCodice errore: " .. json.code

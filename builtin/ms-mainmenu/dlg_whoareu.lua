@@ -123,10 +123,20 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 		-- Wiscom auth
 		passwd = fields.passwd
 		local response = http.fetch_sync({
-			url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/token/",
+			url = WISCOMS_URL .. "/api/token/",
 			timeout = 10,
 			post_data = { username = whoareu, password = passwd },
 		})
+		core.log("wiscom answer: " .. tostring(response.code))
+		if response == nil or response.code == 0 then
+			if string.find(whoareu, "demo") then
+				response = http.fetch_sync({
+					url = WISCOMS_URL_LOCAL .. "/api/token/",
+					timeout = 10,
+					post_data = { username = whoareu, password = passwd },
+				})
+			end
+		end
 
 		if response.succeeded then
 			core.log("info", "Payload is " .. response.data)
@@ -207,7 +217,7 @@ end
 
 function handle_connection(json, user, pass)
     if json ~= nil and json.access ~= nil then
-        if handshake.roadmap.server ~= nil then            
+        if handshake.roadmap.server ~= nil then
             -- inject refresh token. Server musts support this!
             local timeout = 95
 
@@ -228,31 +238,44 @@ function handle_connection(json, user, pass)
             -- set access token to the handshake
             handshake.token = gamedata.access
 
-            wait_go(function(core, handshake, gamedata)
-                gamedata.address    = handshake.roadmap.server.ip
-                gamedata.port       = handshake.roadmap.server.port
+            wait_go(
+				function(core, handshake, gamedata)
+					gamedata.address    = handshake.roadmap.server.ip
+					gamedata.port       = handshake.roadmap.server.port
 
-                -- debug
-                --core.log("warning", "ACCESS: " .. gamedata.access)
-                --core.log("warning", "ROADMAP: " .. core.write_json(handshake.roadmap))
-
-                local http = core.get_http_api()
-                local response = http.fetch_sync({
-                    url = "https://wiscoms.matematicasuperpiatta.it/wiscom/api/users/me/server_info",
-                    extra_headers = {
-                        "Authorization: Bearer " .. gamedata.access,
-                        "Content-Type: application/json"
-                    },
-                    timeout = 10,
-                    post_data = core.write_json({
-                        server_info = handshake.roadmap.server_info,
-                        client_info = handshake.roadmap.client_info
-                    })
-                })
-                
-                core.log("warning", gamedata.address .. ':' .. gamedata.port)
-                core.start()
-            end)
+					-- debug
+					--core.log("warning", "ACCESS: " .. gamedata.access)
+					--core.log("warning", "ROADMAP: " .. core.write_json(handshake.roadmap))
+					local http = core.get_http_api()
+					local extra_headers = {
+						"Authorization: Bearer " .. gamedata.access,
+						"Content-Type: application/json"
+					}
+					local post_data = core.write_json({
+						server_info = handshake.roadmap.server_info,
+						client_info = handshake.roadmap.client_info
+					})
+					local url = handshake.wiscoms_url .. "/api/users/me/server_info"
+				    local response = http.fetch_sync({
+						url = url,
+						extra_headers = extra_headers,
+						timeout = 10,
+						post_data = post_data
+					})
+					if response == nil or response.code == 0 then
+						if string.find(whoareu, "demo") then
+							url = handshake.wiscoms_url_local .. "/api/users/me/server_info"
+							local response = http.fetch_sync({
+								url = url,
+								extra_headers = extra_headers,
+								timeout = 10,
+								post_data = post_data
+							})
+						end
+					end
+					core.log("warning", gamedata.address .. ':' .. gamedata.port)
+					core.start()
+				end)
             return ""
         end
 	end

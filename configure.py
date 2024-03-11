@@ -9,7 +9,7 @@ class Configurations:
    def __init__(self):
       self.api = ['release',
                  ('release', 'dev')]
-      self.operating_system = ['linux',
+      self.operating_system = ['android',
                               ('linux', 'macintosh', 'ios', 'windows', 'android')]
       self.ms_type = ['full',
                      ('full', 'acer', 'panel')]
@@ -17,7 +17,7 @@ class Configurations:
                        ('beta', 'release')]
       self.server_type = ['ecs',
                          ('local', 'multi', 'ecs')]
-      self.version = ['1.1.3',
+      self.version = ['1.1.4',
                       True]
       self.debug = ['false',
                    ('true', 'false')]
@@ -25,7 +25,7 @@ class Configurations:
                      ('true', 'false')]
       self.slack = ['false',
                    ('true', 'false')]
-      self.android_code = ['64',
+      self.android_code = ['65',
                       True]
    
    # Cambiare solo fino a qui.
@@ -100,32 +100,26 @@ class Configurations:
          with open("builtin/ms-mainmenu/oop/handshake.lua", "w") as handshake:
             for line in lines:
                handshake.write(line)
-         with open("builtin/ms-mainmenu/dlg_whoareu.lua", "r") as dlg_whoareu:
-            lines = dlg_whoareu.readlines()
-         url = db_beta_url if self.dev_phase[0] == "beta" else db_release_url
-         for i, line in enumerate(lines):
-            if "wiscom/api/" in line:
-               pre, post = line.split("https://")
-               _, post = post.split("/wiscom/api/")
-               post = "/wiscom/api/" + post
-               lines[i] = pre + url + post
-         with open("builtin/ms-mainmenu/dlg_whoareu.lua", "w") as dlg_whoareu:
-            for line in lines:
-               dlg_whoareu.write(line)
          with open("builtin/ms-mainmenu/init.lua", "r") as handshake:
             lines = handshake.readlines()
+            n = len(lines)
+         with open("minetest.conf", "r") as conf:
+            lines += conf.readlines()
          for i, line in enumerate(lines):
-            if 'matematicasuperpiatta.it/wiscom/api' in line:
-               pre, post = line.split("wiscoms")
+            if 'matematicasuperpiatta.it/wiscom' in line:
+               pre, post = line.split("/wiscoms")
                if self.dev_phase[0] == "beta":
                   ok = post.startswith("beta")
-                  lines[i] = line if ok else pre + "wiscomsbeta" + post
+                  lines[i] = line if ok else pre + "/wiscomsbeta" + post
                elif self.dev_phase[0] == "release":
                   ok = not post.startswith("beta")
-                  lines[i] = line if ok else pre + "wiscoms" + post[4:]
+                  lines[i] = line if ok else pre + "/wiscoms" + post[4:]
          with open("builtin/ms-mainmenu/init.lua", "w") as handshake:
-            for line in lines:
+            for line in lines[:n]:
                handshake.write(line)
+         with open("minetest.conf", "w") as conf:
+            for line in lines[n:]:
+               conf.write(line)
          return True
       else:
          return False
