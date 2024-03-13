@@ -94,6 +94,36 @@ end
 -- Password dialog
 --
 
+local function is_student(username)
+	local syntax = "A?AA0A00"
+	if #username == #syntax then
+		local letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		local numbers = "0123456789"
+		for i = 1, #username do
+			local ch = string.sub(username, i, i)
+			local constraint = string.sub(syntax, i, i)
+			local belonging_set
+			if constraint == "A" then
+				belonging_set = letters
+			elseif constraint == "0" then
+				belonging_set = numbers
+			elseif constraint == "?" then
+				belonging_set = letters .. numbers
+			end
+			if not string.find(belonging_set, ch) then
+				return false
+			end
+		end
+		return true
+	else
+		return false
+	end
+end
+
+local function hide_password(username)
+	return not is_student(username)
+end
+
 local function get_passwd_formspec(tabview, _, tabdata)
 	local bkg_w = 7.5
 	local btn_w = 2.2
@@ -102,17 +132,33 @@ local function get_passwd_formspec(tabview, _, tabdata)
 	if btn_halign_right  then
 		btn_abs_x = bkg_w - (0.5 + btn_w * 2 + 0.1)
 	end
-	return FormspecVersion:new{version=6}:render() ..
-		Size:new{w = bkg_w, h = 4.5, fix = true}:render() ..
-		Label:new{x = 0.5, y = 0.5, label = fgettext("Welcome") .. " " .. whoareu}:render() ..
-		Label:new{x = 0.5, y = 1.5, label = fgettext("Password:")}:render() ..
-		PasswdField:new{x = 0.5, y = 1.75, w = bkg_w - 1.0, h = 0.7, name = "passwd", value = ""}:render() ..
-		StyleType:new{selectors = {"button"}, props = {"bgcolor=#ffa900", "alpha=false"}}:render() ..
-		Button:new{x=btn_abs_x, y=3.25, w=btn_w, h=0.75, name = "btn_back", label = fgettext("Back")}:render() ..
+	if hide_password(whoareu) then
+		core.log("Hide password of " .. whoareu)
+		return FormspecVersion:new{version=6}:render() ..
+			Size:new{w = bkg_w, h = 4.5, fix = true}:render() ..
+			Label:new{x = 0.5, y = 0.5, label = fgettext("Welcome") .. " " .. whoareu}:render() ..
+			Label:new{x = 0.5, y = 1.5, label = fgettext("Password:")}:render() ..
+			PasswdField:new{x = 0.5, y = 1.75, w = bkg_w - 1.0, h = 0.7, name = "passwd", value = ""}:render() ..
+			StyleType:new{selectors = {"button"}, props = {"bgcolor=#ffa900", "alpha=false"}}:render() ..
+			Button:new{x=btn_abs_x, y=3.25, w=btn_w, h=0.75, name = "btn_back", label = fgettext("Back")}:render() ..
 
-		-- Styled stuff
-		StyleType:new{selectors = {"button"}, props = {"font=bold", "bgcolor=#00dc28", "alpha=false"}}:render() ..
-		Button:new{x=btn_abs_x + btn_w + 0.1, y=3.25, w=btn_w, h=0.75, name = "btn_play", label = fgettext("Play!")}:render()
+			-- Styled stuff
+			StyleType:new{selectors = {"button"}, props = {"font=bold", "bgcolor=#00dc28", "alpha=false"}}:render() ..
+			Button:new{x=btn_abs_x + btn_w + 0.1, y=3.25, w=btn_w, h=0.75, name = "btn_play", label = fgettext("Play!")}:render()
+	else
+		core.log("Show password of " .. whoareu)
+		return FormspecVersion:new{version=6}:render() ..
+			Size:new{w = bkg_w, h = 4.5, fix = true}:render() ..
+			Label:new{x = 0.5, y = 0.5, label = fgettext("Welcome") .. " " .. whoareu}:render() ..
+			Label:new{x = 0.5, y = 1.5, label = fgettext("Password:")}:render() ..
+			Field:new{x = 0.5, y = 1.75, w = bkg_w - 1.0, h = 0.7, name = "passwd", value = ""}:render() ..
+			StyleType:new{selectors = {"button"}, props = {"bgcolor=#ffa900", "alpha=false"}}:render() ..
+			Button:new{x=btn_abs_x, y=3.25, w=btn_w, h=0.75, name = "btn_back", label = fgettext("Back")}:render() ..
+
+			-- Styled stuff
+			StyleType:new{selectors = {"button"}, props = {"font=bold", "bgcolor=#00dc28", "alpha=false"}}:render() ..
+			Button:new{x=btn_abs_x + btn_w + 0.1, y=3.25, w=btn_w, h=0.75, name = "btn_play", label = fgettext("Play!")}:render()
+	end
 end
 
 local function handle_passwd_buttons(this, fields, tabname, tabdata)
