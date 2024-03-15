@@ -38,7 +38,7 @@ class Configurations:
          with open("minetest.conf", "r") as minetest:
             lines = minetest.readlines()
          for i, line in enumerate(lines):
-            if len(line) >= 12 and line[:12] == 'ms_discovery':
+            if len(line) >= 14 and line[:14] == 'ms_discovery =':
                pre, _ = line.split("=")
                post = api_dev if self.api[0] == "dev" else api_release
                lines[i] = pre + '= ' + post + '\n'
