@@ -65,7 +65,7 @@ class Configurations:
             lines = conf.readlines()
          for i, line in enumerate(lines):
             if 'debug_log_level =' in line:
-               dl = 0 if self.operating_system[0] == 'linux' else 3
+               dl = 0 if self.operating_system[0] == 'linux' or self.operating_system[0] == 'windows' else 3
                lines[i] = "debug_log_level = " + str(dl) + "\n"
          with open("minetest.conf", "w") as conf:
             for line in lines:
