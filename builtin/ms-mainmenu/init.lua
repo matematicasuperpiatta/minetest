@@ -25,7 +25,7 @@ SERVER_PORT = core.settings:get("ms_port") or 29999
 URL_GET = "http://"..SERVER_ADDRESS..":"..SERVER_PORT
 
 SERVICE_DISCOVERY = core.settings:get("ms_discovery") or "fvqyugucy1.execute-api.eu-south-1.amazonaws.com/release"
-SERVICE_DISCOVERY_LOCAL = core.settings:get("ms_discovery_local") or "168.192.0.4"
+SERVICE_DISCOVERY_LOCAL = core.settings:get("ms_discovery_local") or "192.168.0.4"
 WISCOMS_URL = core.settings:get("wiscoms_url") or "https://wiscoms.matematicasuperpiatta.it/wiscom"
 WISCOMS_URL_LOCAL = core.settings:get("wiscoms_url_local") or "http://" .. SERVICE_DISCOVERY_LOCAL .. ":8000/wiscom"
 PANEL_DATA = core.settings:get("panel_data") or ""

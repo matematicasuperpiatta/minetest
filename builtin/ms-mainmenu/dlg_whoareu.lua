@@ -283,6 +283,7 @@ function handle_connection(json, user, pass)
 
             -- set access token to the handshake
             handshake.token = gamedata.access
+			handshake.is_demo_user = string.find(whoareu, "demo")
 
             wait_go(
 				function(core, handshake, gamedata)
@@ -309,7 +310,7 @@ function handle_connection(json, user, pass)
 						post_data = post_data
 					})
 					if response == nil or response.code == 0 then
-						if string.find(whoareu, "demo") then
+						if handshake.is_demo_user then
 							url = handshake.wiscoms_url_local .. "/api/users/me/server_info"
 							local response = http.fetch_sync({
 								url = url,
