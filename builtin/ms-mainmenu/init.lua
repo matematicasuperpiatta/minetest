@@ -221,7 +221,7 @@ local function init_globals(tabs)
 
 		local http = core.get_http_api()
 		local response = http.fetch_sync({
-			url = WISCOMS_URL .. "/api/token/",
+			url = WISCOMS_URL .. "/api/panel/token/",
 			timeout = 10,
 			post_data = core.parse_json(PANEL_DATA),
 		})
