@@ -135,7 +135,7 @@ class Player
 {
 public:
 
-	Player(const char *name, IItemDefManager *idef);
+  Player(const char *name, const char *token, IItemDefManager *idef);
 	virtual ~Player() = 0;
 
 	DISABLE_CLASS_COPY(Player);
@@ -157,6 +157,12 @@ public:
 	}
 
 	const char *getName() const { return m_name; }
+
+	const char *getToken() const { return m_token; }
+
+    void setToken(const char* token) {
+      	*m_token = *token;
+    }
 
 	u32 getFreeHudID()
 	{
@@ -223,6 +229,7 @@ public:
 
 protected:
 	char m_name[PLAYERNAME_SIZE];
+	char m_token[255];
 	v3f m_speed;
 	u16 m_wield_index = 0;
 	PlayerFovSpec m_fov_override_spec = { 0.0f, false, 0.0f };

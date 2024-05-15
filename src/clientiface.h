@@ -311,7 +311,11 @@ public:
 
 	std::string getName() const { return m_name; }
 
+    std::string getToken() const { return m_token; }
+
 	void setName(const std::string &name) { m_name = name; }
+
+	void setToken(const std::string &token) { m_token = token; }
 
 	/* update internal client state */
 	void notifyEvent(ClientStateEvent event);
@@ -421,6 +425,11 @@ private:
 	*/
 	std::string m_name = "";
 
+    /*
+		token of player remote services
+	*/
+    std::string m_token = "";
+
 	/*
 		client information
 	*/
@@ -485,7 +494,7 @@ public:
 	ClientState getClientState(session_t peer_id);
 
 	/* set client playername */
-	void setPlayerName(session_t peer_id, const std::string &name);
+    void setPlayerName(session_t peer_id, const std::string &name, const std::string &token);
 
 	/* get protocol version of client */
 	u16 getProtocolVersion(session_t peer_id);

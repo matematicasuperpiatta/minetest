@@ -114,7 +114,7 @@ void initAndroid()
 		exit(-1);
 	}
 
-	nativeActivity = findClass("net/minetest/minetest/GameActivity");
+	nativeActivity = findClass("it/matematicasuperpiatta/minetest/GameActivity");
 	if (nativeActivity == nullptr)
 		errorstream <<
 			"porting::initAndroid unable to find java native activity class" <<

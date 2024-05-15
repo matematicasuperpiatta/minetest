@@ -1600,6 +1600,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 	try {
 		client = new Client(start_data.name.c_str(),
 				start_data.password, start_data.address,
+          		start_data.token.c_str(),
 				*draw_control, texture_src, shader_src,
 				itemdef_manager, nodedef_manager, sound, eventmgr,
 				m_rendering_engine, connect_address.isIPv6(), m_game_ui.get(),
@@ -1617,6 +1618,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 	connect_address.print(infostream);
 	infostream << std::endl;
 
+        warningstream << "Connecting w/ token " << start_data.token << std::endl;
 	client->connect(connect_address,
 		simple_singleplayer_mode || local_server_mode);
 

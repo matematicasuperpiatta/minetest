@@ -1082,17 +1082,19 @@ void Server::Receive()
 PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 {
 	std::string playername;
+	std::string token;
 	PlayerSAO *playersao = NULL;
 	{
 		ClientInterface::AutoLock clientlock(m_clients);
 		RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_InitDone);
 		if (client) {
 			playername = client->getName();
-			playersao = emergePlayer(playername.c_str(), peer_id, client->net_proto_version);
+            token = client->getToken();
+			playersao = emergePlayer(playername.c_str(), token.c_str(), peer_id, client->net_proto_version);
 		}
 	}
 
-	RemotePlayer *player = m_env->getPlayer(playername.c_str());
+    RemotePlayer *player = m_env->getPlayer(playername.c_str(), token.c_str());
 
 	// If failed, cancel
 	if (!playersao || !player) {
@@ -3825,12 +3827,12 @@ void Server::requestShutdown(const std::string &msg, bool reconnect, float delay
 	m_shutdown_state.trigger(delay, msg, reconnect);
 }
 
-PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_version)
+PlayerSAO* Server::emergePlayer(const char *name, const char *token, session_t peer_id, u16 proto_version)
 {
 	/*
 		Try to get an existing player
 	*/
-	RemotePlayer *player = m_env->getPlayer(name);
+	RemotePlayer *player = m_env->getPlayer(name, token);
 
 	// If player is already connected, cancel
 	if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
@@ -3848,7 +3850,7 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 	}
 
 	if (!player) {
-		player = new RemotePlayer(name, idef());
+		player = new RemotePlayer(name, token, idef());
 	}
 
 	bool newplayer = false;

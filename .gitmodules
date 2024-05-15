@@ -1,0 +1,6 @@
+[submodule "mods/ms-shared"]
+	path = mods/ms-shared
+	url = git@gitlab.com:leonardoguidoni/ms-shared.git
+[submodule "mods/ms"]
+	path = mods/ms
+	url = git@gitlab.com:leonardoguidoni/ms-shared.git

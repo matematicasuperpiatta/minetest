@@ -151,7 +151,7 @@ int LuaItemStack::l_set_wear(lua_State *L)
 int LuaItemStack::l_get_meta(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaItemStack *o = checkObject<LuaItemStack>(L, 1);
+	LuaItemStack *o = checkobject(L, 1);
 	ItemStackMetaRef::create(L, o);
 	return 1;
 }

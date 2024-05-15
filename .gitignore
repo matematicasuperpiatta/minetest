@@ -42,24 +42,23 @@ build/.cmake/
 ## Non-static Minetest directories or symlinks to these
 /bin/
 /games/*
-!/games/devtest/
-/games/devtest/mods/soundstuff/sounds/gitignored_sounds/*
-!/games/devtest/mods/soundstuff/sounds/gitignored_sounds/custom_sounds_here.txt
+!/games/matematicasuperpiatta/
+/worlds/*
 /cache
 /textures/*
 !/textures/base/
 /screenshots
 /sounds
-/mods/*
-!/mods/mods_here.txt
-/worlds/*
-!/worlds/worlds_here.txt
+!/mods/minetest/
+!/mods/ms
+/mods/minetest/*
+!/mods/minetest/mods_here.txt
 /clientmods/*
 !/clientmods/preview/
 /client/mod_storage/
 
 ## Configuration/log files
-minetest.conf
+#minetest.conf
 debug.txt
 debug.txt.1
 
@@ -119,3 +118,4 @@ lib/irrlichtmt
 
 # Generated mod storage database
 client/mod_storage.sqlite
+minetest.log

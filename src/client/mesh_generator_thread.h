@@ -37,7 +37,6 @@ struct QueuedMeshUpdate
 	int crack_level = -1;
 	v3s16 crack_pos;
 	MeshMakeData *data = nullptr; // This is generated in MeshUpdateQueue::pop()
-	std::vector<MapBlock *> map_blocks;
 	bool urgent = false;
 
 	QueuedMeshUpdate() = default;
@@ -97,10 +96,8 @@ struct MeshUpdateResult
 {
 	v3s16 p = v3s16(-1338, -1338, -1338);
 	MapBlockMesh *mesh = nullptr;
-	std::unordered_map<v3s16, u8> solid_sides;
-	std::vector<v3s16> ack_list;
+	bool ack_block_to_server = false;
 	bool urgent = false;
-	std::vector<MapBlock *> map_blocks;
 
 	MeshUpdateResult() = default;
 };

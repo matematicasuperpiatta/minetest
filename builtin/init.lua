@@ -48,6 +48,7 @@ elseif INIT == "mainmenu" then
 	local mm_script = core.settings:get("main_menu_script")
 	local custom_loaded = false
 	if mm_script and mm_script ~= "" then
+		mm_script = scriptdir .. '..' .. DIR_DELIM .. mm_script
 		local testfile = io.open(mm_script, "r")
 		if testfile then
 			testfile:close()

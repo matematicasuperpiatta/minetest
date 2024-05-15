@@ -68,6 +68,13 @@ ItemStackMetaRef::~ItemStackMetaRef()
 	istack->drop();
 }
 
+// garbage collector
+int ItemStackMetaRef::gc_object(lua_State *L) {
+	ItemStackMetaRef *o = *(ItemStackMetaRef **)(lua_touserdata(L, 1));
+	delete o;
+	return 0;
+}
+
 // Creates an NodeMetaRef and leaves it on top of stack
 // Not callable from Lua; all references are created on the C side.
 void ItemStackMetaRef::create(lua_State *L, LuaItemStack *istack)

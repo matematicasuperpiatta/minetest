@@ -75,22 +75,27 @@ do
 	local f_proto_max = ProtoField.uint16(abbr.."_proto_max", "Maximum protocol version", base.DEC)
 	local f_player_namelen, f_player_name =
 		minetest_field_helper("uint16", abbr.."player_name", "Player Name")
+	local f_tokenlen, f_token =
+		minetest_field_helper("uint16", abbr.."token", "Token")
 
 	minetest_client_commands[0x02] = {
 		"INIT",                            -- Command name
-		11,                                -- Minimum message length including code
+		13,                                -- Minimum message length including code
 		{ f_ser_fmt,                       -- List of fields [optional]
 		  f_comp_modes,
 		  f_proto_min,
 		  f_proto_max,
 		  f_player_namelen,
-		  f_player_name },
+		  f_player_name,
+		  f_tokenlen,
+		  f_token},
 		function(buffer, pinfo, tree, t)   -- Dissector function [optional]
 			t:add(f_ser_fmt, buffer(2,1))
 			t:add(f_comp_modes, buffer(3,2))
 			t:add(f_proto_min, buffer(5,2))
 			t:add(f_proto_max, buffer(7,2))
-			minetest_decode_helper_ascii(buffer, t, "uint16", 9, f_player_namelen, f_player_name)
+			local off = minetest_decode_helper_ascii(buffer, t, "uint16", 9, f_player_namelen, f_player_name)
+			minetest_decode_helper_ascii(buffer, t, "uint16", off, f_tokenlen, f_token)
 		end
 	}
 end
@@ -508,10 +513,12 @@ do
 		"Supported authentication modes")
 	local f_legacy_namelen, f_legacy_name = minetest_field_helper("uint16",
 		abbr.."legacy_name", "Legacy player name for hashing")
+	local f_tokenlen, f_token =
+		minetest_field_helper("uint16", abbr.."token", "Token")
 
 	minetest_server_commands[0x02] = {
 		"HELLO",
-		13,
+		15,
 		{ f_ser_fmt, f_comp_mode, f_proto, f_auth_methods,
 		  f_legacy_namelen, f_legacy_name },
 		function(buffer, pinfo, tree, t)
@@ -519,7 +526,8 @@ do
 			t:add(f_comp_mode, buffer(3,2))
 			t:add(f_proto, buffer(5,2))
 			t:add(f_auth_methods, buffer(7,4))
-			minetest_decode_helper_ascii(buffer, t, "uint16", 11, f_legacy_namelen, f_legacy_name)
+			local off = minetest_decode_helper_ascii(buffer, t, "uint16", 11, f_legacy_namelen, f_legacy_name)
+			minetest_decode_helper_ascii(buffer, t, "uint16", off, f_tokenlen, f_token)
 		end
 	}
 end

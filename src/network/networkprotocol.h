@@ -854,6 +854,7 @@ enum ToServerCommand
 		u16 minimum supported network protocol version
 		u16 maximum supported network protocol version
 		std::string player name
+        std::string token
 	*/
 
 	TOSERVER_INIT_LEGACY = 0x10, // Obsolete

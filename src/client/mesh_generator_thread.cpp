@@ -101,20 +101,6 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 			q->crack_level = m_client->getCrackLevel();
 			q->crack_pos = m_client->getCrackPos();
 			q->urgent |= urgent;
-			v3s16 pos;
-			int i = 0;
-			for (pos.X = q->p.X - 1; pos.X <= q->p.X + mesh_grid.cell_size; pos.X++)
-			for (pos.Z = q->p.Z - 1; pos.Z <= q->p.Z + mesh_grid.cell_size; pos.Z++)
-			for (pos.Y = q->p.Y - 1; pos.Y <= q->p.Y + mesh_grid.cell_size; pos.Y++) {
-				if (!q->map_blocks[i]) {
-					MapBlock *block = map->getBlockNoCreateNoEx(pos);
-					if (block) {
-						block->refGrab();
-						q->map_blocks[i] = block;
-					}
-				}
-				i++;
-			}
 			return true;
 		}
 	}
@@ -144,7 +130,6 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 	q->crack_level = m_client->getCrackLevel();
 	q->crack_pos = m_client->getCrackPos();
 	q->urgent = urgent;
-	q->map_blocks = std::move(map_blocks);
 	m_queue.push_back(q);
 
 	return true;
@@ -291,55 +276,22 @@ void MeshUpdateManager::updateBlock(Map *map, v3s16 p, bool ack_block_to_server,
 
 void MeshUpdateManager::putResult(const MeshUpdateResult &result)
 {
-	if (result.urgent)
-		m_queue_out_urgent.push_back(result);
-	else
-		m_queue_out.push_back(result);
-}
+	QueuedMeshUpdate *q;
+	while ((q = m_queue_in.pop())) {
+		if (m_generation_interval)
+			sleep_ms(m_generation_interval);
+		ScopeProfiler sp(g_profiler, "Client: Mesh making (sum)");
 
-bool MeshUpdateManager::getNextResult(MeshUpdateResult &r)
-{
-	if (!m_queue_out_urgent.empty()) {
-		r = m_queue_out_urgent.pop_frontNoEx();
-		return true;
+		MapBlockMesh *mesh_new = new MapBlockMesh(q->data, m_camera_offset);
+
+		MeshUpdateResult r;
+		r.p = q->p;
+		r.mesh = mesh_new;
+		r.ack_block_to_server = q->ack_block_to_server;
+		r.urgent = q->urgent;
+
+		m_queue_out.push_back(r);
+
+		delete q;
 	}
-
-	if (!m_queue_out.empty()) {
-		r = m_queue_out.pop_frontNoEx();
-		return true;
-	}
-
-	return false;
-}
-
-void MeshUpdateManager::deferUpdate()
-{
-	for (auto &thread : m_workers)
-		thread->deferUpdate();
-}
-
-void MeshUpdateManager::start()
-{
-	for (auto &thread: m_workers)
-		thread->start();
-}
-
-void MeshUpdateManager::stop()
-{
-	for (auto &thread: m_workers)
-		thread->stop();
-}
-
-void MeshUpdateManager::wait()
-{
-	for (auto &thread: m_workers)
-		thread->wait();
-}
-
-bool MeshUpdateManager::isRunning()
-{
-	for (auto &thread: m_workers)
-		if (thread->isRunning())
-			return true;
-	return false;
 }

@@ -49,6 +49,7 @@ struct GameStartData : GameParams
 	std::string name;
 	std::string password;
 	std::string address;
+    std::string token;
 	bool local_server;
 
 	ELoginRegister allow_login_or_register = ELoginRegister::Any;

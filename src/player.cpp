@@ -30,10 +30,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"  // strlcpy
 
 
-Player::Player(const char *name, IItemDefManager *idef):
+Player::Player(const char *name, const char *token, IItemDefManager *idef):
 	inventory(idef)
 {
 	strlcpy(m_name, name, PLAYERNAME_SIZE);
+	strlcpy(m_token, token, 255);
 
 	inventory.clear();
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);

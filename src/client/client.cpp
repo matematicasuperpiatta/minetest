@@ -93,7 +93,8 @@ Client::Client(
 		const char *playername,
 		const std::string &password,
 		const std::string &address_name,
-		MapDrawControl &control,
+		const char *token,
+    	MapDrawControl &control,
 		IWritableTextureSource *tsrc,
 		IWritableShaderSource *shsrc,
 		IWritableItemDefManager *itemdef,
@@ -131,7 +132,7 @@ Client::Client(
 	m_modchannel_mgr(new ModChannelMgr())
 {
 	// Add local player
-	m_env.setLocalPlayer(new LocalPlayer(this, playername));
+	m_env.setLocalPlayer(new LocalPlayer(this, playername, token));
 
 	// Make the mod storage database and begin the save for later
 	m_mod_storage_database =
@@ -428,7 +429,7 @@ void Client::step(float dtime)
 			LocalPlayer *myplayer = m_env.getLocalPlayer();
 			FATAL_ERROR_IF(myplayer == NULL, "Local player not found in environment.");
 
-			sendInit(myplayer->getName());
+			sendInit(myplayer->getName(), myplayer->getToken());
 		}
 
 		// Not connected, return
@@ -1115,9 +1116,9 @@ AuthMechanism Client::choseAuthMech(const u32 mechs)
 	return AUTH_MECHANISM_NONE;
 }
 
-void Client::sendInit(const std::string &playerName)
+void Client::sendInit(const std::string &playerName, const std::string &token)
 {
-	NetworkPacket pkt(TOSERVER_INIT, 1 + 2 + 2 + (1 + playerName.size()));
+    NetworkPacket pkt(TOSERVER_INIT, 1 + 2 + 2 + (1 + playerName.size())  + (1 + token.size()));
 
 	// we don't support network compression yet
 	u16 supp_comp_modes = NETPROTO_COMPRESSION_NONE;
@@ -1125,6 +1126,7 @@ void Client::sendInit(const std::string &playerName)
 	pkt << (u8) SER_FMT_VER_HIGHEST_READ << (u16) supp_comp_modes;
 	pkt << (u16) CLIENT_PROTOCOL_VERSION_MIN << (u16) CLIENT_PROTOCOL_VERSION_MAX;
 	pkt << playerName;
+    pkt << token;
 
 	Send(&pkt);
 }

@@ -8514,3 +8514,15 @@ msgstr "Limite parallelo cURL"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "no"
+
+msgid "based on"
+msgstr "basato su"
+
+msgid "Università degli Studi of L'Aquila"
+msgstr "Università degli Studi dell'Aquila"
+
+msgid "Start"
+msgstr "Gioca"
+
+msgid "more info: matematicasuperpiatta@gmail.com"
+msgstr "per informazioni: matematicasuperpiatta@gmail.com"
