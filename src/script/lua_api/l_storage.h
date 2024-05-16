@@ -22,7 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "l_metadata.h"
 #include "lua_api/l_base.h"
-#include "content/mods.h"
+
+class ModMetadata;
 
 class ModApiStorage : public ModApiBase
 {
@@ -36,19 +37,24 @@ public:
 class StorageRef : public MetaDataRef
 {
 private:
-	ModStorage m_object;
-
-	static const luaL_Reg methods[];
-
-	virtual IMetadata *getmeta(bool auto_create);
-	virtual void clearMeta();
-
-public:
-	StorageRef(const std::string &mod_name, ModStorageDatabase *db): m_object(mod_name, db) {}
-	~StorageRef() = default;
-
-	static void Register(lua_State *L);
-	static void create(lua_State *L, const std::string &mod_name, ModStorageDatabase *db);
+	ModMetadata *m_object = nullptr;
 
 	static const char className[];
+	static const luaL_Reg methods[];
+
+	virtual Metadata *getmeta(bool auto_create);
+	virtual void clearMeta();
+
+	// garbage collector
+	static int gc_object(lua_State *L);
+
+public:
+	StorageRef(ModMetadata *object);
+	~StorageRef();
+
+	static void Register(lua_State *L);
+	static void create(lua_State *L, ModMetadata *object);
+
+	static StorageRef *checkobject(lua_State *L, int narg);
+	static ModMetadata *getobject(StorageRef *ref);
 };

@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Inventory;
 class IItemDefManager;
 
-class NodeMetadata : public SimpleMetadata
+class NodeMetadata : public Metadata
 {
 public:
 	NodeMetadata(IItemDefManager *item_def_mgr);

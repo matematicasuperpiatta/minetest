@@ -194,7 +194,6 @@ LOCAL_SRC_FILES := \
 	../../src/itemdef.cpp                        \
 	../../src/itemstackmetadata.cpp              \
 	../../src/light.cpp                          \
-	../../src/lighting.cpp                       \
 	../../src/log.cpp                            \
 	../../src/main.cpp                           \
 	../../src/map.cpp                            \

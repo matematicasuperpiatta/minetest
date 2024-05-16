@@ -29,10 +29,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Environment;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 
 import java.io.File;
@@ -77,6 +77,9 @@ public class UnzipService extends IntentService {
 		try {
 			setIsRunning(true);
 			File userDataDirectory = Utils.getUserDataDirectory(this);
+			if (userDataDirectory == null) {
+				throw new IOException("Unable to find user data directory");
+			}
 
 			try (InputStream in = this.getAssets().open(zipFile.getName())) {
 				try (OutputStream out = new FileOutputStream(zipFile)) {
@@ -95,9 +98,7 @@ public class UnzipService extends IntentService {
 			failureMessage = e.getLocalizedMessage();
 		} finally {
 			setIsRunning(false);
-			if (!zipFile.delete()) {
-				Log.w("UnzipService", "Minetest installation ZIP cannot be deleted");
-			}
+			zipFile.delete();
 		}
 	}
 
@@ -130,12 +131,8 @@ public class UnzipService extends IntentService {
 		Intent notificationIntent = new Intent(this, MainActivity.class);
 		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 			| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		int pendingIntentFlag = 0;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-			pendingIntentFlag = PendingIntent.FLAG_MUTABLE;
-		}
 		PendingIntent intent = PendingIntent.getActivity(this, 0,
-			notificationIntent, pendingIntentFlag);
+			notificationIntent, 0);
 
 		builder.setContentTitle(getString(R.string.notification_title))
 				.setSmallIcon(R.mipmap.ic_launcher)
@@ -213,9 +210,7 @@ public class UnzipService extends IntentService {
 			return;
 
 		publishProgress(notificationBuilder, R.string.migrating, 0);
-		if (!newLocation.mkdir()) {
-			Log.e("UnzipService", "New installation folder cannot be made");
-		}
+		newLocation.mkdir();
 
 		String[] dirs = new String[] { "worlds", "games", "mods", "textures", "client" };
 		for (int i = 0; i < dirs.length; i++) {
@@ -233,9 +228,7 @@ public class UnzipService extends IntentService {
 			}
 		}
 
-		if (!recursivelyDeleteDirectory(oldLocation)) {
-			Log.w("UnzipService", "Old installation files cannot be deleted successfully");
-		}
+		recursivelyDeleteDirectory(oldLocation);
 	}
 
 	private void publishProgress(@Nullable  Notification.Builder notificationBuilder, @StringRes int message, int progress) {

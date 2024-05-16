@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "metadata.h"
 #include "subgames.h"
 
-class ModStorageDatabase;
+class ModMetadataDatabase;
 
 #define MODNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_"
 
@@ -110,30 +110,20 @@ std::map<std::string, ModSpec> getModsInPath(const std::string &path,
 std::vector<ModSpec> flattenMods(const std::map<std::string, ModSpec> &mods);
 
 
-class ModStorage : public IMetadata
+class ModMetadata : public Metadata
 {
 public:
-	ModStorage() = delete;
-	ModStorage(const std::string &mod_name, ModStorageDatabase *database);
-	~ModStorage() = default;
+	ModMetadata() = delete;
+	ModMetadata(const std::string &mod_name, ModMetadataDatabase *database);
+	~ModMetadata() = default;
+
+	virtual void clear();
 
 	const std::string &getModName() const { return m_mod_name; }
 
-	void clear() override;
-
-	bool contains(const std::string &name) const override;
-
-	bool setString(const std::string &name, const std::string &var) override;
-
-	const StringMap &getStrings(StringMap *place) const override;
-
-	const std::vector<std::string> &getKeys(std::vector<std::string> *place) const override;
-
-protected:
-	const std::string *getStringRaw(const std::string &name,
-			std::string *place) const override;
+	virtual bool setString(const std::string &name, const std::string &var);
 
 private:
 	std::string m_mod_name;
-	ModStorageDatabase *m_database;
+	ModMetadataDatabase *m_database;
 };

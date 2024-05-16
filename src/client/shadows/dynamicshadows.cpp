@@ -41,16 +41,10 @@ static v3f quantizeDirection(v3f direction, float step)
 
 void DirectionalLight::createSplitMatrices(const Camera *cam)
 {
-	static const float COS_15_DEG = 0.965926f;
+	const float DISTANCE_STEP = BS * 2.0; // 2 meters
 	v3f newCenter;
-	v3f look = cam->getDirection().normalize();
-
-	// if current look direction is < 15 degrees away from the captured
-	// look direction then stick to the captured value, otherwise recapture.
-	if (look.dotProduct(last_look) >= COS_15_DEG)
-		look = last_look;
-	else
-		last_look = look;
+	v3f look = cam->getDirection();
+	look = quantizeDirection(look, M_PI / 12.0); // 15 degrees
 
 	// camera view tangents
 	float tanFovY = tanf(cam->getFovY() * 0.5f);
@@ -62,14 +56,10 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 
 	// adjusted camera positions
 	v3f cam_pos_world = cam->getPosition();
-
-	// if world position is less than 1 block away from the captured
-	// world position then stick to the captured value, otherwise recapture.
-	if (cam_pos_world.getDistanceFromSQ(last_cam_pos_world) < BS * BS)
-		cam_pos_world = last_cam_pos_world;
-	else
-		last_cam_pos_world = cam_pos_world;
-
+	cam_pos_world = v3f(
+			floor(cam_pos_world.X / DISTANCE_STEP) * DISTANCE_STEP,
+			floor(cam_pos_world.Y / DISTANCE_STEP) * DISTANCE_STEP,
+			floor(cam_pos_world.Z / DISTANCE_STEP) * DISTANCE_STEP);
 	v3f cam_pos_scene = v3f(cam_pos_world.X - cam->getOffset().X * BS,
 			cam_pos_world.Y - cam->getOffset().Y * BS,
 			cam_pos_world.Z - cam->getOffset().Z * BS);

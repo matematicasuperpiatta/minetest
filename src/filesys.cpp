@@ -127,12 +127,6 @@ bool IsDir(const std::string &path)
 			(attr & FILE_ATTRIBUTE_DIRECTORY));
 }
 
-bool IsExecutable(const std::string &path)
-{
-	DWORD type;
-	return GetBinaryType(path.c_str(), &type) != 0;
-}
-
 bool IsDirDelimiter(char c)
 {
 	return c == '/' || c == '\\';
@@ -313,11 +307,6 @@ bool IsDir(const std::string &path)
 	if(stat(path.c_str(), &statbuf))
 		return false; // Actually error; but certainly not a directory
 	return ((statbuf.st_mode & S_IFDIR) == S_IFDIR);
-}
-
-bool IsExecutable(const std::string &path)
-{
-	return access(path.c_str(), X_OK) == 0;
 }
 
 bool IsDirDelimiter(char c)
@@ -650,7 +639,7 @@ std::string RemoveLastPathComponent(const std::string &path,
 		std::string *removed, int count)
 {
 	if(removed)
-		removed->clear();
+		*removed = "";
 
 	size_t remaining = path.size();
 

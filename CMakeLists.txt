@@ -16,14 +16,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 set(GCC_MINIMUM_VERSION "5.1")
 set(CLANG_MINIMUM_VERSION "3.5")
 
-# You should not need to edit these manually, use util/bump_version.sh
+# Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
 set(VERSION_MAJOR 5)
 set(VERSION_MINOR 6)
 set(VERSION_PATCH 1)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
 # Change to false for releases
-set(DEVELOPMENT_BUILD TRUE)
+set(DEVELOPMENT_BUILD FALSE)
 
 set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 if(VERSION_EXTRA)
@@ -136,17 +136,6 @@ if(BUILD_CLIENT AND TARGET IrrlichtMt::IrrlichtMt)
 	endif()
 endif()
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-	if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "${GCC_MINIMUM_VERSION}")
-		message(FATAL_ERROR "Insufficient gcc version, found ${CMAKE_CXX_COMPILER_VERSION}. "
-			"Version ${GCC_MINIMUM_VERSION} or higher is required.")
-	endif()
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang")
-	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "${CLANG_MINIMUM_VERSION}")
-		message(FATAL_ERROR "Insufficient clang version, found ${CMAKE_CXX_COMPILER_VERSION}. "
-			"Version ${CLANG_MINIMUM_VERSION} or higher is required.")
-	endif()
-endif()
 
 # Installation
 
@@ -249,13 +238,8 @@ endif()
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/minetest_game" DESTINATION "${SHAREDIR}/games/"
 	COMPONENT "SUBGAME_MINETEST_GAME" OPTIONAL PATTERN ".git*" EXCLUDE )
-
-set(INSTALL_DEVTEST FALSE CACHE BOOL "Install Development Test")
-
-if(INSTALL_DEVTEST)
-	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/devtest" DESTINATION "${SHAREDIR}/games/"
-		PATTERN ".git*" EXCLUDE )
-endif()
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/devtest" DESTINATION "${SHAREDIR}/games/"
+	COMPONENT "SUBGAME_MINIMAL" OPTIONAL PATTERN ".git*" EXCLUDE )
 
 if(BUILD_CLIENT)
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/client/shaders" DESTINATION "${SHAREDIR}/client")
@@ -294,7 +278,21 @@ find_package(GMP REQUIRED)
 find_package(Json REQUIRED)
 find_package(Lua REQUIRED)
 if(NOT USE_LUAJIT)
+	set(LUA_BIT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/bitop)
+	set(LUA_BIT_LIBRARY bitop)
 	add_subdirectory(lib/bitop)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "${GCC_MINIMUM_VERSION}")
+		message(FATAL_ERROR "Insufficient gcc version, found ${CMAKE_CXX_COMPILER_VERSION}. "
+			"Version ${GCC_MINIMUM_VERSION} or higher is required.")
+	endif()
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang")
+	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "${CLANG_MINIMUM_VERSION}")
+		message(FATAL_ERROR "Insufficient clang version, found ${CMAKE_CXX_COMPILER_VERSION}. "
+			"Version ${CLANG_MINIMUM_VERSION} or higher is required.")
+	endif()
 endif()
 
 if(BUILD_BENCHMARKS)
@@ -304,6 +302,7 @@ endif()
 # Subdirectories
 # Be sure to add all relevant definitions above this
 add_subdirectory(src)
+
 
 # CPack
 
@@ -327,12 +326,19 @@ cpack_add_component(SUBGAME_MINETEST_GAME
 	GROUP "Games"
 )
 
+cpack_add_component(SUBGAME_MINIMAL
+	DISPLAY_NAME "Development Test"
+	DESCRIPTION "A basic testing environment used for engine development and sometimes for testing mods."
+	DISABLED #DISABLED does not mean it is disabled, and is just not selected by default.
+	GROUP "Games"
+)
+
 cpack_add_component_group(Subgames
 	DESCRIPTION "Games for the Minetest engine."
 )
 
 if(WIN32)
-	# Include all dynamically linked runtime libraries such as MSVCRxxx.dll
+	# Include all dynamically linked runtime libaries such as MSVCRxxx.dll
 	include(InstallRequiredSystemLibraries)
 
 	if(RUN_IN_PLACE)

@@ -55,11 +55,11 @@ void GameUI::init()
 {
 	// First line of debug text
 	m_guitext = gui::StaticText::add(guienv, utf8_to_wide(PROJECT_NAME_C).c_str(),
-		core::rect<s32>(0, 0, 0, 0), false, true, guiroot);
+		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
 
 	// Second line of debug text
 	m_guitext2 = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0), false,
-		true, guiroot);
+		false, guiroot);
 
 	// Chat text
 	m_guitext_chat = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0),
@@ -102,8 +102,6 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 {
 	v2u32 screensize = RenderingEngine::getWindowSize();
 
-	s32 minimal_debug_height = 0;
-
 	// Minimal debug text must only contain info that can't give a gameplay advantage
 	if (m_flags.show_minimal_debug) {
 		const u16 fps = 1.0 / stats.dtime_jitter.avg;
@@ -124,12 +122,10 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 			<< (draw_control->range_all ? "All" : itos(draw_control->wanted_range))
 			<< std::setprecision(2)
 			<< " | RTT: " << (client->getRTT() * 1000.0f) << "ms";
-
-		m_guitext->setRelativePosition(core::rect<s32>(5, 5, screensize.X, screensize.Y));
-
 		setStaticText(m_guitext, utf8_to_wide(os.str()).c_str());
 
-		minimal_debug_height = m_guitext->getTextHeight();
+		m_guitext->setRelativePosition(core::rect<s32>(5, 5, screensize.X,
+			5 + g_fontengine->getTextHeight()));
 	}
 
 	// Finally set the guitext visible depending on the flag
@@ -165,10 +161,12 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 			}
 		}
 
-		m_guitext2->setRelativePosition(core::rect<s32>(5, 5 + minimal_debug_height,
-				screensize.X, screensize.Y));
-
 		setStaticText(m_guitext2, utf8_to_wide(os.str()).c_str());
+
+		m_guitext2->setRelativePosition(core::rect<s32>(5,
+			5 + g_fontengine->getTextHeight(), screensize.X,
+			5 + g_fontengine->getTextHeight() * 2
+		));
 	}
 
 	m_guitext2->setVisible(m_flags.show_basic_debug);
@@ -243,9 +241,9 @@ void GameUI::updateChatSize()
 	s32 chat_y = 5;
 
 	if (m_flags.show_minimal_debug)
-		chat_y += m_guitext->getTextHeight();
+		chat_y += g_fontengine->getLineHeight();
 	if (m_flags.show_basic_debug)
-		chat_y += m_guitext2->getTextHeight();
+		chat_y += g_fontengine->getLineHeight();
 
 	const v2u32 &window_size = RenderingEngine::getWindowSize();
 
@@ -276,7 +274,7 @@ void GameUI::updateProfiler()
 
 		core::dimension2d<u32> size = m_guitext_profiler->getOverrideFont()->
 				getDimension(str.c_str());
-		core::position2di upper_left(6, m_guitext->getTextHeight() * 2.5f);
+		core::position2di upper_left(6, 50);
 		core::position2di lower_right = upper_left;
 		lower_right.X += size.Width + 10;
 		lower_right.Y += size.Height;

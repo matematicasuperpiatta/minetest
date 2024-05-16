@@ -17,13 +17,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <server.h>
 #include "test.h"
-#include "test_config.h"
-
-#include "mock_server.h"
 
 #include "util/string.h"
 #include "util/serialize.h"
+
+class FakeServer : public Server
+{
+public:
+	FakeServer() : Server("fakeworld", SubgameSpec("fakespec", "fakespec"), true,
+					Address(), true, nullptr)
+	{
+	}
+
+private:
+	void SendChatMessage(session_t peer_id, const ChatMessage &message)
+	{
+		// NOOP
+	}
+};
 
 class TestServerShutdownState : public TestBase
 {
@@ -80,10 +93,10 @@ void TestServerShutdownState::testTrigger()
 
 void TestServerShutdownState::testTick()
 {
-	auto server = std::make_unique<MockServer>();
+	auto fakeServer = std::make_unique<FakeServer>();
 	Server::ShutdownState ss;
 	ss.trigger(28.0f, "testtrigger", true);
-	ss.tick(0.0f, server.get());
+	ss.tick(0.0f, fakeServer.get());
 
 	// Tick with no time should not change anything
 	UASSERT(!ss.is_requested);
@@ -92,14 +105,14 @@ void TestServerShutdownState::testTick()
 	UASSERT(ss.m_timer == 28.0f);
 
 	// Tick 2 seconds
-	ss.tick(2.0f, server.get());
+	ss.tick(2.0f, fakeServer.get());
 	UASSERT(!ss.is_requested);
 	UASSERT(ss.should_reconnect);
 	UASSERT(ss.message == "testtrigger");
 	UASSERT(ss.m_timer == 26.0f);
 
 	// Tick remaining seconds + additional expire
-	ss.tick(26.1f, server.get());
+	ss.tick(26.1f, fakeServer.get());
 	UASSERT(ss.is_requested);
 	UASSERT(ss.should_reconnect);
 	UASSERT(ss.message == "testtrigger");

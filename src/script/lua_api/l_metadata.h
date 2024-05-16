@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "lua_api/l_base.h"
 
-class IMetadata;
+class Metadata;
 
 /*
 	NodeMetaRef
@@ -34,21 +34,17 @@ class MetaDataRef : public ModApiBase
 public:
 	virtual ~MetaDataRef() = default;
 
-	static MetaDataRef *checkAnyMetadata(lua_State *L, int narg);
-
 protected:
+	static MetaDataRef *checkobject(lua_State *L, int narg);
+
 	virtual void reportMetadataChange(const std::string *name = nullptr) {}
-	virtual IMetadata *getmeta(bool auto_create) = 0;
+	virtual Metadata *getmeta(bool auto_create) = 0;
 	virtual void clearMeta() = 0;
 
-	virtual void handleToTable(lua_State *L, IMetadata *meta);
-	virtual bool handleFromTable(lua_State *L, int table, IMetadata *meta);
-
-	static void registerMetadataClass(lua_State *L, const char *name, const luaL_Reg *methods);
+	virtual void handleToTable(lua_State *L, Metadata *meta);
+	virtual bool handleFromTable(lua_State *L, int table, Metadata *meta);
 
 	// Exported functions
-
-	static int gc_object(lua_State *L);
 
 	// contains(self, name)
 	static int l_contains(lua_State *L);
@@ -73,9 +69,6 @@ protected:
 
 	// set_float(self, name, var)
 	static int l_set_float(lua_State *L);
-
-	// get_keys(self)
-	static int l_get_keys(lua_State *L);
 
 	// to_table(self)
 	static int l_to_table(lua_State *L);

@@ -77,14 +77,14 @@ void NodeMetadata::deSerialize(std::istream &is, u8 version)
 
 void NodeMetadata::clear()
 {
-	SimpleMetadata::clear();
+	Metadata::clear();
 	m_privatevars.clear();
 	m_inventory->clear();
 }
 
 bool NodeMetadata::empty() const
 {
-	return SimpleMetadata::empty() && m_inventory->getLists().empty();
+	return Metadata::empty() && m_inventory->getLists().empty();
 }
 
 

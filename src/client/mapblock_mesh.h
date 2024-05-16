@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include <array>
 #include <map>
-#include <unordered_map>
 
 class Client;
 class IShaderSource;
@@ -43,8 +42,6 @@ struct MeshMakeData
 	v3s16 m_blockpos = v3s16(-1337,-1337,-1337);
 	v3s16 m_crack_pos_relative = v3s16(-1337,-1337,-1337);
 	bool m_smooth_lighting = false;
-	MeshGrid m_mesh_grid;
-	u16 side_length = MAP_BLOCKSIZE;
 
 	Client *m_client;
 	bool m_use_shaders;
@@ -55,7 +52,13 @@ struct MeshMakeData
 		Copy block data manually (to allow optimizations by the caller)
 	*/
 	void fillBlockDataBegin(const v3s16 &blockpos);
-	void fillBlockData(const v3s16 &bp, MapNode *data);
+	void fillBlockData(const v3s16 &block_offset, MapNode *data);
+
+	/*
+		Copy central data directly from block, and other data from
+		parent of block.
+	*/
+	void fill(MapBlock *block);
 
 	/*
 		Set the (node) position of a crack
@@ -97,7 +100,7 @@ public:
 };
 
 /**
- * Implements a binary space partitioning tree
+ * Implements a binary space partitioning tree 
  * See also: https://en.wikipedia.org/wiki/Binary_space_partitioning
  */
 class MapBlockBspTree
@@ -105,7 +108,7 @@ class MapBlockBspTree
 public:
 	MapBlockBspTree() {}
 
-	void buildTree(const std::vector<MeshTriangle> *triangles, u16 side_lingth);
+	void buildTree(const std::vector<MeshTriangle> *triangles);
 
 	void traverse(v3f viewpoint, std::vector<s32> &output) const
 	{
@@ -200,11 +203,11 @@ public:
 		return m_mesh[layer];
 	}
 
-	std::vector<MinimapMapblock*> moveMinimapMapblocks()
+	MinimapMapblock *moveMinimapMapblock()
 	{
-		std::vector<MinimapMapblock*> minimap_mapblocks;
-		minimap_mapblocks.swap(m_minimap_mapblocks);
-		return minimap_mapblocks;
+		MinimapMapblock *p = m_minimap_mapblock;
+		m_minimap_mapblock = NULL;
+		return p;
 	}
 
 	bool isAnimationForced() const
@@ -217,12 +220,6 @@ public:
 		if(m_animation_force_timer > 0)
 			m_animation_force_timer--;
 	}
-
-	/// Radius of the bounding-sphere, in BS-space.
-	f32 getBoundingRadius() const { return m_bounding_radius; }
-
-	/// Center of the bounding-sphere, in BS-space, relative to block pos.
-	v3f getBoundingSphereCenter() const { return m_bounding_sphere_center; }
 
 	/// update transparent buffers to render towards the camera
 	void updateTransparentBuffers(v3f camera_pos, v3s16 block_pos);
@@ -242,13 +239,9 @@ private:
 	};
 
 	scene::IMesh *m_mesh[MAX_TILE_LAYERS];
-	std::vector<MinimapMapblock*> m_minimap_mapblocks;
+	MinimapMapblock *m_minimap_mapblock;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
-
-	f32 m_bounding_radius;
-	// MapblockMeshGenerator uses the same as mapblock center
-	v3f m_bounding_sphere_center = v3f((MAP_BLOCKSIZE * 0.5f - 0.5f) * BS);
 
 	bool m_enable_shaders;
 	bool m_enable_vbo;
@@ -337,8 +330,3 @@ void final_color_blend(video::SColor *result,
 // TileFrame vector copy cost very much to client
 void getNodeTileN(MapNode mn, const v3s16 &p, u8 tileindex, MeshMakeData *data, TileSpec &tile);
 void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *data, TileSpec &tile);
-
-/// Return bitset of the sides of the mapblock that consist of solid nodes only
-/// Bits:
-/// 0 0 -Z +Z -X +X -Y +Y
-std::unordered_map<v3s16, u8> get_solid_sides(MeshMakeData *data);

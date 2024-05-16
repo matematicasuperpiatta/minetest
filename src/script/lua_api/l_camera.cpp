@@ -165,6 +165,17 @@ int LuaCamera::l_get_aspect_ratio(lua_State *L)
 	return 1;
 }
 
+LuaCamera *LuaCamera::checkobject(lua_State *L, int narg)
+{
+	luaL_checktype(L, narg, LUA_TUSERDATA);
+
+	void *ud = luaL_checkudata(L, narg, className);
+	if (!ud)
+		luaL_typerror(L, narg, className);
+
+	return *(LuaCamera **)ud;
+}
+
 Camera *LuaCamera::getobject(LuaCamera *ref)
 {
 	return ref->m_camera;
@@ -172,9 +183,12 @@ Camera *LuaCamera::getobject(LuaCamera *ref)
 
 Camera *LuaCamera::getobject(lua_State *L, int narg)
 {
-	LuaCamera *ref = checkObject<LuaCamera>(L, narg);
+	LuaCamera *ref = checkobject(L, narg);
 	assert(ref);
-	return getobject(ref);
+	Camera *camera = getobject(ref);
+	if (!camera)
+		return NULL;
+	return camera;
 }
 
 int LuaCamera::gc_object(lua_State *L)
@@ -186,11 +200,27 @@ int LuaCamera::gc_object(lua_State *L)
 
 void LuaCamera::Register(lua_State *L)
 {
-	static const luaL_Reg metamethods[] = {
-		{"__gc", gc_object},
-		{0, 0}
-	};
-	registerClass(L, className, methods, metamethods);
+	lua_newtable(L);
+	int methodtable = lua_gettop(L);
+	luaL_newmetatable(L, className);
+	int metatable = lua_gettop(L);
+
+	lua_pushliteral(L, "__metatable");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__index");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__gc");
+	lua_pushcfunction(L, gc_object);
+	lua_settable(L, metatable);
+
+	lua_pop(L, 1);
+
+	luaL_register(L, nullptr, methods);
+	lua_pop(L, 1);
 }
 
 // clang-format off

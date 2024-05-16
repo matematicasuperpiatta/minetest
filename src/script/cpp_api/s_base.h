@@ -115,9 +115,6 @@ public:
 
 	void clientOpenLibs(lua_State *L);
 
-	// Check things that should be set by the builtin mod.
-	void checkSetByBuiltin();
-
 protected:
 	friend class LuaABM;
 	friend class LuaLBM;

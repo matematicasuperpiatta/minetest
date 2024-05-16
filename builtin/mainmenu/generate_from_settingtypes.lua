@@ -18,7 +18,7 @@ local minetest_example_header = [[
 #    to the program, eg. "minetest.exe --config ../minetest.conf.example".
 
 #    Further documentation:
-#    https://wiki.minetest.net/
+#    http://wiki.minetest.net/
 
 ]]
 
@@ -61,10 +61,6 @@ local function create_minetest_conf_example()
 						insert(result, "#    " .. comment_line .. "\n")
 					end
 				end
-			end
-			if entry.type == "key" then
-				local line = "See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h"
-				insert(result, "#    " .. line .. "\n")
 			end
 			insert(result, "#    type: " .. entry.type)
 			if entry.min then
@@ -113,9 +109,6 @@ local function create_translation_file()
 	for _, entry in ipairs(settings) do
 		if entry.type == "category" then
 			insert(result, sprintf("\tgettext(%q);", entry.name))
-		elseif entry.type == "key" then --luacheck: ignore
-			-- Neither names nor descriptions of keys are used since we have a
-			-- dedicated menu for them.
 		else
 			if entry.readable_name then
 				insert(result, sprintf("\tgettext(%q);", entry.readable_name))

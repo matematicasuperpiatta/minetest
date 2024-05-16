@@ -311,7 +311,7 @@ void RemoteClient::GetNextBlocks (
 				block->resetUsageTimer();
 
 				// Check whether the block exists (with data)
-				if (!block->isGenerated())
+				if (block->isDummy() || !block->isGenerated())
 					block_not_found = true;
 
 				/*

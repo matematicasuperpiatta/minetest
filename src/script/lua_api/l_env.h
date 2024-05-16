@@ -287,13 +287,14 @@ public:
 		this->trigger_contents = trigger_contents;
 		this->name = name;
 	}
-	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n, float dtime_s);
+	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n);
 };
 
 //! Lua wrapper for RaycastState objects
 class LuaRaycast : public ModApiBase
 {
 private:
+	static const char className[];
 	static const luaL_Reg methods[];
 	//! Inner state
 	RaycastState state;
@@ -320,10 +321,14 @@ public:
 	//! Creates a LuaRaycast and leaves it on top of the stack.
 	static int create_object(lua_State *L);
 
+	/*!
+	 * Returns the Raycast from the stack or throws an error.
+	 * @param narg location of the RaycastState in the stack
+	 */
+	static LuaRaycast *checkobject(lua_State *L, int narg);
+
 	//! Registers Raycast as a Lua userdata type.
 	static void Register(lua_State *L);
-
-	static const char className[];
 };
 
 struct ScriptCallbackState {

@@ -31,9 +31,12 @@ class ItemStackMetaRef : public MetaDataRef
 private:
 	LuaItemStack *istack;
 
+	static const char className[];
 	static const luaL_Reg methods[];
 
-	virtual IMetadata* getmeta(bool auto_create);
+	static ItemStackMetaRef *checkobject(lua_State *L, int narg);
+
+	virtual Metadata* getmeta(bool auto_create);
 
 	virtual void clearMeta();
 
@@ -51,6 +54,9 @@ private:
 
 	// Exported functions
 	static int l_set_tool_capabilities(lua_State *L);
+
+	// garbage collector
+	static int gc_object(lua_State *L);
 public:
 	// takes a reference
 	ItemStackMetaRef(LuaItemStack *istack);
@@ -63,6 +69,4 @@ public:
 	static void create(lua_State *L, LuaItemStack *istack);
 
 	static void Register(lua_State *L);
-
-	static const char className[];
 };

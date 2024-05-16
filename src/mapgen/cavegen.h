@@ -157,7 +157,7 @@ public:
 
 	// ndef is a mandatory parameter.
 	// If gennotify is NULL, generation events are not logged.
-	// If biomegen is NULL, cave liquids have classic behavior.
+	// If biomegen is NULL, cave liquids have classic behaviour.
 	CavesRandomWalk(const NodeDefManager *ndef, GenerateNotifier *gennotify =
 		NULL, s32 seed = 0, int water_level = 1, content_t water_source =
 		CONTENT_IGNORE, content_t lava_source = CONTENT_IGNORE,

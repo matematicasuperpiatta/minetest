@@ -19,6 +19,10 @@ waitfor () {
 	exit 1
 }
 
+gdbrun () {
+	gdb -q -batch -ex 'set confirm off' -ex 'r' -ex 'bt' --args "$@"
+}
+
 [ -e "$minetest" ] || { echo "executable $minetest missing"; exit 1; }
 
 rm -rf "$worldpath"
@@ -35,11 +39,11 @@ printf '%s\n' >"$testspath/server.conf" \
 ln -s "$dir/helper_mod" "$worldpath/worldmods/"
 
 echo "Starting server"
-"$minetest" --debugger --server --config "$conf_server" --world "$worldpath" --gameid $gameid 2>&1 | sed -u 's/^/(server) /' &
+gdbrun "$minetest" --server --config "$conf_server" --world "$worldpath" --gameid $gameid 2>&1 | sed -u 's/^/(server) /' &
 waitfor "$worldpath/startup"
 
 echo "Starting client"
-"$minetest" --debugger --config "$conf_client1" --go --address 127.0.0.1 2>&1 | sed -u 's/^/(client) /' &
+gdbrun "$minetest" --config "$conf_client1" --go --address 127.0.0.1 2>&1 | sed -u 's/^/(client) /' &
 waitfor "$worldpath/done"
 
 echo "Waiting for client and server to exit"

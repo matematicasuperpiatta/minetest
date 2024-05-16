@@ -66,8 +66,6 @@ struct EnumString ScriptApiNode::es_ContentParamType2[] =
 		{CPT2_COLORED_WALLMOUNTED, "colorwallmounted"},
 		{CPT2_GLASSLIKE_LIQUID_LEVEL, "glasslikeliquidlevel"},
 		{CPT2_COLORED_DEGROTATE, "colordegrotate"},
-		{CPT2_4DIR, "4dir"},
-		{CPT2_COLORED_4DIR, "color4dir"},
 		{0, NULL},
 	};
 
@@ -119,7 +117,7 @@ bool ScriptApiNode::node_on_punch(v3s16 p, MapNode node,
 
 	// Call function
 	push_v3s16(L, p);
-	pushnode(L, node);
+	pushnode(L, node, ndef);
 	objectrefGetOrCreate(L, puncher);
 	pushPointedThing(pointed);
 	PCALL_RES(lua_pcall(L, 4, 0, error_handler));
@@ -142,7 +140,7 @@ bool ScriptApiNode::node_on_dig(v3s16 p, MapNode node,
 
 	// Call function
 	push_v3s16(L, p);
-	pushnode(L, node);
+	pushnode(L, node, ndef);
 	objectrefGetOrCreate(L, digger);
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 
@@ -204,8 +202,8 @@ bool ScriptApiNode::node_on_flood(v3s16 p, MapNode node, MapNode newnode)
 
 	// Call function
 	push_v3s16(L, p);
-	pushnode(L, node);
-	pushnode(L, newnode);
+	pushnode(L, node, ndef);
+	pushnode(L, newnode, ndef);
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	lua_remove(L, error_handler);
 	return readParam<bool>(L, -1, false);
@@ -225,7 +223,7 @@ void ScriptApiNode::node_after_destruct(v3s16 p, MapNode node)
 
 	// Call function
 	push_v3s16(L, p);
-	pushnode(L, node);
+	pushnode(L, node, ndef);
 	PCALL_RES(lua_pcall(L, 2, 0, error_handler));
 	lua_pop(L, 1);  // Pop error handler
 }

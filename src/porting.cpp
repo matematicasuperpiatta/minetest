@@ -418,22 +418,15 @@ bool setSystemPaths()
 	path_share = exepath + "\\..";
 	if (detectMSVCBuildDir(exepath)) {
 		// The msvc build dir schould normaly not be present if properly installed,
-		// but its useful for debugging.
+		// but its usefull for debugging.
 		path_share += DIR_DELIM "..";
 	}
 
-	// Use %MINETEST_USER_PATH%
-	DWORD len = GetEnvironmentVariable("MINETEST_USER_PATH", buf, sizeof(buf));
-	FATAL_ERROR_IF(len > sizeof(buf), "Failed to get MINETEST_USER_PATH (too large for buffer)");
-	if (len == 0) {
-		// Use "C:\Users\<user>\AppData\Roaming\<PROJECT_NAME_C>"
-		len = GetEnvironmentVariable("APPDATA", buf, sizeof(buf));
-		FATAL_ERROR_IF(len == 0 || len > sizeof(buf), "Failed to get APPDATA");
-		path_user = std::string(buf) + DIR_DELIM + PROJECT_NAME_C;
-	} else {
-		path_user = std::string(buf);
-	}
+	// Use "C:\Users\<user>\AppData\Roaming\<PROJECT_NAME_C>"
+	DWORD len = GetEnvironmentVariable("APPDATA", buf, sizeof(buf));
+	FATAL_ERROR_IF(len == 0 || len > sizeof(buf), "Failed to get APPDATA");
 
+	path_user = std::string(buf) + DIR_DELIM + PROJECT_NAME_C;
 	return true;
 }
 
@@ -493,13 +486,8 @@ bool setSystemPaths()
 	}
 
 #ifndef __ANDROID__
-	const char *const minetest_user_path = getenv("MINETEST_USER_PATH");
-	if (minetest_user_path && minetest_user_path[0] != '\0') {
-		path_user = std::string(minetest_user_path);
-	} else {
-		path_user = std::string(getHomeOrFail()) + DIR_DELIM "."
-			+ PROJECT_NAME;
-	}
+	path_user = std::string(getHomeOrFail()) + DIR_DELIM "."
+		+ PROJECT_NAME;
 #endif
 
 	return true;
@@ -522,14 +510,9 @@ bool setSystemPaths()
 	}
 	CFRelease(resources_url);
 
-	const char *const minetest_user_path = getenv("MINETEST_USER_PATH");
-	if (minetest_user_path && minetest_user_path[0] != '\0') {
-		path_user = std::string(minetest_user_path);
-	} else {
-		path_user = std::string(getHomeOrFail())
-			+ "/Library/Application Support/"
-			+ PROJECT_NAME;
-	}
+	path_user = std::string(getHomeOrFail())
+		+ "/Library/Application Support/"
+		+ PROJECT_NAME;
 	return true;
 }
 
@@ -539,13 +522,8 @@ bool setSystemPaths()
 bool setSystemPaths()
 {
 	path_share = STATIC_SHAREDIR;
-	const char *const minetest_user_path = getenv("MINETEST_USER_PATH");
-	if (minetest_user_path && minetest_user_path[0] != '\0') {
-		path_user = std::string(minetest_user_path);
-	} else {
-		path_user  = std::string(getHomeOrFail()) + DIR_DELIM "."
-			+ lowercase(PROJECT_NAME);
-	}
+	path_user  = std::string(getHomeOrFail()) + DIR_DELIM "."
+		+ lowercase(PROJECT_NAME);
 	return true;
 }
 
@@ -728,38 +706,6 @@ void attachOrCreateConsole()
 	}
 #endif
 }
-
-#ifdef _WIN32
-std::string QuoteArgv(const std::string &arg)
-{
-	// Quoting rules on Windows are batshit insane, can differ between applications
-	// and there isn't even a stdlib function to deal with it.
-	// Ref: https://learn.microsoft.com/archive/blogs/twistylittlepassagesallalike/everyone-quotes-command-line-arguments-the-wrong-way
-	if (!arg.empty() && arg.find_first_of(" \t\n\v\"") == std::string::npos)
-		return arg;
-
-	std::string ret;
-	ret.reserve(arg.size()+2);
-	ret.push_back('"');
-	for (auto it = arg.begin(); it != arg.end(); ++it) {
-		u32 back = 0;
-		while (it != arg.end() && *it == '\\')
-			++back, ++it;
-
-		if (it == arg.end()) {
-			ret.append(2 * back, '\\');
-			break;
-		} else if (*it == '"') {
-			ret.append(2 * back + 1, '\\');
-		} else {
-			ret.append(back, '\\');
-		}
-		ret.push_back(*it);
-	}
-	ret.push_back('"');
-	return ret;
-}
-#endif
 
 int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...)
 {

@@ -229,12 +229,10 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		v3f accel_f, ActiveObject *self,
 		bool collideWithObjects)
 {
-	#define PROFILER_NAME(text) (s_env ? ("Server: " text) : ("Client: " text))
 	static bool time_notification_done = false;
 	Map *map = &env->getMap();
-	ServerEnvironment *s_env = dynamic_cast<ServerEnvironment*>(env);
 
-	ScopeProfiler sp(g_profiler, PROFILER_NAME("collisionMoveSimple()"), SPT_AVG);
+	ScopeProfiler sp(g_profiler, "collisionMoveSimple()", SPT_AVG);
 
 	collisionMoveResult result;
 
@@ -251,13 +249,10 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	} else {
 		time_notification_done = false;
 	}
-
-	v3f dpos_f = (*speed_f + accel_f * 0.5f * dtime) * dtime;
-	v3f newpos_f = *pos_f + dpos_f;
 	*speed_f += accel_f * dtime;
 
-	// If the object is static, there are no collisions
-	if (dpos_f == v3f())
+	// If there is no speed, there are no collisions
+	if (speed_f->getLength() == 0)
 		return result;
 
 	// Limit speed for avoiding hangs
@@ -273,8 +268,9 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	std::vector<NearbyCollisionInfo> cinfo;
 	{
 	//TimeTaker tt2("collisionMoveSimple collect boxes");
-	ScopeProfiler sp2(g_profiler, PROFILER_NAME("collision collect boxes"), SPT_AVG);
+	ScopeProfiler sp2(g_profiler, "collisionMoveSimple(): collect boxes", SPT_AVG);
 
+	v3f newpos_f = *pos_f + *speed_f * dtime;
 	v3f minpos_f(
 		MYMIN(pos_f->X, newpos_f.X),
 		MYMIN(pos_f->Y, newpos_f.Y) + 0.01f * BS, // bias rounding, player often at +/-n.5
@@ -392,6 +388,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		else
 #endif
 		{
+			ServerEnvironment *s_env = dynamic_cast<ServerEnvironment*>(env);
 			if (s_env != NULL) {
 				// Calculate distance by speed, add own extent and 1.5m of tolerance
 				f32 distance = speed_f->getLength() * dtime +

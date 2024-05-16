@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/container.h"
 
 class Map;
+class ServerMap;
 class MapBlock;
 class MMVManip;
 
@@ -67,7 +68,7 @@ void update_block_border_lighting(Map *map, MapBlock *block,
  * \param modified_blocks output, contains all map blocks that
  * the function modified
  */
-void blit_back_with_light(Map *map, MMVManip *vm,
+void blit_back_with_light(ServerMap *map, MMVManip *vm,
 	std::map<v3s16, MapBlock*> *modified_blocks);
 
 /*!
@@ -76,7 +77,7 @@ void blit_back_with_light(Map *map, MMVManip *vm,
  *
  * \param block the block to update
  */
-void repair_block_light(Map *map, MapBlock *block,
+void repair_block_light(ServerMap *map, MapBlock *block,
 	std::map<v3s16, MapBlock*> *modified_blocks);
 
 /*!

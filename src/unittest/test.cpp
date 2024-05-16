@@ -22,8 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/sound.h"
 #include "nodedef.h"
 #include "itemdef.h"
-#include "dummygamedef.h"
+#include "gamedef.h"
 #include "modchannels.h"
+#include "content/mods.h"
+#include "database/database-dummy.h"
 #include "util/numeric.h"
 #include "porting.h"
 
@@ -40,13 +42,36 @@ content_t t_CONTENT_BRICK;
 //// TestGameDef
 ////
 
-class TestGameDef : public DummyGameDef {
+class TestGameDef : public IGameDef {
 public:
 	TestGameDef();
-	~TestGameDef() = default;
+	~TestGameDef();
+
+	IItemDefManager *getItemDefManager() { return m_itemdef; }
+	const NodeDefManager *getNodeDefManager() { return m_nodedef; }
+	ICraftDefManager *getCraftDefManager() { return m_craftdef; }
+	ITextureSource *getTextureSource() { return m_texturesrc; }
+	IShaderSource *getShaderSource() { return m_shadersrc; }
+	ISoundManager *getSoundManager() { return m_soundmgr; }
+	scene::ISceneManager *getSceneManager() { return m_scenemgr; }
+	IRollbackManager *getRollbackManager() { return m_rollbackmgr; }
+	EmergeManager *getEmergeManager() { return m_emergemgr; }
+	ModMetadataDatabase *getModStorageDatabase() { return m_mod_storage_database; }
+
+	scene::IAnimatedMesh *getMesh(const std::string &filename) { return NULL; }
+	bool checkLocalPrivilege(const std::string &priv) { return false; }
+	u16 allocateUnknownNodeId(const std::string &name) { return 0; }
 
 	void defineSomeNodes();
 
+	virtual const std::vector<ModSpec> &getMods() const
+	{
+		static std::vector<ModSpec> testmodspec;
+		return testmodspec;
+	}
+	virtual const ModSpec* getModSpec(const std::string &modname) const { return NULL; }
+	virtual bool registerModStorage(ModMetadata *meta) { return true; }
+	virtual void unregisterModStorage(const std::string &name) {}
 	bool joinModChannel(const std::string &channel);
 	bool leaveModChannel(const std::string &channel);
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
@@ -56,15 +81,36 @@ public:
 	}
 
 private:
+	IItemDefManager *m_itemdef = nullptr;
+	const NodeDefManager *m_nodedef = nullptr;
+	ICraftDefManager *m_craftdef = nullptr;
+	ITextureSource *m_texturesrc = nullptr;
+	IShaderSource *m_shadersrc = nullptr;
+	ISoundManager *m_soundmgr = nullptr;
+	scene::ISceneManager *m_scenemgr = nullptr;
+	IRollbackManager *m_rollbackmgr = nullptr;
+	EmergeManager *m_emergemgr = nullptr;
+	ModMetadataDatabase *m_mod_storage_database = nullptr;
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
 };
 
 
 TestGameDef::TestGameDef() :
-	DummyGameDef(),
+	m_mod_storage_database(new Database_Dummy()),
 	m_modchannel_mgr(new ModChannelMgr())
 {
+	m_itemdef = createItemDefManager();
+	m_nodedef = createNodeDefManager();
+
 	defineSomeNodes();
+}
+
+
+TestGameDef::~TestGameDef()
+{
+	delete m_itemdef;
+	delete m_nodedef;
+	delete m_mod_storage_database;
 }
 
 
@@ -139,8 +185,6 @@ void TestGameDef::defineSomeNodes()
 	f = ContentFeatures();
 	f.name = itemdef.name;
 	f.alpha = ALPHAMODE_BLEND;
-	f.light_propagates = true;
-	f.param_type = CPT_LIGHT;
 	f.liquid_type = LIQUID_SOURCE;
 	f.liquid_viscosity = 4;
 	f.is_ground_content = true;
@@ -512,7 +556,7 @@ struct TestMapBlock: public TestBase
 			while being underground
 		*/
 		{
-			// Make neighbors to exist and set some non-sunlight to them
+			// Make neighbours to exist and set some non-sunlight to them
 			parent.position_valid = true;
 			b.setIsUnderground(true);
 			parent.node.setLight(LIGHTBANK_DAY, LIGHT_MAX/2);
@@ -547,7 +591,7 @@ struct TestMapBlock: public TestBase
 					}
 				}
 			}
-			// Make neighbors invalid
+			// Make neighbours invalid
 			parent.position_valid = false;
 			// Add exceptions to the top of the bottom block
 			for(u16 x=0; x<MAP_BLOCKSIZE; x++)

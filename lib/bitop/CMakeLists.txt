@@ -1,5 +1,4 @@
-add_library(bitop STATIC bit.cpp)
-target_include_directories(bitop PRIVATE ${LUA_INCLUDE_DIR})
+add_library(bitop STATIC bit.c)
+target_link_libraries(bitop)
 
-set(LUA_BIT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
-set(LUA_BIT_LIBRARY bitop PARENT_SCOPE)
+include_directories(${LUA_INCLUDE_DIR})

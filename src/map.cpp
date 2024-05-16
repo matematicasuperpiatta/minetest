@@ -158,9 +158,10 @@ MapNode Map::getNode(v3s16 p, bool *is_valid_position)
 	}
 
 	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-	MapNode node = block->getNodeNoCheck(relpos);
+	bool is_valid_p;
+	MapNode node = block->getNodeNoCheck(relpos, &is_valid_p);
 	if (is_valid_position != NULL)
-		*is_valid_position = true;
+		*is_valid_position = is_valid_p;
 	return node;
 }
 
@@ -171,9 +172,10 @@ static void set_node_in_block(MapBlock *block, v3s16 relpos, MapNode n)
 		const NodeDefManager *nodedef = block->getParent()->getNodeDefManager();
 		v3s16 blockpos = block->getPos();
 		v3s16 p = blockpos * MAP_BLOCKSIZE + relpos;
+		bool temp_bool;
 		errorstream<<"Not allowing to place CONTENT_IGNORE"
 				<<" while trying to replace \""
-				<<nodedef->get(block->getNodeNoCheck(relpos)).name
+				<<nodedef->get(block->getNodeNoCheck(relpos, &temp_bool)).name
 				<<"\" at "<<PP(p)<<" (block "<<PP(blockpos)<<")"<<std::endl;
 		return;
 	}
@@ -181,7 +183,7 @@ static void set_node_in_block(MapBlock *block, v3s16 relpos, MapNode n)
 }
 
 // throws InvalidPositionException if not found
-void Map::setNode(v3s16 p, MapNode n)
+void Map::setNode(v3s16 p, MapNode & n)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreate(blockpos);
@@ -198,10 +200,12 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreate(blockpos);
+	if (block->isDummy())
+		throw InvalidPositionException();
 	v3s16 relpos = p - blockpos * MAP_BLOCKSIZE;
 
 	// This is needed for updating the lighting
-	MapNode oldnode = block->getNodeNoCheck(relpos);
+	MapNode oldnode = block->getNodeUnsafe(relpos);
 
 	// Remove node metadata
 	if (remove_metadata) {
@@ -209,19 +213,19 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	}
 
 	// Set the node on the map
-	ContentLightingFlags f = m_nodedef->getLightingFlags(n);
-	ContentLightingFlags oldf = m_nodedef->getLightingFlags(oldnode);
-	if (f == oldf) {
+	const ContentFeatures &cf = m_nodedef->get(n);
+	const ContentFeatures &oldcf = m_nodedef->get(oldnode);
+	if (cf.lightingEquivalent(oldcf)) {
 		// No light update needed, just copy over the old light.
-		n.setLight(LIGHTBANK_DAY, oldnode.getLightRaw(LIGHTBANK_DAY, oldf), f);
-		n.setLight(LIGHTBANK_NIGHT, oldnode.getLightRaw(LIGHTBANK_NIGHT, oldf), f);
+		n.setLight(LIGHTBANK_DAY, oldnode.getLightRaw(LIGHTBANK_DAY, oldcf), cf);
+		n.setLight(LIGHTBANK_NIGHT, oldnode.getLightRaw(LIGHTBANK_NIGHT, oldcf), cf);
 		set_node_in_block(block, relpos, n);
 
 		modified_blocks[blockpos] = block;
 	} else {
 		// Ignore light (because calling voxalgo::update_lighting_nodes)
-		n.setLight(LIGHTBANK_DAY, 0, f);
-		n.setLight(LIGHTBANK_NIGHT, 0, f);
+		n.setLight(LIGHTBANK_DAY, 0, cf);
+		n.setLight(LIGHTBANK_NIGHT, 0, cf);
 		set_node_in_block(block, relpos, n);
 
 		// Update lighting
@@ -262,7 +266,10 @@ bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
 		std::map<v3s16, MapBlock*> modified_blocks;
 		addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
 
-		event.setModifiedBlocks(modified_blocks);
+		// Copy modified_blocks to event
+		for (auto &modified_block : modified_blocks) {
+			event.modified_blocks.insert(modified_block.first);
+		}
 	}
 	catch(InvalidPositionException &e){
 		succeeded = false;
@@ -284,7 +291,10 @@ bool Map::removeNodeWithEvent(v3s16 p)
 		std::map<v3s16, MapBlock*> modified_blocks;
 		removeNodeAndUpdate(p, modified_blocks);
 
-		event.setModifiedBlocks(modified_blocks);
+		// Copy modified_blocks to event
+		for (auto &modified_block : modified_blocks) {
+			event.modified_blocks.insert(modified_block.first);
+		}
 	}
 	catch(InvalidPositionException &e){
 		succeeded = false;
@@ -325,7 +335,6 @@ void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 	u32 deleted_blocks_count = 0;
 	u32 saved_blocks_count = 0;
 	u32 block_count_all = 0;
-	u32 locked_blocks = 0;
 
 	const auto start_time = porting::getTimeUs();
 	beginSave();
@@ -397,10 +406,8 @@ void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 
 			MapBlock *block = b.block;
 
-			if (block->refGet() != 0) {
-				locked_blocks++;
+			if (block->refGet() != 0)
 				continue;
-			}
 
 			v3s16 p = block->getPos();
 
@@ -445,7 +452,7 @@ void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 				<<" blocks from memory";
 		if(save_before_unloading)
 			infostream<<", of which "<<saved_blocks_count<<" were written";
-		infostream<<", "<<block_count_all<<" blocks in memory, " << locked_blocks << " locked";
+		infostream<<", "<<block_count_all<<" blocks in memory";
 		infostream<<"."<<std::endl;
 		if(saved_blocks_count != 0){
 			PrintInfo(infostream); // ServerMap/ClientMap:
@@ -526,11 +533,9 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		infostream<<"transformLiquids(): initial_size="<<initial_size<<std::endl;*/
 
 	// list of nodes that due to viscosity have not reached their max level height
-	std::vector<v3s16> must_reflow;
+	std::deque<v3s16> must_reflow;
 
 	std::vector<std::pair<v3s16, MapNode> > changed_nodes;
-
-	std::vector<v3s16> check_for_falling;
 
 	u32 liquid_loop_max = g_settings->getS32("liquid_loop_max");
 	u32 loop_max = liquid_loop_max;
@@ -594,7 +599,6 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		int num_neutrals = 0;
 		bool flowing_down = false;
 		bool ignored_sources = false;
-		bool floating_node_above = false;
 		for (u16 i = 0; i < 6; i++) {
 			NeighborType nt = NEIGHBOR_SAME_LEVEL;
 			switch (i) {
@@ -610,9 +614,7 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 			v3s16 npos = p0 + liquid_6dirs[i];
 			NodeNeighbor nb(getNode(npos), nt, npos);
 			const ContentFeatures &cfnb = m_nodedef->get(nb.n);
-			if (nt == NEIGHBOR_UPPER && cfnb.floats)
-				floating_node_above = true;
-			switch (cfnb.liquid_type) {
+			switch (m_nodedef->get(nb.n.getContent()).liquid_type) {
 				case LIQUID_NONE:
 					if (cfnb.floodable) {
 						airs[num_airs++] = nb;
@@ -692,7 +694,7 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 			else
 				new_node_content = floodable_node;
 		} else if (ignored_sources && liquid_level >= 0) {
-			// Maybe there are neighboring sources that aren't loaded yet
+			// Maybe there are neighbouring sources that aren't loaded yet
 			// so prevent flowing away.
 			new_node_level = liquid_level;
 			new_node_content = liquid_kind;
@@ -754,11 +756,6 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 				== flowing_down)))
 			continue;
 
-		/*
-			check if there is a floating node above that needs to be updated.
-		 */
-		if (floating_node_above && new_node_content == CONTENT_AIR)
-			check_for_falling.push_back(p0);
 
 		/*
 			update the current node
@@ -783,9 +780,8 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		}
 
 		// Ignore light (because calling voxalgo::update_lighting_nodes)
-		ContentLightingFlags f0 = m_nodedef->getLightingFlags(n0);
-		n0.setLight(LIGHTBANK_DAY, 0, f0);
-		n0.setLight(LIGHTBANK_NIGHT, 0, f0);
+		n0.setLight(LIGHTBANK_DAY, 0, m_nodedef);
+		n0.setLight(LIGHTBANK_NIGHT, 0, m_nodedef);
 
 		// Find out whether there is a suspect for this action
 		std::string suspect;
@@ -817,7 +813,7 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		}
 
 		/*
-			enqueue neighbors for update if necessary
+			enqueue neighbors for update if neccessary
 		 */
 		switch (m_nodedef->get(n0.getContent()).liquid_type) {
 			case LIQUID_SOURCE:
@@ -839,19 +835,14 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 	}
 	//infostream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
 
-	for (const auto &iter : must_reflow)
+	for (auto &iter : must_reflow)
 		m_transforming_liquid.push_back(iter);
 
 	voxalgo::update_lighting_nodes(this, changed_nodes, modified_blocks);
-
-	for (const v3s16 &p : check_for_falling) {
-		env->getScriptIface()->check_for_falling(p);
-	}
-
 	env->getScriptIface()->on_liquid_transformed(changed_nodes);
 
 	/* ----------------------------------------------------------------------
-	 * Manage the queue so that it does not grow indefinitely
+	 * Manage the queue so that it does not grow indefinately
 	 */
 	u16 time_until_purge = g_settings->getU16("liquid_queue_purge_time");
 
@@ -1007,7 +998,7 @@ NodeTimer Map::getNodeTimer(v3s16 p)
 				<<std::endl;
 		return NodeTimer();
 	}
-	NodeTimer t = block->getNodeTimer(p_rel);
+	NodeTimer t = block->m_node_timers.get(p_rel);
 	NodeTimer nt(t.timeout, t.elapsed, p);
 	return nt;
 }
@@ -1029,7 +1020,7 @@ void Map::setNodeTimer(const NodeTimer &t)
 		return;
 	}
 	NodeTimer nt(t.timeout, t.elapsed, p_rel);
-	block->setNodeTimer(nt);
+	block->m_node_timers.set(nt);
 }
 
 void Map::removeNodeTimer(v3s16 p)
@@ -1043,7 +1034,7 @@ void Map::removeNodeTimer(v3s16 p)
 				<<std::endl;
 		return;
 	}
-	block->removeNodeTimer(p_rel);
+	block->m_node_timers.remove(p_rel);
 }
 
 bool Map::determineAdditionalOcclusionCheck(const v3s16 &pos_camera,
@@ -1131,7 +1122,7 @@ bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 		MapNode node = getNode(pos_node, &is_valid_position);
 
 		if (is_valid_position &&
-				!m_nodedef->getLightingFlags(node).light_propagates) {
+				!m_nodedef->get(node).light_propagates) {
 			// Cannot see through light-blocking nodes --> occluded
 			count++;
 			if (count >= needed_count)
@@ -1523,6 +1514,8 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 
 	MapBlock *block = sector->getBlockNoCreateNoEx(block_y);
 	if (block) {
+		if(block->isDummy())
+			block->unDummify();
 		return block;
 	}
 	// Create blank
@@ -1535,7 +1528,7 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 {
 	{
 		MapBlock *block = getBlockNoCreateNoEx(p);
-		if (block)
+		if (block && !block->isDummy())
 			return block;
 	}
 
@@ -1762,6 +1755,13 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db, int compression_leve
 {
 	v3s16 p3d = block->getPos();
 
+	// Dummy blocks are not written
+	if (block->isDummy()) {
+		warningstream << "saveBlock: Not writing dummy block "
+			<< PP(p3d) << std::endl;
+		return true;
+	}
+
 	// Format used for writing
 	u8 version = SER_FMT_VER_HIGHEST_WRITE;
 
@@ -1870,7 +1870,10 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 			//Modified lighting, send event
 			MapEditEvent event;
 			event.type = MEET_OTHER;
-			event.setModifiedBlocks(modified_blocks);
+			std::map<v3s16, MapBlock *>::iterator it;
+			for (it = modified_blocks.begin();
+					it != modified_blocks.end(); ++it)
+				event.modified_blocks.insert(it->first);
 			dispatchEvent(event);
 		}
 	}
@@ -1958,7 +1961,7 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 			TimeTaker timer2("emerge load", &emerge_load_time);
 
 			block = m_map->getBlockNoCreateNoEx(p);
-			if (!block)
+			if (!block || block->isDummy())
 				block_data_inexistent = true;
 			else
 				block->copyTo(*this);

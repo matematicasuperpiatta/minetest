@@ -1,43 +1,36 @@
 package net.minetest.minetest;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import java.io.File;
-import java.util.Objects;
 
 public class Utils {
-	@NonNull
-	public static File createDirs(@NonNull File root, @NonNull String dir) {
+	public static @NonNull File createDirs(File root, String dir) {
 		File f = new File(root, dir);
 		if (!f.isDirectory())
-			if (!f.mkdirs())
-				Log.e("Utils", "Directory " + dir + " cannot be created");
+			f.mkdirs();
 
 		return f;
 	}
 
-	@NonNull
-	public static File getUserDataDirectory(@NonNull Context context) {
-		File extDir = Objects.requireNonNull(
-			context.getExternalFilesDir(null),
-			"Cannot get external file directory"
-		);
+	public static @Nullable File getUserDataDirectory(Context context) {
+		File extDir = context.getExternalFilesDir(null);
+		if (extDir == null) {
+			return null;
+		}
+
 		return createDirs(extDir, "Minetest");
 	}
 
-	@NonNull
-	public static File getCacheDirectory(@NonNull Context context) {
-		return Objects.requireNonNull(
-			context.getCacheDir(),
-			"Cannot get cache directory"
-		);
+	public static @Nullable File getCacheDirectory(Context context) {
+		return context.getCacheDir();
 	}
 
-	public static boolean isInstallValid(@NonNull Context context) {
+	public static boolean isInstallValid(Context context) {
 		File userDataDirectory = getUserDataDirectory(context);
-		return userDataDirectory.isDirectory() &&
+		return userDataDirectory != null && userDataDirectory.isDirectory() &&
 			new File(userDataDirectory, "games").isDirectory() &&
 			new File(userDataDirectory, "builtin").isDirectory() &&
 			new File(userDataDirectory, "client").isDirectory() &&

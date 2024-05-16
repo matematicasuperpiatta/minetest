@@ -30,8 +30,6 @@ gtags.files
 build/.cmake/
 # Gradle
 .gradle
-# Clang
-.cache
 
 ## Files related to Minetest development cycle
 /*.patch

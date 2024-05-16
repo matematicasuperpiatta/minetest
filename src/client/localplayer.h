@@ -62,7 +62,13 @@ public:
 	bool swimming_vertical = false;
 	bool swimming_pitch = false;
 
-	f32 gravity = 0; // total downwards acceleration
+	float physics_override_speed = 1.0f;
+	float physics_override_jump = 1.0f;
+	float physics_override_gravity = 1.0f;
+	bool physics_override_sneak = true;
+	bool physics_override_sneak_glitch = false;
+	// Temporary option for old move code
+	bool physics_override_new_move = true;
 
 	void move(f32 dtime, Environment *env, f32 pos_max_d);
 	void move(f32 dtime, Environment *env, f32 pos_max_d,
@@ -150,7 +156,7 @@ public:
 
 	inline void addVelocity(const v3f &vel)
 	{
-		m_added_velocity += vel;
+		added_velocity += vel;
 	}
 
 	inline Lighting& getLighting() { return m_lighting; }
@@ -200,7 +206,8 @@ private:
 	bool m_autojump = false;
 	float m_autojump_time = 0.0f;
 
-	v3f m_added_velocity = v3f(0.0f); // in BS-space; cleared on each move()
+	v3f added_velocity = v3f(0.0f); // cleared on each move()
+	// TODO: Rename to adhere to convention: added_velocity --> m_added_velocity
 
 	GenericCAO *m_cao = nullptr;
 	Client *m_client;

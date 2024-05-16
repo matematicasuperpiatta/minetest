@@ -35,7 +35,7 @@ void ToolGroupCap::toJson(Json::Value &object) const
 	Json::Value times_object;
 	for (auto time : times)
 		times_object[time.first] = time.second;
-	object["times"] = std::move(times_object);
+	object["times"] = times_object;
 }
 
 void ToolGroupCap::fromJson(const Json::Value &json)
@@ -134,13 +134,14 @@ void ToolCapabilities::serializeJson(std::ostream &os) const
 	for (const auto &groupcap : groupcaps) {
 		groupcap.second.toJson(groupcaps_object[groupcap.first]);
 	}
-	root["groupcaps"] = std::move(groupcaps_object);
+	root["groupcaps"] = groupcaps_object;
 
 	Json::Value damage_groups_object;
-	for (const auto &damagegroup : damageGroups) {
-		damage_groups_object[damagegroup.first] = damagegroup.second;
+	DamageGroup::const_iterator dgiter;
+	for (dgiter = damageGroups.begin(); dgiter != damageGroups.end(); ++dgiter) {
+		damage_groups_object[dgiter->first] = dgiter->second;
 	}
-	root["damage_groups"] = std::move(damage_groups_object);
+	root["damage_groups"] = damage_groups_object;
 
 	fastWriteJson(root, os);
 }
@@ -233,7 +234,7 @@ u32 calculateResultWear(const u32 uses, const u16 initial_wear)
 		   only oversized blocks remain.
 		   This also implies the raw tool wear number
 		   increases a bit faster after this point,
-		   but this should be barely noticeable by the
+		   but this should be barely noticable by the
 		   player.
 		*/
 		u16 wear_extra_at = blocks_normal * wear_normal;

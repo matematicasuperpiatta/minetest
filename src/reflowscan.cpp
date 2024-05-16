@@ -52,7 +52,7 @@ void ReflowScan::scan(MapBlock *block, UniqueQueue<v3s16> *liquid_queue)
 		scanColumn(x, z);
 	}
 
-	// Scan neighboring columns from the nearby blocks as they might contain
+	// Scan neighbouring columns from the nearby blocks as they might contain
 	// liquid nodes that weren't allowed to flow to prevent gaps.
 	for (s16 i = 0; i < MAP_BLOCKSIZE; i++) {
 		scanColumn(i, -1);
@@ -66,7 +66,7 @@ inline MapBlock *ReflowScan::lookupBlock(int x, int y, int z)
 {
 	// Gets the block that contains (x,y,z) relativ to the scanned block.
 	// This uses a lookup as there might be many lookups into the same
-	// neighboring block which makes fetches from Map costly.
+	// neighbouring block which makes fetches from Map costly.
 	int bx = (MAP_BLOCKSIZE + x) / MAP_BLOCKSIZE;
 	int by = (MAP_BLOCKSIZE + y) / MAP_BLOCKSIZE;
 	int bz = (MAP_BLOCKSIZE + z) / MAP_BLOCKSIZE;
@@ -85,12 +85,13 @@ inline MapBlock *ReflowScan::lookupBlock(int x, int y, int z)
 inline bool ReflowScan::isLiquidFlowableTo(int x, int y, int z)
 {
 	// Tests whether (x,y,z) is a node to which liquid might flow.
+	bool valid_position;
 	MapBlock *block = lookupBlock(x, y, z);
 	if (block) {
 		int dx = (MAP_BLOCKSIZE + x) % MAP_BLOCKSIZE;
 		int dy = (MAP_BLOCKSIZE + y) % MAP_BLOCKSIZE;
 		int dz = (MAP_BLOCKSIZE + z) % MAP_BLOCKSIZE;
-		MapNode node = block->getNodeNoCheck(dx, dy, dz);
+		MapNode node = block->getNodeNoCheck(dx, dy, dz, &valid_position);
 		if (node.getContent() != CONTENT_IGNORE) {
 			const ContentFeatures &f = m_ndef->get(node);
 			// NOTE: No need to check for flowing nodes with lower liquid level
@@ -105,7 +106,7 @@ inline bool ReflowScan::isLiquidFlowableTo(int x, int y, int z)
 inline bool ReflowScan::isLiquidHorizontallyFlowable(int x, int y, int z)
 {
 	// Check if the (x,y,z) might spread to one of the horizontally
-	// neighboring nodes
+	// neighbouring nodes
 	return isLiquidFlowableTo(x - 1, y, z) ||
 		isLiquidFlowableTo(x + 1, y, z) ||
 		isLiquidFlowableTo(x, y, z - 1) ||
@@ -114,6 +115,8 @@ inline bool ReflowScan::isLiquidHorizontallyFlowable(int x, int y, int z)
 
 void ReflowScan::scanColumn(int x, int z)
 {
+	bool valid_position;
+
 	// Is the column inside a loaded block?
 	MapBlock *block = lookupBlock(x, 0, z);
 	if (!block)
@@ -126,7 +129,7 @@ void ReflowScan::scanColumn(int x, int z)
 	// Get the state from the node above the scanned block
 	bool was_ignore, was_liquid;
 	if (above) {
-		MapNode node = above->getNodeNoCheck(dx, 0, dz);
+		MapNode node = above->getNodeNoCheck(dx, 0, dz, &valid_position);
 		was_ignore = node.getContent() == CONTENT_IGNORE;
 		was_liquid = m_ndef->get(node).isLiquid();
 	} else {
@@ -138,7 +141,7 @@ void ReflowScan::scanColumn(int x, int z)
 
 	// Scan through the whole block
 	for (s16 y = MAP_BLOCKSIZE - 1; y >= 0; y--) {
-		MapNode node = block->getNodeNoCheck(dx, y, dz);
+		MapNode node = block->getNodeNoCheck(dx, y, dz, &valid_position);
 		const ContentFeatures &f = m_ndef->get(node);
 		bool is_ignore = node.getContent() == CONTENT_IGNORE;
 		bool is_liquid = f.isLiquid();
@@ -176,7 +179,7 @@ void ReflowScan::scanColumn(int x, int z)
 	// Check the node below the current block
 	MapBlock *below = lookupBlock(x, -1, z);
 	if (below) {
-		MapNode node = below->getNodeNoCheck(dx, MAP_BLOCKSIZE - 1, dz);
+		MapNode node = below->getNodeNoCheck(dx, MAP_BLOCKSIZE - 1, dz, &valid_position);
 		const ContentFeatures &f = m_ndef->get(node);
 		bool is_ignore = node.getContent() == CONTENT_IGNORE;
 		bool is_liquid = f.isLiquid();

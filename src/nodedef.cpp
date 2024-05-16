@@ -354,12 +354,12 @@ void ContentFeatures::reset()
 		NOTE: Most of this is always overridden by the default values given
 		      in builtin.lua
 	*/
-	name.clear();
+	name = "";
 	groups.clear();
 	// Unknown nodes can be dug
 	groups["dig_immediate"] = 2;
 	drawtype = NDT_NORMAL;
-	mesh.clear();
+	mesh = "";
 #ifndef SERVER
 	for (auto &i : mesh_ptr)
 		i = NULL;
@@ -387,9 +387,9 @@ void ContentFeatures::reset()
 	leveled = 0;
 	leveled_max = LEVELED_MAX;
 	liquid_type = LIQUID_NONE;
-	liquid_alternative_flowing.clear();
+	liquid_alternative_flowing = "";
 	liquid_alternative_flowing_id = CONTENT_IGNORE;
-	liquid_alternative_source.clear();
+	liquid_alternative_source = "";
 	liquid_alternative_source_id = CONTENT_IGNORE;
 	liquid_viscosity = 0;
 	liquid_renewable = true;
@@ -410,7 +410,7 @@ void ContentFeatures::reset()
 	connects_to_ids.clear();
 	connect_sides = 0;
 	color = video::SColor(0xFFFFFFFF);
-	palette_name.clear();
+	palette_name = "";
 	palette = NULL;
 	node_dig_prediction = "air";
 	move_resistance = 0;
@@ -992,7 +992,6 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 
 	if (param_type_2 == CPT2_COLOR ||
 			param_type_2 == CPT2_COLORED_FACEDIR ||
-			param_type_2 == CPT2_COLORED_4DIR ||
 			param_type_2 == CPT2_COLORED_WALLMOUNTED ||
 			param_type_2 == CPT2_COLORED_DEGROTATE)
 		palette = tsrc->getPalette(palette_name);
@@ -1014,15 +1013,6 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			(param_type_2 == CPT2_FACEDIR
 			|| param_type_2 == CPT2_COLORED_FACEDIR)) {
 		for (u16 j = 1; j < 24; j++) {
-			mesh_ptr[j] = cloneMesh(mesh_ptr[0]);
-			rotateMeshBy6dFacedir(mesh_ptr[j], j);
-			recalculateBoundingBox(mesh_ptr[j]);
-			meshmanip->recalculateNormals(mesh_ptr[j], true, false);
-		}
-	} else if (tsettings.enable_mesh_cache && mesh_ptr[0] &&
-			(param_type_2 == CPT2_4DIR
-			|| param_type_2 == CPT2_COLORED_4DIR)) {
-		for (u16 j = 1; j < 4; j++) {
 			mesh_ptr[j] = cloneMesh(mesh_ptr[0]);
 			rotateMeshBy6dFacedir(mesh_ptr[j], j);
 			recalculateBoundingBox(mesh_ptr[j]);
@@ -1098,8 +1088,6 @@ void NodeDefManager::clear()
 		// Insert directly into containers
 		content_t c = CONTENT_UNKNOWN;
 		m_content_features[c] = f;
-		for (u32 ci = 0; ci <= CONTENT_MAX; ci++)
-			m_content_lighting_flag_cache[ci] = f.getLightingFlags();
 		addNameIdMapping(c, f.name);
 	}
 
@@ -1120,7 +1108,6 @@ void NodeDefManager::clear()
 		// Insert directly into containers
 		content_t c = CONTENT_AIR;
 		m_content_features[c] = f;
-		m_content_lighting_flag_cache[c] = f.getLightingFlags();
 		addNameIdMapping(c, f.name);
 	}
 
@@ -1140,7 +1127,6 @@ void NodeDefManager::clear()
 		// Insert directly into containers
 		content_t c = CONTENT_IGNORE;
 		m_content_features[c] = f;
-		m_content_lighting_flag_cache[c] = f.getLightingFlags();
 		addNameIdMapping(c, f.name);
 	}
 }
@@ -1255,9 +1241,7 @@ void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
 				half_processed.MaxEdge.Y = +BS / 2;
 			}
 			if (features.param_type_2 == CPT2_FACEDIR ||
-					features.param_type_2 == CPT2_COLORED_FACEDIR ||
-					features.param_type_2 == CPT2_4DIR ||
-					features.param_type_2 == CPT2_COLORED_4DIR) {
+					features.param_type_2 == CPT2_COLORED_FACEDIR) {
 				// Get maximal coordinate
 				f32 coords[] = {
 					fabsf(half_processed.MinEdge.X),
@@ -1355,7 +1339,7 @@ void NodeDefManager::eraseIdFromGroups(content_t id)
 		// Get the group items vector.
 		std::vector<content_t> &items = iter_groups->second;
 
-		// Remove any occurrence of the id in the group items vector.
+		// Remove any occurence of the id in the group items vector.
 		items.erase(std::remove(items.begin(), items.end(), id), items.end());
 
 		// If group is empty, erase its vector from the map.
@@ -1371,7 +1355,7 @@ void NodeDefManager::eraseIdFromGroups(content_t id)
 content_t NodeDefManager::set(const std::string &name, const ContentFeatures &def)
 {
 	// Pre-conditions
-	assert(!name.empty());
+	assert(name != "");
 	assert(name != "ignore");
 	assert(name == def.name);
 
@@ -1393,8 +1377,6 @@ content_t NodeDefManager::set(const std::string &name, const ContentFeatures &de
 		eraseIdFromGroups(id);
 
 	m_content_features[id] = def;
-	m_content_features[id].floats = itemgroup_get(def.groups, "float") != 0;
-	m_content_lighting_flag_cache[id] = def.getLightingFlags();
 	verbosestream << "NodeDefManager: registering content id \"" << id
 		<< "\": name=\"" << def.name << "\""<<std::endl;
 
@@ -1413,7 +1395,7 @@ content_t NodeDefManager::set(const std::string &name, const ContentFeatures &de
 
 content_t NodeDefManager::allocateDummy(const std::string &name)
 {
-	assert(!name.empty());	// Pre-condition
+	assert(name != "");	// Pre-condition
 	ContentFeatures f;
 	f.name = name;
 	return set(name, f);
@@ -1423,7 +1405,7 @@ content_t NodeDefManager::allocateDummy(const std::string &name)
 void NodeDefManager::removeNode(const std::string &name)
 {
 	// Pre-condition
-	assert(!name.empty());
+	assert(name != "");
 
 	// Erase name from name ID mapping
 	content_t id = CONTENT_IGNORE;
@@ -1463,52 +1445,44 @@ void NodeDefManager::applyTextureOverrides(const std::vector<TextureOverride> &o
 
 		ContentFeatures &nodedef = m_content_features[id];
 
-		auto apply = [&] (TileDef &tile) {
-			tile.name = texture_override.texture;
-			if (texture_override.world_scale > 0) {
-				tile.align_style = ALIGN_STYLE_WORLD;
-				tile.scale = texture_override.world_scale;
-			}
-		};
-
 		// Override tiles
 		if (texture_override.hasTarget(OverrideTarget::TOP))
-			apply(nodedef.tiledef[0]);
+			nodedef.tiledef[0].name = texture_override.texture;
 
 		if (texture_override.hasTarget(OverrideTarget::BOTTOM))
-			apply(nodedef.tiledef[1]);
+			nodedef.tiledef[1].name = texture_override.texture;
 
 		if (texture_override.hasTarget(OverrideTarget::RIGHT))
-			apply(nodedef.tiledef[2]);
+			nodedef.tiledef[2].name = texture_override.texture;
 
 		if (texture_override.hasTarget(OverrideTarget::LEFT))
-			apply(nodedef.tiledef[3]);
+			nodedef.tiledef[3].name = texture_override.texture;
 
 		if (texture_override.hasTarget(OverrideTarget::BACK))
-			apply(nodedef.tiledef[4]);
+			nodedef.tiledef[4].name = texture_override.texture;
 
 		if (texture_override.hasTarget(OverrideTarget::FRONT))
-			apply(nodedef.tiledef[5]);
+			nodedef.tiledef[5].name = texture_override.texture;
 
 
 		// Override special tiles, if applicable
 		if (texture_override.hasTarget(OverrideTarget::SPECIAL_1))
-			apply(nodedef.tiledef_special[0]);
+			nodedef.tiledef_special[0].name = texture_override.texture;
 
 		if (texture_override.hasTarget(OverrideTarget::SPECIAL_2))
-			apply(nodedef.tiledef_special[1]);
+			nodedef.tiledef_special[1].name = texture_override.texture;
 
 		if (texture_override.hasTarget(OverrideTarget::SPECIAL_3))
-			apply(nodedef.tiledef_special[2]);
+			nodedef.tiledef_special[2].name = texture_override.texture;
 
 		if (texture_override.hasTarget(OverrideTarget::SPECIAL_4))
-			apply(nodedef.tiledef_special[3]);
+			nodedef.tiledef_special[3].name = texture_override.texture;
 
 		if (texture_override.hasTarget(OverrideTarget::SPECIAL_5))
-			apply(nodedef.tiledef_special[4]);
+			nodedef.tiledef_special[4].name = texture_override.texture;
 
 		if (texture_override.hasTarget(OverrideTarget::SPECIAL_6))
-			apply(nodedef.tiledef_special[5]);
+			nodedef.tiledef_special[5].name = texture_override.texture;
 	}
 }
 
@@ -1607,8 +1581,6 @@ void NodeDefManager::deSerialize(std::istream &is, u16 protocol_version)
 		if (i >= m_content_features.size())
 			m_content_features.resize((u32)(i) + 1);
 		m_content_features[i] = f;
-		m_content_features[i].floats = itemgroup_get(f.groups, "float") != 0;
-		m_content_lighting_flag_cache[i] = f.getLightingFlags();
 		addNameIdMapping(i, f.name);
 		TRACESTREAM(<< "NodeDef: deserialized " << f.name << std::endl);
 
@@ -1689,7 +1661,7 @@ static void removeDupes(std::vector<content_t> &list)
 void NodeDefManager::resolveCrossrefs()
 {
 	for (ContentFeatures &f : m_content_features) {
-		if (f.isLiquid() || f.isLiquidRender()) {
+		if (f.liquid_type != LIQUID_NONE || f.drawtype == NDT_LIQUID || f.drawtype == NDT_FLOWINGLIQUID) {
 			f.liquid_alternative_flowing_id = getId(f.liquid_alternative_flowing);
 			f.liquid_alternative_source_id = getId(f.liquid_alternative_source);
 			continue;
@@ -1725,9 +1697,7 @@ bool NodeDefManager::nodeboxConnects(MapNode from, MapNode to,
 	// does to node declare usable faces?
 	if (f2.connect_sides > 0) {
 		if ((f2.param_type_2 == CPT2_FACEDIR ||
-				f2.param_type_2 == CPT2_COLORED_FACEDIR ||
-				f2.param_type_2 == CPT2_4DIR ||
-				f2.param_type_2 == CPT2_COLORED_4DIR)
+				f2.param_type_2 == CPT2_COLORED_FACEDIR)
 				&& (connect_face >= 4)) {
 			static const u8 rot[33 * 4] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				0, 0, 0, 0, 4, 32, 16, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1741,15 +1711,8 @@ bool NodeDefManager::nodeboxConnects(MapNode from, MapNode to,
 				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				0, 0, 0, 0, 0, 0, 32, 16, 8, 4 // 32 - left
 				};
-			if (f2.param_type_2 == CPT2_FACEDIR ||
-					f2.param_type_2 == CPT2_COLORED_FACEDIR) {
-				return (f2.connect_sides
-					& rot[(connect_face * 4) + (to.param2 & 0x1F)]);
-			} else if (f2.param_type_2 == CPT2_4DIR ||
-					f2.param_type_2 == CPT2_COLORED_4DIR) {
-				return (f2.connect_sides
-					& rot[(connect_face * 4) + (to.param2 & 0x03)]);
-			}
+			return (f2.connect_sides
+				& rot[(connect_face * 4) + (to.param2 & 0x1F)]);
 		}
 		return (f2.connect_sides & connect_face);
 	}

@@ -317,11 +317,7 @@ int luaD_precall (lua_State *L, StkId func, int nresults) {
     if (L->hookmask & LUA_MASKCALL)
       luaD_callhook(L, LUA_HOOKCALL, -1);
     lua_unlock(L);
-    /* MINETEST-SPECIFIC CHANGE: Let custom code wrap C function calls. */
-    if (G(L)->wrapcf)
-      n = G(L)->wrapcf(L, *curr_func(L)->c.f);
-    else
-      n = (*curr_func(L)->c.f)(L);
+    n = (*curr_func(L)->c.f)(L);  /* do the actual call */
     lua_lock(L);
     if (n < 0)  /* yielding? */
       return PCRYIELD;

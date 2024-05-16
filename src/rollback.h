@@ -73,6 +73,7 @@ private:
 			int range, int limit);
 	const std::list<RollbackAction> getActionsSince(time_t firstTime,
 			const std::string & actor = "");
+	void migrate(const std::string & filepath);
 	static float getSuspectNearness(bool is_guess, v3s16 suspect_p,
 		time_t suspect_t, v3s16 action_p, time_t action_t);
 

@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <cstring>
 #include <vector>
-#include <limits>
 #include <map>
 #include <sstream>
 #include <iomanip>
@@ -41,15 +40,6 @@ class Translations;
 #define IS_ASCII_PRINTABLE_CHAR(x)   \
 	(((unsigned int)(x) >= 0x20) &&  \
 	( (unsigned int)(x) <= 0x7e))
-
-// Checks whether a value is in a Unicode private use area
-#define IS_PRIVATE_USE_CHAR(x)    \
-	(((wchar_t)(x) >= 0xE000 &&   \
-	  (wchar_t)(x) <= 0xF8FF) ||  \
-	 ((wchar_t)(x) >= 0xF0000 &&  \
-	  (wchar_t)(x) <= 0xFFFFD) || \
-	 ((wchar_t)(x) >= 0x100000 && \
-	  (wchar_t)(x) <= 0x10FFFD))  \
 
 // Checks whether a byte is an inner byte for an utf-8 multibyte sequence
 #define IS_UTF8_MULTB_INNER(x)       \
@@ -430,11 +420,14 @@ inline std::string itos(s32 i) { return std::to_string(i); }
 /// Returns a string representing the decimal value of the 64-bit value \p i.
 inline std::string i64tos(s64 i) { return std::to_string(i); }
 
-/// Returns a string representing the exact decimal value of the float value \p f.
+// std::to_string uses the '%.6f' conversion, which is inconsistent with
+// std::ostream::operator<<() and impractical too.  ftos() uses the
+// more generic and std::ostream::operator<<()-compatible '%G' format.
+/// Returns a string representing the decimal value of the float value \p f.
 inline std::string ftos(float f)
 {
 	std::ostringstream oss;
-	oss << std::setprecision(std::numeric_limits<float>::max_digits10) << f;
+	oss << f;
 	return oss.str();
 }
 
@@ -457,7 +450,7 @@ inline void str_replace(std::string &str, const std::string &pattern,
 }
 
 /**
- * Escapes characters [ ] \ , ; that cannot be used in formspecs
+ * Escapes characters [ ] \ , ; that can not be used in formspecs
  */
 inline void str_formspec_escape(std::string &str)
 {
@@ -466,7 +459,6 @@ inline void str_formspec_escape(std::string &str)
 	str_replace(str, "[", "\\[");
 	str_replace(str, ";", "\\;");
 	str_replace(str, ",", "\\,");
-	str_replace(str, "$", "\\$");
 }
 
 /**
@@ -618,7 +610,7 @@ std::vector<std::basic_string<T> > split(const std::basic_string<T> &s, T delim)
 		} else {
 			if (si == delim) {
 				tokens.push_back(current);
-				current.clear();
+				current = std::basic_string<T>();
 				last_was_escape = false;
 			} else if (si == '\\') {
 				last_was_escape = true;
@@ -737,7 +729,7 @@ inline std::string str_join(const std::vector<std::string> &list,
 }
 
 /**
- * Create a UTF8 std::string from an irr::core::stringw.
+ * Create a UTF8 std::string from a irr::core::stringw.
  */
 inline std::string stringw_to_utf8(const irr::core::stringw &input)
 {
@@ -746,7 +738,7 @@ inline std::string stringw_to_utf8(const irr::core::stringw &input)
 }
 
  /**
-  * Create an irr::core:stringw from a UTF8 std::string.
+  * Create a irr::core:stringw from a UTF8 std::string.
   */
 inline irr::core::stringw utf8_to_stringw(const std::string &input)
 {

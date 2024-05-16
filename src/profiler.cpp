@@ -137,7 +137,7 @@ int Profiler::print(std::ostream &o, u32 page, u32 pagecount)
 {
 	GraphValues values;
 	getPage(values, page, pagecount);
-	char buffer[50];
+	char num_buf[50];
 
 	for (const auto &i : values) {
 		o << "  " << i.first << " ";
@@ -146,17 +146,16 @@ int Profiler::print(std::ostream &o, u32 page, u32 pagecount)
 			continue;
 		}
 
-		{
-			// Padding
-			s32 space = std::max(0, 44 - (s32)i.first.size());
-			memset(buffer, '_', space);
-			buffer[space] = '\0';
-			o << buffer;
+		s32 space = 44 - i.first.size();
+		for (s32 j = 0; j < space; j++) {
+			if ((j & 1) && j < space - 1)
+				o << ".";
+			else
+				o << " ";
 		}
-
-		porting::mt_snprintf(buffer, sizeof(buffer), "% 5ix % 7g",
-				getAvgCount(i.first), floor(i.second * 1000.0) / 1000.0);
-		o << buffer << std::endl;
+		porting::mt_snprintf(num_buf, sizeof(num_buf), "% 4ix % 3g",
+				getAvgCount(i.first), i.second);
+		o << num_buf << std::endl;
 	}
 	return values.size();
 }

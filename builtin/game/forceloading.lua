@@ -33,7 +33,7 @@ local function get_relevant_tables(transient)
 	end
 end
 
-function core.forceload_block(pos, transient, limit)
+function core.forceload_block(pos, transient)
 	-- set changed flag
 	forceload_blocks_changed = true
 
@@ -46,8 +46,7 @@ function core.forceload_block(pos, transient, limit)
 	elseif other_table[hash] ~= nil then
 		relevant_table[hash] = 1
 	else
-		limit = limit or tonumber(core.settings:get("max_forceloaded_blocks")) or 16
-		if limit >= 0 and total_forceloaded >= limit then
+		if total_forceloaded >= (tonumber(core.settings:get("max_forceloaded_blocks")) or 16) then
 			return false
 		end
 		total_forceloaded = total_forceloaded+1

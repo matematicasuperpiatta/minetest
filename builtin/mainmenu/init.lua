@@ -86,12 +86,9 @@ local function init_globals()
 	menudata.worldlist:add_sort_mechanism("alphabetic", sort_worlds_alphabetic)
 	menudata.worldlist:set_sortmode("alphabetic")
 
-	local gameid = core.settings:get("menu_last_game")
-	local game = gameid and pkgmgr.find_by_gameid(gameid)
-	if not game then
-		gameid = core.settings:get("default_game") or "minetest"
-		game = pkgmgr.find_by_gameid(gameid)
-		core.settings:set("menu_last_game", gameid)
+	if not core.settings:get("menu_last_game") then
+		local default_game = core.settings:get("default_game") or "minetest"
+		core.settings:set("menu_last_game", default_game)
 	end
 
 	mm_game_theme.init()
@@ -118,8 +115,11 @@ local function init_globals()
 
 	-- In case the folder of the last selected game has been deleted,
 	-- display "Minetest" as a header
-	if tv_main.current_tab == "local" and not game then
-		mm_game_theme.reset()
+	if tv_main.current_tab == "local" then
+		local game = pkgmgr.find_by_gameid(core.settings:get("menu_last_game"))
+		if game == nil then
+			mm_game_theme.reset()
+		end
 	end
 
 	ui.set_default("maintab")

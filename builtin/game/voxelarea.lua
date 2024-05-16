@@ -8,10 +8,7 @@ VoxelArea = {
 	zstride = 0,
 }
 
-local class_metatable = {}
-setmetatable(VoxelArea, class_metatable)
-
-local function new(self, o)
+function VoxelArea:new(o)
 	o = o or {}
 	setmetatable(o, self)
 	self.__index = self
@@ -22,12 +19,6 @@ local function new(self, o)
 
 	return o
 end
-
-function class_metatable:__call(MinEdge, MaxEdge)
-	return new(self, {MinEdge = MinEdge, MaxEdge = MaxEdge})
-end
-
-VoxelArea.new = new
 
 function VoxelArea:getExtent()
 	local MaxEdge, MinEdge = self.MaxEdge, self.MinEdge

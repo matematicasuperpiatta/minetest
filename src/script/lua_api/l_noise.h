@@ -31,6 +31,7 @@ class LuaPerlinNoise : public ModApiBase
 private:
 	NoiseParams np;
 
+	static const char className[];
 	static luaL_Reg methods[];
 
 	// Exported functions
@@ -49,12 +50,12 @@ public:
 	// Creates an LuaPerlinNoise and leaves it on top of stack
 	static int create_object(lua_State *L);
 
+	static LuaPerlinNoise *checkobject(lua_State *L, int narg);
+
 	static void *packIn(lua_State *L, int idx);
 	static void packOut(lua_State *L, void *ptr);
 
 	static void Register(lua_State *L);
-
-	static const char className[];
 };
 
 /*
@@ -64,6 +65,7 @@ class LuaPerlinNoiseMap : public ModApiBase
 {
 	Noise *noise;
 
+	static const char className[];
 	static luaL_Reg methods[];
 
 	// Exported functions
@@ -90,12 +92,12 @@ public:
 	// Creates an LuaPerlinNoiseMap and leaves it on top of stack
 	static int create_object(lua_State *L);
 
+	static LuaPerlinNoiseMap *checkobject(lua_State *L, int narg);
+
 	static void *packIn(lua_State *L, int idx);
 	static void packOut(lua_State *L, void *ptr);
 
 	static void Register(lua_State *L);
-
-	static const char className[];
 };
 
 /*
@@ -106,6 +108,7 @@ class LuaPseudoRandom : public ModApiBase
 private:
 	PseudoRandom m_pseudo;
 
+	static const char className[];
 	static const luaL_Reg methods[];
 
 	// Exported functions
@@ -123,9 +126,9 @@ public:
 	// Creates an LuaPseudoRandom and leaves it on top of stack
 	static int create_object(lua_State *L);
 
-	static void Register(lua_State *L);
+	static LuaPseudoRandom *checkobject(lua_State *L, int narg);
 
-	static const char className[];
+	static void Register(lua_State *L);
 };
 
 /*
@@ -136,6 +139,7 @@ class LuaPcgRandom : public ModApiBase
 private:
 	PcgRandom m_rnd;
 
+	static const char className[];
 	static const luaL_Reg methods[];
 
 	// Exported functions
@@ -158,9 +162,9 @@ public:
 	// Creates an LuaPcgRandom and leaves it on top of stack
 	static int create_object(lua_State *L);
 
-	static void Register(lua_State *L);
+	static LuaPcgRandom *checkobject(lua_State *L, int narg);
 
-	static const char className[];
+	static void Register(lua_State *L);
 };
 
 /*
@@ -170,6 +174,7 @@ class LuaSecureRandom : public ModApiBase
 {
 private:
 	static const size_t RAND_BUF_SIZE = 2048;
+	static const char className[];
 	static const luaL_Reg methods[];
 
 	u32 m_rand_idx;
@@ -190,7 +195,7 @@ public:
 	// Creates an LuaSecureRandom and leaves it on top of stack
 	static int create_object(lua_State *L);
 
-	static void Register(lua_State *L);
+	static LuaSecureRandom *checkobject(lua_State *L, int narg);
 
-	static const char className[];
+	static void Register(lua_State *L);
 };

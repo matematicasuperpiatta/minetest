@@ -175,7 +175,7 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 				// Inform other things that the meta data has changed
 				MapEditEvent event;
 				event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
-				event.setPositionModified(p);
+				event.p = p;
 				map->dispatchEvent(event);
 			} catch (InvalidPositionException &e) {
 				infostream << "RollbackAction::applyRevert(): "

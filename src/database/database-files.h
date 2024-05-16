@@ -72,21 +72,16 @@ private:
 	bool writeAuthFile();
 };
 
-class ModStorageDatabaseFiles : public ModStorageDatabase
+class ModMetadataDatabaseFiles : public ModMetadataDatabase
 {
 public:
-	ModStorageDatabaseFiles(const std::string &savedir);
-	virtual ~ModStorageDatabaseFiles() = default;
+	ModMetadataDatabaseFiles(const std::string &savedir);
+	virtual ~ModMetadataDatabaseFiles() = default;
 
-	virtual void getModEntries(const std::string &modname, StringMap *storage);
-	virtual void getModKeys(const std::string &modname, std::vector<std::string> *storage);
-	virtual bool getModEntry(const std::string &modname,
-		const std::string &key, std::string *value);
-	virtual bool hasModEntry(const std::string &modname, const std::string &key);
+	virtual bool getModEntries(const std::string &modname, StringMap *storage);
 	virtual bool setModEntry(const std::string &modname,
 		const std::string &key, const std::string &value);
 	virtual bool removeModEntry(const std::string &modname, const std::string &key);
-	virtual bool removeModEntries(const std::string &modname);
 	virtual void listMods(std::vector<std::string> *res);
 
 	virtual void beginSave();
@@ -97,6 +92,6 @@ private:
 	bool writeJson(const std::string &modname, const Json::Value &json);
 
 	std::string m_storage_dir;
-	std::unordered_map<std::string, Json::Value> m_mod_storage;
+	std::unordered_map<std::string, Json::Value> m_mod_meta;
 	std::unordered_set<std::string> m_modified;
 };

@@ -98,15 +98,15 @@ Where each location is on each platform:
 * Windows installed:
     * `bin`   = `C:\Program Files\Minetest\bin (Depends on the install location)`
     * `share` = `C:\Program Files\Minetest (Depends on the install location)`
-    * `user`  = `%APPDATA%\Minetest` or `%MINETEST_USER_PATH%`
+    * `user`  = `%APPDATA%\Minetest`
 * Linux installed:
     * `bin`   = `/usr/bin`
     * `share` = `/usr/share/minetest`
-    * `user`  = `~/.minetest` or `$MINETEST_USER_PATH`
+    * `user`  = `~/.minetest`
 * macOS:
     * `bin`   = `Contents/MacOS`
     * `share` = `Contents/Resources`
-    * `user`  = `Contents/User` or `~/Library/Application Support/minetest` or `$MINETEST_USER_PATH`
+    * `user`  = `Contents/User OR ~/Library/Application Support/minetest`
 
 Worlds can be found as separate folders in: `user/worlds/`
 
@@ -175,7 +175,7 @@ Download source (this is the URL to the latest of source repository, which might
     git clone --depth 1 https://github.com/minetest/minetest.git
     cd minetest
 
-Download Minetest Game (otherwise only the "Development Test" game is available) using Git:
+Download minetest_game (otherwise only the "Development Test" game is available) using Git:
 
     git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
 
@@ -189,7 +189,7 @@ Download source, without using Git:
     tar xf master.tar.gz
     cd minetest-master
 
-Download Minetest Game, without using Git:
+Download minetest_game, without using Git:
 
     cd games/
     wget https://github.com/minetest/minetest_game/archive/master.tar.gz
@@ -262,7 +262,6 @@ General options and their default values:
     ENABLE_SYSTEM_JSONCPP=ON   - Use JsonCPP from system
     RUN_IN_PLACE=FALSE         - Create a portable install (worlds, settings etc. in current directory)
     ENABLE_UPDATE_CHECKER=TRUE - Whether to enable update checks by default
-    INSTALL_DEVTEST=FALSE      - Whether the Development Test game should be installed alongside Minetest
     USE_GPROF=FALSE            - Enable profiling using GProf
     VERSION_EXTRA=             - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
     ENABLE_TOUCH=FALSE         - Enable Touchscreen support (requires support by IrrlichtMt)
@@ -280,10 +279,9 @@ Library specific options:
     FREETYPE_LIBRARY                - Path to libfreetype.a/libfreetype.so/freetype.lib
     FREETYPE_DLL                    - Only on Windows; path to libfreetype-6.dll
     GETTEXT_DLL                     - Only when building with gettext on Windows; paths to libintl + libiconv DLLs
-    GETTEXT_INCLUDE_DIR             - Only when building with gettext; directory that contains libintl.h
-    GETTEXT_LIBRARY                 - Optional/platform-dependent with gettext; path to libintl.so/libintl.dll.a
+    GETTEXT_INCLUDE_DIR             - Only when building with gettext; directory that contains iconv.h
+    GETTEXT_LIBRARY                 - Only when building with gettext on Windows; path to libintl.dll.a
     GETTEXT_MSGFMT                  - Only when building with gettext; path to msgfmt/msgfmt.exe
-    ICONV_LIBRARY                   - Optional/platform-dependent; path to libiconv.so/libiconv.dylib
     IRRLICHT_DLL                    - Only on Windows; path to IrrlichtMt.dll
     IRRLICHT_INCLUDE_DIR            - Directory that contains IrrCompileConfig.h (usable for server build only)
     LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
@@ -294,7 +292,7 @@ Library specific options:
     REDIS_INCLUDE_DIR               - Only when building with Redis; directory that contains hiredis.h
     REDIS_LIBRARY                   - Only when building with Redis; path to libhiredis.a/libhiredis.so
     SPATIAL_INCLUDE_DIR             - Only when building with LibSpatial; directory that contains spatialindex/SpatialIndex.h
-    SPATIAL_LIBRARY                 - Only when building with LibSpatial; path to libspatialindex.so/spatialindex-32.lib
+    SPATIAL_LIBRARY                 - Only when building with LibSpatial; path to libspatialindex_c.so/spatialindex-32.lib
     LUA_INCLUDE_DIR                 - Only if you want to use LuaJIT; directory where luajit.h is located
     LUA_LIBRARY                     - Only if you want to use LuaJIT; path to libluajit.a/libluajit.so
     OGG_DLL                         - Only if building with sound on Windows; path to libogg.dll
@@ -406,7 +404,7 @@ git clone --depth 1 https://github.com/minetest/minetest.git
 cd minetest
 ```
 
-Download Minetest Game (otherwise only the "Development Test" game is available) using Git:
+Download minetest_game (otherwise only the "Development Test" game is available) using Git:
 
 ```
 git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
