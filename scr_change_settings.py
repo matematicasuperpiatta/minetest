@@ -12,7 +12,6 @@ settings = {
    'max_block_generate_distance': '6',
    'max_simultaneous_block_sends_per_client': '1',
    'max_simultaneous_block_sends_server_total': '20',
-   'active_block_range': '1',
    'server_map_save_interval': '15.3'
 }
 folders = [""]
