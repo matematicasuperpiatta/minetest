@@ -3,16 +3,16 @@
 ##############################################
 settings = {
    'active_block_range': '6',
-   'creative_mode': 'true',
+   'creative_mode': 'false',
    'viewing_range': '110',
    'item_entity_ttl': '15',
    'server_unload_unused_data_timeout': '30',
-   'max_clearobjects_extra_loaded_blocks': '64',
+   'max_clearobjects_extra_loaded_blocks': '4096',
    'max_block_send_distance': '6',
    'max_block_generate_distance': '6',
-   'max_simultaneous_block_sends_per_client': '1',
-   'max_simultaneous_block_sends_server_total': '20',
-   'server_map_save_interval': '15.3'
+   'max_simultaneous_block_sends_per_client': '16',
+   'max_simultaneous_block_sends_server_total': '16',
+   'server_map_save_interval': '15'
 }
 folders = [""]
 ##############################################
