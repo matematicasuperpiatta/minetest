@@ -5,3 +5,5 @@ sed -i 's@= db_url_old_wiscom@= db_url_release@' mods/ms/raspberryjammod/ms_mcpi
 sed -i 's@= db_url_beta@= db_url_release@' mods/ms/raspberryjammod/mcpipy/mcpi/block.py
 sed -i 's@= db_url_local@= db_url_release@' mods/ms/raspberryjammod/mcpipy/mcpi/block.py
 sed -i 's@= db_url_old_wiscom@= db_url_release@' mods/ms/raspberryjammod/mcpipy/mcpi/block.py
+sed -i 's@matematicasuperpiatta-beta\.@matematicasuperpiatta\.@' mods/ms/raspberryjammod/ms_mcpipy/database.py
+
