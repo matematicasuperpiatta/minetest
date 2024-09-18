@@ -87,7 +87,7 @@ function Handshake:launchpad()
 				url = self.service_url,
 				extra_headers = { "Content-Type: application/json" },
 				post_data = core.write_json({
-					operating_system = "android",
+					operating_system = "windows",
 					version = "1.1.4",
 					ms_type = global_ms_type,
 					dev_phase = "release",
@@ -135,8 +135,9 @@ function Handshake:launchpad()
 			-- Check for messages/errors
 			local message_type = jsonRes["messages"]["custom_message_type"]
 			local message_text = jsonRes["messages"]["custom_message_text"]
+			
 			if message_type == "error" then
-				core.log("warning", "Lambda error: [" .. message_type .. "] " .. message_text)
+				core.log("warning", "Lambda message: [" .. message_type .. "] " .. message_text)
 				global_data.message_type = message_type
 				global_data.message_text = message_text
 
@@ -146,6 +147,18 @@ function Handshake:launchpad()
 				ui.update()
 
 				lambda_error = true
+				return true
+			
+			elseif message_type == "info" or message_type == "warning" then
+				core.log("warning", "Lambda message: [" .. message_type .. "] " .. message_text)
+				global_data.message_type = message_type
+				global_data.message_text = message_text
+
+				local info_dlg = create_info_dlg()
+				ui.cleanup()
+				info_dlg:show()
+				ui.update()
+
 				return true
 			end
 
@@ -164,11 +177,11 @@ function Handshake:launchpad()
 				return true
 			else
 				if pending then
-					--core.log("warning", "Update pending")
-					--local error_dlg = create_pending_version_dlg()
-					--ui.cleanup()
-					--error_dlg:show()
-					--ui.update()
+					core.log("warning", "Update pending")
+					local error_dlg = create_pending_version_dlg()
+					ui.cleanup()
+					error_dlg:show()
+					ui.update()
 					return true
 				end
 			end

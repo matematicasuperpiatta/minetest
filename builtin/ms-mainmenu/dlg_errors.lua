@@ -75,9 +75,11 @@ end
 local function get_pending_version_formspec(tabview, _, tabdata)
 	local fs = FormspecVersion:new{version=6}:render() ..
 		Size:new{w = 8, h = 4.5, fix = true}:render() ..
-		Label:new{x = 0.5, y = 0.5, label = fgettext("New version is available!")}:render() .. -- Trova il modo di metterci il messaggio tornato dalla lambda
-		Button:new{x=4 - 1.1, y=2.25, w=2.2, h=0.75, name = "btn_update", label = fgettext("Update")}:render() ..
-		Button:new{x=4 - 1.1, y=3.25, w=2.2, h=0.75, name = "btn_continue", label = fgettext("Continue")}:render()
+		Label:new{x = 0.5, y = 0.5, label = fgettext(global_data.message_text)}:render() .. -- Trova il modo di metterci il messaggio tornato dalla lambda
+		--Button:new{x=4 - 1.1, y=2.25, w=2.2, h=0.75, name = "btn_update", label = fgettext("Update")}:render() ..
+		--Button:new{x=4 - 1.1, y=3.25, w=2.2, h=0.75, name = "btn_continue", label = fgettext("Continue")}:render()
+		Button:new{x=4 - 3.2, y=3.25, w=2.2, h=0.75, name = "btn_update", label = fgettext("Update")}:render() ..
+		Button:new{x=4 + 1, y=3.25, w=2.2, h=0.75, name = "btn_continue", label = fgettext("Continue")}:render()
 	return fs
 end
 
@@ -104,10 +106,44 @@ local function handle_pending_version_buttons(this, fields, tabname, tabdata)
 	return false
 end
 
+local function handle_pending_version_event(self, event)
+	-- https://github.com/minetest/minetest/blob/master/builtin/fstk/dialog.lua#L18
+	-- do nothing
+end
+
 function create_pending_version_dlg()
 	return dialog_create("pendingVersion",
 				get_pending_version_formspec,
 				handle_pending_version_buttons,
+				nil)
+end
+
+-- Info message
+local function get_info_formspec(tabview, _, tabdata)
+	local fs = FormspecVersion:new{version=6}:render() ..
+		Size:new{w = 8, h = 4.5, fix = true}:render() ..
+		Label:new{x = 0.5, y = 0.5, label = fgettext(global_data.message_text)}:render() ..
+		Button:new{x=4 - 1.1, y=3.25, w=2.2, h=0.75, name = "btn_continue", label = fgettext("Continue")}:render()
+	return fs
+end
+
+local function handle_info_buttons(this, fields, tabname, tabdata)
+	if (fields.btn_continue) then
+		this:delete()
+		return true
+	end
+	return false
+end
+
+local function handle_info_event(self, event)
+	-- https://github.com/minetest/minetest/blob/master/builtin/fstk/dialog.lua#L18
+	-- do nothing
+end
+
+function create_info_dlg()
+	return dialog_create("infoMessage",
+				get_info_formspec,
+				handle_info_buttons,
 				nil)
 end
 
@@ -124,3 +160,4 @@ function display_required_version_error()
 	error_dlg:show()
 	ui.update()
 end
+

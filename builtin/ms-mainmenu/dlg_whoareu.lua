@@ -26,6 +26,25 @@ local error_msg = ""
 
 local http = core.get_http_api()
 
+function print_all(title, o)
+	core.log("warning", title)
+	core.log("warning", dump(o))
+end
+
+function dump(o)
+	if type(o) == 'table' then
+	   local s = '{ '
+	   for k,v in pairs(o) do
+		  if type(k) ~= 'number' then k = '"'..k..'"' end
+		  s = s .. '['..k..'] = ' .. dump(v) .. ','
+	   end
+	   return s .. '} '
+	else
+	   return tostring(o)
+	end
+ end
+
+
 --------------------------------------------------------------------------------
 --
 -- Username dialog
@@ -78,6 +97,7 @@ local function handle_whoareu_buttons(this, fields, tabname, tabdata)
 	end
 
 	if (fields.btn_back) then
+		print_all("WHOAREU", this)
 		this:delete()
 		return true
 	end
@@ -214,6 +234,7 @@ local function handle_passwd_buttons(this, fields, tabname, tabdata)
 	end
 
 	if fields.btn_back then
+		print_all("PASS", this)
 		this:delete()
 		return true
 	end
