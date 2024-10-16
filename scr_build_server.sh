@@ -14,8 +14,8 @@ cd ../../ || exit
 cp game.conf.ms games/minetest_game/game.conf
 cp minetestgame.conf.ms games/minetest_game/minetest.conf
 cd games/minetest_game/mods/ || exit
-rm -rf beds binoculars boats bones bucket butterflies carts creative doors dungeon_lot env_sounds fireflies keysmap
-rm -rf mtg_craftguide screwdriver sethome sfinv spawn vessels walls weather xpanes
+rm -rf beds binoculars boats bones bucket butterflies carts doors dungeon_lot env_sounds fireflies keysmap
+rm -rf mtg_craftguide screwdriver sethome spawn vessels walls weather xpanes
 cd ../../../ || exit
 
 # COMPILING
