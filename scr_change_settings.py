@@ -3,8 +3,8 @@
 ##############################################
 settings = {
    'active_block_range': '6',
-   'creative_mode': 'false',
-   'viewing_range': '110',
+   'creative_mode': 'true',
+   #'viewing_range': '110',
    'item_entity_ttl': '15',
    'server_unload_unused_data_timeout': '30',
    'max_clearobjects_extra_loaded_blocks': '4096',
