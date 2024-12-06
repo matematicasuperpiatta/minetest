@@ -19,7 +19,8 @@ rm -rf mtg_craftguide screwdriver sethome sfinv spawn vessels walls weather xpan
 cd ../../../ || exit
 
 # COMPILING
-cmake . -DRUN_IN_PLACE=TRUE -DBUILD_SERVER=TRUE -DBUILD_CLIENT=FALSE
-make -j 1
-python3 scr_change_settings.py
+#cmake . -DRUN_IN_PLACE=TRUE -DBUILD_SERVER=TRUE -DBUILD_CLIENT=FALSE
+#make -j 1
+
+#python3 scr_change_settings.py
 
