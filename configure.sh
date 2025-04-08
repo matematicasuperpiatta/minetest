@@ -12,7 +12,8 @@ if grep -q "^database_host" "minetest.conf"; then
     sed -i "s/^database_host.*/database_host = $db_host/" "minetest.conf"
 else
     # Se la riga non esiste, aggiungi la variabile al file
-    echo "database_host = $db_host" >> "minetest.conf"
+    echo "
+database_host = $db_host" >> "minetest.conf"
 fi
 
 echo "Configurato database_host nel file minetest.conf: $db_host"
