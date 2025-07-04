@@ -1,3 +1,5 @@
+#!/bin/bash
+
 source versions.env
 
 # ms_shared
