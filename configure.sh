@@ -6,6 +6,21 @@ source config.env
 # Usa il valore di database_host da config.env o un valore di default
 db_host="${database_host:-default}"
 
+# Setta l'ip corretto del media_server in minetest.conf
+public_ip=$(curl -s https://api.ipify.org)
+
+remote_line="remote_media = http://$public_ip:8001/"
+
+if grep -q "^remote_media" "minetest.conf"; then
+    sed -i "s|^remote_media.*|$remote_line|" "minetest.conf"
+else
+    echo "" >> "minetest.conf"
+    echo "$remote_line" >> "minetest.conf"
+fi
+
+# crea gli sha dei media
+./media_gen.sh
+
 # Sovrascrivi il valore se già presente, altrimenti aggiungi la variabile al file minetest.conf
 if grep -q "^database_host" "minetest.conf"; then
     # Se la riga esiste, sovrascrivila con il nuovo valore
