@@ -4,7 +4,7 @@
 source config.env
 
 db_host="${database_host:-127.0.0.1}"
-language="${language:-IT}"
+language="${lang:-IT}"
 wiscom_local="${wiscom_local:-default}"
 
 # Sovrascrivi il valore se già presente, altrimenti aggiungi la variabile al file minetest.conf
