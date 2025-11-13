@@ -16,8 +16,8 @@ mkdir -p media/
 # all textures that a server uses.
 collect_from mods/
 # Example for MineClone2 (they put textures in textures/ now)
-#collect_from mods/
-#collect_from textures/
+collect_from worlds/
+collect_from games/
 
 printf "Creating index.mth... "
 printf "MTHS\x00\x01" > media/index.mth
