@@ -4,7 +4,7 @@
 source config.env
 
 db_host="${database_host:-127.0.0.1}"
-language="${lang:-IT}"
+lang="${lang:-IT}"
 wiscom_local="${wiscom_local:-default}"
 
 # Sovrascrivi il valore se già presente, altrimenti aggiungi la variabile al file minetest.conf
@@ -32,11 +32,11 @@ fi
 echo "Configurato wiscom_local nel file minetest.conf: $wiscom_local"
 
 # Sovrascrivi se esiste, altrimenti aggiungi a minetest.conf
-if grep -q "^language" "minetest.conf"; then
-    sed -i "s/^language.*/language = $language/" "minetest.conf"
+if grep -q "^lang" "minetest.conf"; then
+    sed -i "s/^lang.*/lang = $lang/" "minetest.conf"
 else
     echo "
-language = $language" >> "minetest.conf"
+lang = $lang" >> "minetest.conf"
 fi
 
-echo "Configurato language nel file minetest.conf: $language"
+echo "Configurato lang nel file minetest.conf: $lang"
