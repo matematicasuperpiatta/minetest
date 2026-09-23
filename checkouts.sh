@@ -19,3 +19,8 @@ git checkout "$checkout_ms_mcpipy" || { echo "❌ Errore: checkout fallito su ms
 git pull
 git stash pop
 cd ../../../../
+
+# copy world from ms_mcpipy
+echo "Copy MATEMATICA_SUPERPIATTA world from ms_mcpipy to worlds"
+mkdir -p worlds
+cp -r mods/ms/raspberryjammod/ms_mcpipy/MATEMATICA_SUPERPIATTA worlds
